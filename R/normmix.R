@@ -11,7 +11,7 @@ normmix <- function(ps, mus, sigmas) {
     stop("Number of components mismatch.")
   }
 
-  RVAL <- list(num = length(ps), ps = ps, mus = mus, sigmas = sigmas)
+  RVAL <- list(m = length(ps), ps = ps, mus = mus, sigmas = sigmas)
   class(RVAL) <- "normmix"
   return(RVAL)
 }
@@ -23,7 +23,8 @@ is.normmix <- function(mix) {
 }
 
 print.normmix <- function(mix) {
-  print(paste("Normal Mixture with", mix$num, "component"))
+  print(paste("Normal Mixture with", mix$m, "component"))
+}
 }
 
 summary.normmix <- function(mix) {

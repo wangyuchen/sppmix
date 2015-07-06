@@ -1,4 +1,4 @@
-rsppmix <- function(lambda, mix, window, truncate=TRUE) {
+rsppmix <- function(lambda, window, mix, truncate=TRUE) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")
   }
@@ -9,12 +9,12 @@ rsppmix <- function(lambda, mix, window, truncate=TRUE) {
   }
 
   gen_n_from_mix <- function(n, mix) {
-    comp <- sample(1:mix$num, size = n, replace=TRUE, prob=mix$ps)
+    comp <- sample(1:mix$m, size = n, replace=TRUE, prob=mix$ps)
     spp <- mvtnorm::rmvnorm(sum(comp == 1),
                             mix$mus[[1]], mix$sigmas[[1]])
 
-    if (mix$num >= 1) {
-      for (k in 2:mix$num) {
+    if (mix$m >= 1) {
+      for (k in 2:mix$m) {
         samples <- mvtnorm::rmvnorm(sum(comp == k),
                                     mix$mus[[k]], mix$sigmas[[k]])
         spp <- rbind(spp, samples)
