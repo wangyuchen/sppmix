@@ -3,7 +3,7 @@ normmix <- function(ps, mus, sigmas) {
     stop("Mixture with 0 components")
   }
 
-  if (sum(ps) != 1) {
+  if (abs(sum(ps) - 1) > .0000001) {
     stop("Component probabilities must sum to 1.")
   }
 
@@ -25,6 +25,27 @@ is.normmix <- function(mix) {
 print.normmix <- function(mix) {
   print(paste("Normal Mixture with", mix$m, "component"))
 }
+
+gen_normmix <- function(m, sig0, sigdf, window, rand_m=FALSE) {
+  if (!is.owin(window)) {
+    stop("window must be of class owin.")
+  }
+  if (rand_m == TRUE) {
+    # number of components is random
+    m <- sample(1:m, 1)
+  }
+
+  ps <- MCMCpack::rdirichlet(1, rep(1, m))
+  mus <- list()
+  sigmas <- list()
+
+  for (k in 1:m) {
+    mus[[k]] <- c(runif(1, window$xrange[1], window$xrange[2]),
+                runif(1, window$yrange[1], window$yrange[2]))
+    sigmas[[k]] <- rWishart(1, sigdf, sig0 * diag(2))[, , 1]
+  }
+
+  return(normmix(ps, mus, sigmas))
 }
 
 summary.normmix <- function(mix) {
