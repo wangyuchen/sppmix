@@ -26,7 +26,7 @@ print.normmix <- function(mix) {
   print(paste("Normal Mixture with", mix$m, "component"))
 }
 
-gen_normmix <- function(m, sig0, sigdf,
+rnormmix <- function(m, sig0, sigdf,
                         win=spatstat::square(1),
                         rand_m=FALSE) {
   if (!spatstat::is.owin(win)) {
@@ -48,6 +48,21 @@ gen_normmix <- function(m, sig0, sigdf,
   }
 
   return(normmix(ps, mus, sigmas))
+}
+
+dnormmix <- function(x, y, mix, win = spatstat::square(1), truncate = TRUE) {
+  approx <- approx_normmix(mix, win)
+  den <- matrix(NA_real_, length(x), mix$m)
+  for (k in 1:mix$m) {
+    # every row of den is for a point
+    # every col of den is for a component
+    den[, k] <- mvtnorm::dmvnorm(cbind(x, y), mix$mus[[k]], mix$sigmas[[k]])
+    den[, k] <- den[, k] * mix$ps[k]
+    if (truncate) {
+      den[, k] <- den[, k] / approx[k]
+    }
+  }
+  return(rowSums(den))
 }
 
 summary.normmix <- function(mix) {
