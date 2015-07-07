@@ -1,4 +1,4 @@
-rsppmix <- function(lambda, window, mix, truncate=TRUE) {
+rsppmix <- function(lambda, mix, win=spatstat::square(1), truncate=TRUE) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")
   }
@@ -26,11 +26,11 @@ rsppmix <- function(lambda, window, mix, truncate=TRUE) {
   spp <- gen_n_from_mix(n, mix)
 
   if (truncate == TRUE) {
-    while (sum(spatstat::inside.owin(spp[, 1], spp[, 2], window)) < n) {
+    while (sum(spatstat::inside.owin(spp[, 1], spp[, 2], win)) < n) {
       spp <- rbind(spp, gen_n_from_mix(n, mix))
     }
-    spp <- spp[spatstat::inside.owin(spp[, 1], spp[, 2], window), ][1:n, ]
+    spp <- spp[spatstat::inside.owin(spp[, 1], spp[, 2], win), ][1:n, ]
   }
 
-  return(as.ppp(spp, W=window, check = truncate))
+  return(as.ppp(spp, W=win, check = truncate))
 }

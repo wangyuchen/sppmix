@@ -26,9 +26,11 @@ print.normmix <- function(mix) {
   print(paste("Normal Mixture with", mix$m, "component"))
 }
 
-gen_normmix <- function(m, sig0, sigdf, window, rand_m=FALSE) {
-  if (!is.owin(window)) {
-    stop("window must be of class owin.")
+gen_normmix <- function(m, sig0, sigdf,
+                        win=spatstat::square(1),
+                        rand_m=FALSE) {
+  if (!spatstat::is.owin(win)) {
+    stop("win must be of class owin.")
   }
   if (rand_m == TRUE) {
     # number of components is random
@@ -40,8 +42,8 @@ gen_normmix <- function(m, sig0, sigdf, window, rand_m=FALSE) {
   sigmas <- list()
 
   for (k in 1:m) {
-    mus[[k]] <- c(runif(1, window$xrange[1], window$xrange[2]),
-                runif(1, window$yrange[1], window$yrange[2]))
+    mus[[k]] <- c(runif(1, win$xrange[1], win$xrange[2]),
+                runif(1, win$yrange[1], win$yrange[2]))
     sigmas[[k]] <- rWishart(1, sigdf, sig0 * diag(2))[, , 1]
   }
 
