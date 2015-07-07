@@ -1,3 +1,23 @@
+#' Generate a spatial point pattern from normal mixture.
+#'
+#' Generate a spatial point pattern from a given mixture with normal components.
+#'
+#' @param lambda Intensity of the spatial point pattern
+#' @param mix Object of class normmix
+#' @param win Object of class spatstat::owin, default is spatstat::square(1)
+#' @param truncate Whether to truncate the points outside the domain, default to TRUE.
+#' @details
+#' If \code{truncate = FALSE} is set, the returned point pattern will not check whether the points are inside the domain.
+#'
+#' When \code{truncate = TRUE}, a point pattern with \code{n} points will be generated from the mixture first. Then if not all the points are in the domain, it will generate another \code{n} points until there are more than \code{n} points in the domain. The first \code{n} points are returned as the generated spatial point pattern.
+#'
+#' @return A point pattern of class spatstat::ppp
+#'
+#' @examples
+#' mix1 <- normmix(ps=c(.5, .5),
+#'                 mus=list(c(.2, .2), c(.7, .7)),
+#'                 sigmas=list(.01*diag(2), .02*diag(2)))
+#' rsppmix(200, mix1)
 rsppmix <- function(lambda, mix, win=spatstat::square(1), truncate=TRUE) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")

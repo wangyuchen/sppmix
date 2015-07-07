@@ -48,7 +48,6 @@ est_riemann_int <- function(func, xlimits, ylimits, L=100) {
 #'                 mus=list(c(0, 0), c(1, 1)),
 #'                 sigmas=list(.01*diag(2), .01*diag(2)))
 #' approx_normmix(mix1)
-
 approx_normmix <- function(mix, win=spatstat::square(1)) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")
