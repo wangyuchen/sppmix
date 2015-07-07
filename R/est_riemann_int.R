@@ -50,9 +50,14 @@ est_riemann_int <- function(func, xlimits, ylimits, L=100) {
 #' approx_normmix(mix1)
 
 approx_normmix <- function(mix, win=spatstat::square(1)) {
-  if (!spatstat::is.owin(win)) {
-    stop("window must be of class owin.")
+  if (!is.normmix(mix)) {
+    stop("mix must be an object of class normmix.")
   }
+
+  if (!spatstat::is.owin(win)) {
+    stop("win must be of class owin.")
+  }
+
   approx <- numeric(mix$m)
 
   for (k in 1:mix$m) {
