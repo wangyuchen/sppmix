@@ -11,4 +11,3 @@ License: GPL-2
 LazyData: true
 Imports: spatstat,
     mvtnorm
-Suggests: MCMCpack

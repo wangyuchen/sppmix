@@ -37,7 +37,7 @@ rnormmix <- function(m, sig0, sigdf,
     m <- sample(1:m, 1)
   }
 
-  ps <- MCMCpack::rdirichlet(1, rep(1, m))
+  ps <- rdirichlet(1, rep(1, m))
   mus <- list()
   sigmas <- list()
 
