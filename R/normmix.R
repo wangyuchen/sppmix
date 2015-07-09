@@ -26,7 +26,7 @@ print.normmix <- function(mix) {
   print(paste("Normal Mixture with", mix$m, "component"))
 }
 
-#' Generate mixture with normal components
+#' Generate mixture with normal components.
 #'
 #' Generate a mixture on a 2d window where the mean and variance of the components are random. The number of component can either be fixed or random.
 #'

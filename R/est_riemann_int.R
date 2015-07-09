@@ -34,7 +34,7 @@ est_riemann_int <- function(func, xlimits, ylimits, L=100) {
 }
 
 
-#' Approximate density of a normal mixture over 2d domain
+#' Approximate density of a normal mixture over a 2d domain.
 #'
 #' Approximate the density of each component in a normal mixture within the domain using Riemann integral.
 #'
