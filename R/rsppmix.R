@@ -9,6 +9,8 @@
 #' @details
 #' If \code{truncate = FALSE} is set, the returned point pattern will not check whether the points are inside the domain.
 #'
+#' The number of points \code{n} follows Poisson distribution with intensity lambda * area of window.
+#'
 #' When \code{truncate = TRUE}, a point pattern with \code{n} points will be generated from the mixture first. Then if not all the points are in the domain, it will generate another \code{n} points until there are more than \code{n} points in the domain. The first \code{n} points are returned as the generated spatial point pattern.
 #'
 #' @return A point pattern of class spatstat::ppp
@@ -18,12 +20,18 @@
 #'                 mus=list(c(.2, .2), c(.7, .7)),
 #'                 sigmas=list(.01*diag(2), .02*diag(2)))
 #' rsppmix(200, mix1)
+#'
+#' if (require(spatstat)) rsppmix(200, mix1, spatstat::square(2))
+#'
+#' rsppmix(200, mix1, truncate = FALSE)
+
+
 rsppmix <- function(lambda, mix, win=spatstat::square(1), truncate=TRUE) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")
   }
 
-  n <- rpois(1, lambda)
+  n <- rpois(1, lambda * spatstat::area(win))
   if (n == 0) {
     stop("0 points in the requested point pattern")
   }

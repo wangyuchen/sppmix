@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_riemann_int.R
 \name{approx_normmix}
 \alias{approx_normmix}
-\title{Approximate density of a normal mixture over 2d domain}
+\title{Approximate density of a normal mixture over a 2d domain.}
 \usage{
 approx_normmix(mix, win = spatstat::square(1))
 }

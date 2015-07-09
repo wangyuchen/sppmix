@@ -2,7 +2,7 @@
 % Please edit documentation in R/normmix.R
 \name{rnormmix}
 \alias{rnormmix}
-\title{Generate mixture with normal components}
+\title{Generate mixture with normal components.}
 \usage{
 rnormmix(m, sig0, sigdf, win = spatstat::square(1), rand_m = FALSE)
 }
