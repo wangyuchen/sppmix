@@ -26,6 +26,22 @@ print.normmix <- function(mix) {
   print(paste("Normal Mixture with", mix$m, "component"))
 }
 
+#' Generate mixture with normal components
+#'
+#' Generate a mixture on a 2d window where the mean and variance of the components are random. The number of component can either be fixed or random.
+#'
+#' @param m Number of component if \code{rand_m = FALSE}. When \code{rand_m = TRUE}, number of component is random and this is the maximum number of components.
+#' @param sig0 Tunning parameter in generating random matrix from Wishart distribution.
+#' @param sigdf Degree of freedom in generating random matrix from Wishart distribution.
+#' @param win Object of class \code{spatstat::owin}. The mean vectors are inside this window.
+#' @param rand_m Whether the number of components are random or fixed (default).
+#'
+#' @return Object of class \code{normmix}.
+#'
+#' @examples
+#' mix1 <- rnormmix(3, .01, 5)
+#' mix2 <- rnormmix(3, .01, 5, rand_m = TRUE)
+#'
 rnormmix <- function(m, sig0, sigdf,
                         win=spatstat::square(1),
                         rand_m=FALSE) {
