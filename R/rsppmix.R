@@ -30,17 +30,12 @@ rsppmix <- function(lambda, mix, win=spatstat::square(1), truncate=TRUE) {
 
   gen_n_from_mix <- function(n, mix) {
     comp <- sample(1:mix$m, size = n, replace=TRUE, prob=mix$ps)
-    spp <- mvtnorm::rmvnorm(sum(comp == 1),
-                            mix$mus[[1]], mix$sigmas[[1]])
-
-    if (mix$m >= 1) {
-      for (k in 2:mix$m) {
-        samples <- mvtnorm::rmvnorm(sum(comp == k),
-                                    mix$mus[[k]], mix$sigmas[[k]])
-        spp <- rbind(spp, samples)
-      }
+    spp <- list()
+    for (k in unique(comp)) {
+      spp[[k]] <- mvtnorm::rmvnorm(sum(comp == k),
+                                   mix$mus[[k]], mix$sigmas[[k]])
     }
-    return(spp)
+    return(do.call(rbind, spp))
   }
 
   spp <- gen_n_from_mix(n, mix)
