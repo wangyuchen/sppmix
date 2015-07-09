@@ -86,7 +86,7 @@ summary.normmix <- function(mix) {
 }
 
 plot.normmix <- function(mix, win,truncate=TRUE) {
-  open3d()
+  rgl::open3d()
   xcoord <- seq(win$xrange[1],win$xrange[2],,20)
   ycoord <- seq(win$yrange[1],win$yrange[2],,20)
   #plot3d(a$x,a$y,rep(0,a$n),box=F,xlab="",ylab="",zlab="")
@@ -94,7 +94,7 @@ plot.normmix <- function(mix, win,truncate=TRUE) {
   xgrid <- coord$Var1
   ygrid <- coord$Var2
   z <- matrix(dnormmix(xgrid,ygrid,mix1,truncate = truncate,win = win),20,20)
-  surface3d(xcoord,ycoord,z,color="#FF2222",alpha=0.5,axes3d(edges ="bbox",
+  rgl::surface3d(xcoord,ycoord,z,color="#FF2222",alpha=0.5,axes3d(edges ="bbox",
             box=F,labels = T))
 
 }
