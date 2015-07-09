@@ -47,5 +47,9 @@ rsppmix <- function(lambda, mix, win=spatstat::square(1), truncate=TRUE) {
     spp <- spp[spatstat::inside.owin(spp[, 1], spp[, 2], win), ][1:n, ]
   }
 
+  if (truncate == FALSE)
+    print(paste(sum(!spatstat::inside.owin(spp[, 1], spp[, 2], win)),
+                "points are outside window."))
+
   return(as.ppp(spp, W=win, check = truncate))
 }
