@@ -82,13 +82,18 @@ dnormmix <- function(x, y, mix, win = spatstat::square(1), truncate = TRUE) {
 }
 
 summary.normmix <- function(mix) {
-
+  cat(paste("Normal Mixture with", mix$m, "components:\n"))
+  for (i in 1:mix$m) {
+    cat(paste("Component", i, "is centered at",
+              "(", mix$mus[[i]][1], ",", mix$mus[[i]][1], ")",
+              "with probability", mix$ps[[i]], "\n"))
+  }
 }
 
 plot.normmix <- function(mix, win,truncate=TRUE) {
   rgl::open3d()
-  xcoord <- seq(win$xrange[1],win$xrange[2],,20)
-  ycoord <- seq(win$yrange[1],win$yrange[2],,20)
+  xcoord <- seq(win$xrange[1], win$xrange[2], length.out = 20)
+  ycoord <- seq(win$yrange[1], win$yrange[2], length.out = 20)
   #plot3d(a$x,a$y,rep(0,a$n),box=F,xlab="",ylab="",zlab="")
   coord <- expand.grid(xcoord,ycoord)
   xgrid <- coord$Var1
