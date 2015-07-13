@@ -4,7 +4,7 @@
 #'
 #' @param lambda Intensity of the spatial point pattern
 #' @param mix Object of class normmix
-#' @param win Object of class spatstat::owin, default is spatstat::square(1)
+#' @param win Object of class spatstat::owin
 #' @param truncate Whether to truncate the points outside the domain, default to TRUE.
 #' @details
 #' If \code{truncate = FALSE} is set, the returned point pattern will not check whether the points are inside the domain.
@@ -16,17 +16,20 @@
 #' @return A point pattern of class spatstat::ppp
 #'
 #' @examples
+#' # generate a mixture with given ps, mus and sigmas
 #' mix1 <- normmix(ps=c(.5, .5),
 #'                 mus=list(c(.2, .2), c(.7, .7)),
 #'                 sigmas=list(.01*diag(2), .02*diag(2)))
-#' rsppmix(200, mix1)
+#' rsppmix(200, mix1, spatstat::square(1))
 #'
-#' if (require(spatstat)) rsppmix(200, mix1, spatstat::square(2))
+#' # Using different window
+#' rsppmix(200, mix1, spatstat::square(2))
 #'
+#' # If truncate = FALSE it will generate points outside the window
 #' rsppmix(200, mix1, truncate = FALSE)
 
 
-rsppmix <- function(lambda, mix, win=spatstat::square(1), truncate=TRUE) {
+rsppmix <- function(lambda, mix, win, truncate=TRUE) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")
   }

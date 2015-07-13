@@ -43,7 +43,7 @@ print.normmix <- function(mix) {
 #' mix2 <- rnormmix(3, .01, 5, rand_m = TRUE)
 #'
 rnormmix <- function(m, sig0, sigdf,
-                        win=spatstat::square(1),
+                        win,
                         rand_m=FALSE) {
   if (!spatstat::is.owin(win)) {
     stop("win must be of class owin.")
@@ -66,7 +66,7 @@ rnormmix <- function(m, sig0, sigdf,
   return(normmix(ps, mus, sigmas))
 }
 
-dnormmix <- function(x, y, mix, win = spatstat::square(1), truncate = TRUE) {
+dnormmix <- function(x, y, mix, win, truncate = TRUE) {
   approx <- approx_normmix(mix, win)
   den <- matrix(NA_real_, length(x), mix$m)
   for (k in 1:mix$m) {
@@ -90,7 +90,7 @@ summary.normmix <- function(mix) {
   }
 }
 
-plot.normmix <- function(mix, win,truncate=TRUE) {
+plot.normmix <- function(mix, win, truncate=TRUE) {
   rgl::open3d()
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = 20)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = 20)
