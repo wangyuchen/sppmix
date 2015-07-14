@@ -66,13 +66,16 @@ rnormmix <- function(m, sig0, sigdf,
   return(normmix(ps, mus, sigmas))
 }
 
-dnormmix <- function(x, y, mix, win, truncate = TRUE) {
+dnormmix <- function(mix, win, x, y, L = 128, truncate = TRUE) {
+  if (missing(x)) x <- seq(win$xrange[1], win$xrange[2], length.out = L)
+  if (missing(y)) y <- seq(win$yrange[1], win$yrange[2], length.out = L)
+
+  locs <- expand.grid(x, y)
   approx <- approx_normmix(mix, win)
-  den <- matrix(NA_real_, length(x) * length(y), mix$m)
+  den <- matrix(NA_real_, nrow(locs), mix$m)
   for (k in 1:mix$m) {
     # every row of den is for a point
     # every col of den is for a component
-    locs <- expand.grid(x, y)
     den[, k] <- mvtnorm::dmvnorm(locs, mix$mus[[k]], mix$sigmas[[k]])
     den[, k] <- den[, k] * mix$ps[k]
     if (truncate) {
@@ -80,32 +83,43 @@ dnormmix <- function(x, y, mix, win, truncate = TRUE) {
     }
   }
 
-  pi <- im(matrix(rowSums(den), nrow = length(y),
-                  ncol = length(x), byrow = T), x, y)
-
-  return(pi)
+  RVAL <- spatstat::im(matrix(rowSums(den), nrow = length(y),
+                              ncol = length(x), byrow = T), x, y)
+  return(RVAL)
 }
+
+
+
+inormmix <- function(lambda, mix, win, x, y, L = 128, truncate = TRUE) {
+  if (missing(x)) x <- seq(win$xrange[1], win$xrange[2], length.out = L)
+  if (missing(y)) y <- seq(win$yrange[1], win$yrange[2], length.out = L)
+
+  intensity <- lambda * dnormmix(mix, win, x, y,
+                                 truncate = truncate)$v
+
+  RVAL <- spatstat::im(matrix(intensity, nrow = length(y),
+                              ncol = length(x), byrow = T), x, y)
+  return(RVAL)
 }
 
 summary.normmix <- function(mix) {
   cat(paste("Normal Mixture with", mix$m, "components:\n"))
   for (i in 1:mix$m) {
     cat(paste("Component", i, "is centered at",
-              "(", mix$mus[[i]][1], ",", mix$mus[[i]][1], ")",
-              "with probability", mix$ps[[i]], "\n"))
+              "(", round(mix$mus[[i]][1], 2), ",",
+              round(mix$mus[[i]][2], 2), ")",
+              "with probability", round(mix$ps[[i]], 4), "\n"))
   }
 }
 
-plot.normmix <- function(mix, win, truncate=TRUE) {
+plot.normmix <- function(mix, win, L = 20, truncate=TRUE) {
   rgl::open3d()
-  xcoord <- seq(win$xrange[1], win$xrange[2], length.out = 20)
-  ycoord <- seq(win$yrange[1], win$yrange[2], length.out = 20)
-  #plot3d(a$x,a$y,rep(0,a$n),box=F,xlab="",ylab="",zlab="")
-  coord <- expand.grid(xcoord,ycoord)
-  xgrid <- coord$Var1
-  ygrid <- coord$Var2
-  z <- matrix(dnormmix(xgrid,ygrid,mix1,truncate = truncate,win = win),20,20)
-  rgl::surface3d(xcoord,ycoord,z,color="#FF2222",alpha=0.5,axes3d(edges ="bbox",
-            box=F,labels = T))
+  xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
+  ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
+
+  z <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
+  rgl::surface3d(xcoord, ycoord, z,
+                 color="#FF2222", alpha=0.5,
+                 rgl::axes3d(edges ="bbox", box=F, labels = T))
 
 }
