@@ -39,12 +39,12 @@ print.normmix <- function(mix) {
 #' @return Object of class \code{normmix}.
 #'
 #' @examples
-#' mix1 <- rnormmix(3, .01, 5)
-#' mix2 <- rnormmix(3, .01, 5, rand_m = TRUE)
+#' mix1 <- rnormmix(3, .01, 5, square(5))
+#' mix2 <- rnormmix(8, .01, 10, square(1), rand_m = TRUE)
 #'
 rnormmix <- function(m, sig0, sigdf,
-                        win,
-                        rand_m=FALSE) {
+                     win,
+                     rand_m=FALSE) {
   if (!spatstat::is.owin(win)) {
     stop("win must be of class owin.")
   }
@@ -59,7 +59,7 @@ rnormmix <- function(m, sig0, sigdf,
 
   for (k in 1:m) {
     mus[[k]] <- c(runif(1, win$xrange[1], win$xrange[2]),
-                runif(1, win$yrange[1], win$yrange[2]))
+                  runif(1, win$yrange[1], win$yrange[2]))
     sigmas[[k]] <- rWishart(1, sigdf, sig0 * diag(2))[, , 1]
   }
 
