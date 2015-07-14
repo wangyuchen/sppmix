@@ -39,6 +39,6 @@ est_intenstiy_np <- function(pattern, win, h, kernel=c("Epanechnikov"),
       intensity <- aggregate(val, list(index[, 2]), sum) / h^2
     }
   }
-  return(im(matrix(intensity[,2],lenx,leny,byrow=T),x,y))
+  return(spatstat::im(matrix(intensity[,2],lenx,leny,byrow=T),x,y))
 }
 
