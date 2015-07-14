@@ -26,7 +26,7 @@
 #' rsppmix(200, mix1, spatstat::square(2))
 #'
 #' # If truncate = FALSE it will generate points outside the window
-#' rsppmix(200, mix1, truncate = FALSE)
+#' rsppmix(200, mix1, spatstat::square(1), truncate = FALSE)
 
 
 rsppmix <- function(lambda, mix, win, truncate=TRUE) {
