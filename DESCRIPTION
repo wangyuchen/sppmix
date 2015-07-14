@@ -9,6 +9,6 @@ Description: What the package does (one paragraph)
 Depends: R (>= 3.2.1)
 License: GPL-2
 LazyData: true
-Imports: spatstat,
-    mvtnorm,
+Depends: spatstat
+Imports: mvtnorm,
     rgl
