@@ -4,7 +4,7 @@
 \alias{rnormmix}
 \title{Generate mixture with normal components.}
 \usage{
-rnormmix(m, sig0, sigdf, win = spatstat::square(1), rand_m = FALSE)
+rnormmix(m, sig0, sigdf, win, rand_m = FALSE)
 }
 \arguments{
 \item{m}{Number of component if \code{rand_m = FALSE}. When \code{rand_m = TRUE}, number of component is random and this is the maximum number of components.}
@@ -24,7 +24,7 @@ Object of class \code{normmix}.
 Generate a mixture on a 2d window where the mean and variance of the components are random. The number of component can either be fixed or random.
 }
 \examples{
-mix1 <- rnormmix(3, .01, 5)
-mix2 <- rnormmix(3, .01, 5, rand_m = TRUE)
+mix1 <- rnormmix(3, .01, 5, square(5))
+mix2 <- rnormmix(8, .01, 10, square(1), rand_m = TRUE)
 }
 

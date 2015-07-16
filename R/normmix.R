@@ -1,3 +1,28 @@
+#' Mixture in 2d with normal components.
+#'
+#' Class of mixture in 2d with bivariate normal components.
+#'
+#' @param ps Vector of component probabilities.
+#' @param mus A list where every element is a vector of length 2, defining the
+#'  center of each component.
+#' @param sigmas A list where every element is a 2 by 2 matrix, defining the
+#'  covariance of each component.
+#'
+#' @return An object of class "normmix" containing the following components:
+#'  \item{m}{Number of components.}
+#'  \item{ps}{Vector of component probabilities.}
+#'  \item{mus}{List of mean vectors of components.}
+#'  \item{sigmas}{List of covariance matrix of components.}
+#' @seealso \code{\link{rnormmix}} for generating random mixture.
+#' @examples
+#' mix1 <- normmix(ps=c(.3, .7), mus=list(c(0, 0), c(1, 1)),
+#'                 sigmas=list(.01*diag(2), .01*diag(2)))
+#' mix1
+#' summary(mix1)
+#' if (require(spatstat)) {
+#'   plot(mix1, square(1))
+#' }
+
 normmix <- function(ps, mus, sigmas) {
   if (length(ps) == 0) {
     stop("Mixture with 0 components")

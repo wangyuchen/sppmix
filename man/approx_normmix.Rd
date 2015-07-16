@@ -4,23 +4,29 @@
 \alias{approx_normmix}
 \title{Approximate density of a normal mixture over a 2d domain.}
 \usage{
-approx_normmix(mix, win = spatstat::square(1))
+approx_normmix(mix, win)
 }
 \arguments{
-\item{mix}{An object of class normmix}
+\item{mix}{An object of class \code{\link{normmix}}}
 
-\item{win}{An object of class owin, defaults to spatstat::square(1)}
+\item{win}{An object of class \code{\link[spatstat]{owin}}}
 }
 \value{
-A numerical vector corresponding to the density of each component within thw window.
+A numerical vector corresponding to the density of each component
+ within the window.
 }
 \description{
-Approximate the density of each component in a normal mixture within the domain using Riemann integral.
+Approximate the density of each component in a normal mixture within the
+domain using Riemann integral.
 }
 \examples{
-mix1 <- normmix(ps=c(.5, .5),
-                mus=list(c(0, 0), c(1, 1)),
-                sigmas=list(.01*diag(2), .01*diag(2)))
-approx_normmix(mix1)
+if (require("spatstat")) {
+  mix1 <- normmix(ps=c(.3, .7),
+                  mus=list(c(0, 0), c(1, 1)),
+                 sigmas=list(.01*diag(2), .01*diag(2)))
+  win1 <- spatstat::square(1)
+  plot(dnormmix(mix1, win1))
+  approx_normmix(mix1, win1)
+}
 }
 

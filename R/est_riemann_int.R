@@ -36,18 +36,24 @@ est_riemann_int <- function(func, xlimits, ylimits, L=100) {
 
 #' Approximate density of a normal mixture over a 2d domain.
 #'
-#' Approximate the density of each component in a normal mixture within the domain using Riemann integral.
+#' Approximate the density of each component in a normal mixture within the
+#' domain using Riemann integral.
 #'
-#' @param mix An object of class normmix
-#' @param win An object of class owin
+#' @param mix An object of class \code{\link{normmix}}
+#' @param win An object of class \code{\link[spatstat]{owin}}
 #'
-#' @return A numerical vector corresponding to the density of each component within thw window.
+#' @return A numerical vector corresponding to the density of each component
+#'  within the window.
 #'
 #' @examples
-#' mix1 <- normmix(ps=c(.5, .5),
-#'                 mus=list(c(0, 0), c(1, 1)),
-#'                 sigmas=list(.01*diag(2), .01*diag(2)))
-#' approx_normmix(mix1, spatstat::square(1))
+#' if (require("spatstat")) {
+#'   mix1 <- normmix(ps=c(.3, .7),
+#'                   mus=list(c(0, 0), c(1, 1)),
+#'                  sigmas=list(.01*diag(2), .01*diag(2)))
+#'   win1 <- spatstat::square(1)
+#'   plot(dnormmix(mix1, win1))
+#'   approx_normmix(mix1, win1)
+#' }
 approx_normmix <- function(mix, win) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")
