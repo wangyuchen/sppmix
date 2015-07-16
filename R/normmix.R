@@ -23,7 +23,6 @@
 #' if (require(spatstat)) {
 #'   plot(mix1, square(1))
 #' }
-
 normmix <- function(ps, mus, sigmas) {
   if (length(ps) == 0) {
     stop("Mixture with 0 components")
@@ -94,6 +93,27 @@ rnormmix <- function(m, sig0, sigdf,
   return(normmix(ps, mus, sigmas))
 }
 
+#' Calculate density of locations under a mixture.
+#'
+#' Calculate the density values of a given mixture with normal components.
+#'
+#' @inheritParams plot.normmix
+#' @param x,y Locations where the density function will be evaluated. It will
+#'  automatically expand it into a grid. If missing, a regular grid over the
+#'  window will be given.
+#'
+#' @return An object of class \code{\link[spatstat]{im}}. This is a pixel image
+#'  on a grid with values corresponding to the density at that location.
+#'
+#' @seealso \code{\link[spatstat]{summary.im}} and
+#'  \code{\link[spatstat]{plot.im}} for manipulating with pixel image object.
+#'
+#' @examples
+#' if (require(spatstat)) {
+#'   mix1 <- rnormmix(8, sig0 = .01, 10, square(2))
+#'   den <- dnormmix(mix1, square(2))
+#'  plot(den)
+#' }
 dnormmix <- function(mix, win, x, y, L = 128, truncate = TRUE) {
   if (missing(x)) x <- seq(win$xrange[1], win$xrange[2], length.out = L)
   if (missing(y)) y <- seq(win$yrange[1], win$yrange[2], length.out = L)
@@ -116,8 +136,22 @@ dnormmix <- function(mix, win, x, y, L = 128, truncate = TRUE) {
   return(RVAL)
 }
 
-
-
+#' Calculate intensity of locations under a mixture.
+#'
+#' Calculate intensity values of a given mixture at given locations.
+#'
+#' @param lambda Mean intensity value
+#' @inheritParams dnormmix
+#'
+#' @return A pixel image of class \code{\link[spatstat]{im}} with the values
+#'  corresponding to the intensity at given locations.
+#'
+#' @examples
+#' if (require(spatstat)) {
+#'   mix1 <- rnormmix(8, sig0 = .01, 10, square(2))
+#'   int <- inormmix(100, mix1, square(2))
+#'  plot(int)
+#' }
 inormmix <- function(lambda, mix, win, x, y, L = 128, truncate = TRUE) {
   if (missing(x)) x <- seq(win$xrange[1], win$xrange[2], length.out = L)
   if (missing(y)) y <- seq(win$yrange[1], win$yrange[2], length.out = L)
