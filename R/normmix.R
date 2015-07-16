@@ -112,14 +112,19 @@ summary.normmix <- function(mix) {
   }
 }
 
-plot.normmix <- function(mix, win, L = 20, truncate=TRUE) {
-  rgl::open3d()
+plot.normmix <- function(mix, win, L = 100, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
   z <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
-  rgl::surface3d(xcoord, ycoord, z,
-                 color="#FF2222", alpha=0.5,
-                 rgl::axes3d(edges ="bbox", box=F, labels = T))
 
+
+  # assign colors to heights for each point
+  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                                   "#7FFF7F", "yellow", "#FF7F00", "red",
+                                   "#7F0000"))
+  col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
+
+  rgl::open3d()
+  rgl::persp3d(xcoord, ycoord, z, color = col, alpha = .8, ...)
 }
