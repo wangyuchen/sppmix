@@ -7,6 +7,7 @@
 #'  center of each component.
 #' @param sigmas A list where every element is a 2 by 2 matrix, defining the
 #'  covariance of each component.
+#' @param mix An objecto of class \code{\link{normmix}}
 #'
 #' @return An object of class "normmix" containing the following components:
 #'  \item{m}{Number of components.}
@@ -41,12 +42,14 @@ normmix <- function(ps, mus, sigmas) {
   return(RVAL)
 }
 
+#' @rdname normmix
 is.normmix <- function(mix) {
   # check class of object, if TRUE, assuming it's created by normmix() and
   # subject to all its constraints.
   return(ifelse(class(mix) == "normmix", TRUE, FALSE))
 }
 
+#' @rdname normmix
 print.normmix <- function(mix) {
   print(paste("Normal Mixture with", mix$m, "component"))
 }
@@ -127,6 +130,7 @@ inormmix <- function(lambda, mix, win, x, y, L = 128, truncate = TRUE) {
   return(RVAL)
 }
 
+#' @rdname normmix
 summary.normmix <- function(mix) {
   cat(paste("Normal Mixture with", mix$m, "components:\n"))
   for (i in 1:mix$m) {
@@ -137,6 +141,22 @@ summary.normmix <- function(mix) {
   }
 }
 
+#' Plot mixture density.
+#'
+#' Plot the density surface of a mixture.
+#'
+#' @param mix An object of class \code{\link{normmix}}.
+#' @param win An object of class \code{\link[spatstat]{owin}}.
+#' @param L Length of grid on x and y axes.
+#' @param truncate Whether the density is truncated in the window (truncate)
+#'  or not.
+#' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
+#'
+#' @examples
+#' if (require(spatstat)) {
+#'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = T)
+#'   plot(mix1, square(2))
+#' }
 plot.normmix <- function(mix, win, L = 100, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
@@ -151,5 +171,6 @@ plot.normmix <- function(mix, win, L = 100, truncate = TRUE, ...) {
   col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
 
   rgl::open3d()
-  rgl::persp3d(xcoord, ycoord, z, color = col, alpha = .8, ...)
+  rgl::persp3d(x = xcoord, y = ycoord, z = z,
+               color = col, alpha = .8, ...)
 }
