@@ -1,5 +1,38 @@
-est_intenstiy_np <- function(pattern, win, h, kernel=c("Epanechnikov"),
-                             edgecorrect=TRUE, truncate=TRUE, L=10){
+#' Estimate intensity surface by using non-parametric method.
+#'
+#' Using Epanechnikov kernel to estimate intensity surface.
+#'
+#' @param pattern An object of class \code{\link[spatstat]{ppp}}. It should be a
+#'  2 dimesional spatial point pattern.
+#' @param win Object of class \code{\link[spatstat]{owin}}.
+#' @param h Kernel bandwith.  \code{h} should be a postive number.
+#' @param L Number of grid for x and y axis.
+#' @param kernel Kernel used to estimate intensity surface.  Currently, only
+#'  support Epanechnikov kernel.
+#' @param edgecorrect Logical flag indicating whether to use edge-correction in
+#'  estimating intensity surface. The default is TRUE.
+#' @param truncate Locgical flag indicating whether truncation is used for
+#'  \code{pattern}. The default is TRUE.
+#'
+#'  @return An object of class \code{\link[spatstat]{im}}.
+#'
+#'  @examples
+# generate a point pattern
+#' if (require(spatstat)){
+#'   mix1 <- rnormmix(3, .01, 5, square(5))
+#'   pattern1 <- rsppmix(30, mix1, square(5))
+#' }
+#'
+#' # estimate and plot the estimated intensity surface
+#' if (require(spatstat)){
+#'   surf1 <- est_intensity_np(mix1, win=square(5), h=0.05, L=100)
+#'   plot(surf1)
+#' }
+
+
+
+est_intensity_np <- function(pattern, win, h, L=10, kernel=c("Epanechnikov"),
+                             edgecorrect=TRUE, truncate=TRUE){
   kernel <- match.arg(kernel)
   if (truncate==TRUE) {
     pattern <- pattern[spatstat::inside.owin(pattern$x,pattern$y,win)]
