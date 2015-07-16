@@ -1,4 +1,35 @@
-kstest2d <- function(x1, x2, alpha=0.05) {
+#' Two-sample Two-dimesional Kolmogorov-Smirnov test
+#'
+#' Performs a test of goodness-of-fit of two point patterns.  The emperical
+#' distribution of two point patterns are compared using the Kolmogorov-Smirnov
+#' test.
+#'
+#' @param x1,x2 Objects of class \code{\link[spatstat]{ppp}}.
+#'
+#' @return A list with class "htest" containing the following components:
+#' \item{statistic}{the value of the KS statistic}
+#' \item{p.value}{the p-value of the test}
+#' \item{alternative}{a character string describing the alternative hypothesis}
+#'
+#' @references J. A. Peacock, "Two-dimensional goodness-of-fit testingin
+#' astronomy", Monthly Notices Royal Astronomy Society 202 (1983)615-627.
+#'
+#' Adapted from Matlab code by Dylan Muir.
+#'
+#' @examples
+#' # genrating two point patterns
+#' if(require(spatstat)){
+#'   mix1 <- rnormmix(3, .01, 5, square(5))
+#'   mix2 <- rnormmix(8, .01, 10, square(5))
+#'   pp1=rsppmix(20,mix1,square(5))
+#'   pp2=rsppmix(20,mix2,square(5))
+#' }
+#' # Test for goodness of fit
+#' kstest2d(pp1,pp2)
+
+
+
+kstest2d <- function(x1, x2) {
 
   ecdf2d <- function(x,edge){
     count=cbind(as.numeric(x$x>=edge[1] & x$y>=edge[2]),
@@ -34,14 +65,11 @@ kstest2d <- function(x1, x2, alpha=0.05) {
   Zinf <- Zn/(1-0.53 * n^(-0.9))
   pValue=2*exp(-2 * (Zinf - 0.5)^2)
 
-  if (pValue > 0.2) pValue = 0.2
-  H <- (pValue <= alpha)
-  if (H==1) {
-    print("Reject Null, No GoF")
-  } else {
-    print("Cannot Reject Null, we have GoF")
-  }
-
-  return(c(KSstat, pValue, H))
+  RVAL <- list(statistic=c(KSstat = KSstat),p.value = pValue,method =
+                 "Two sample 2D Kolmogorov-Smirnov Test",data.name =
+                 paste(sep=", ",deparse(substitute(x1)),deparse(substitute(x2))
+                       ),alternative="No goodness of fit")
+  class(RVAL) <- "htest"
+  return(RVAL)
 }
 
