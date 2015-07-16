@@ -14,7 +14,7 @@ est_intenstiy_np <- function(pattern, win, h, kernel=c("Epanechnikov"),
   index <- expand.grid(1:pattern$n, 1:(lenx*leny))
   xy <- loc[index[,2],]-pp[index[,1],]
   if (edgecorrect==TRUE){
-    LL <- 10
+    LL <- 20
     ax <- seq(win$xrange[1],win$xrange[2], length.out = LL)
     ay <- seq(win$yrange[1],win$yrange[2], length.out = LL)
     alenx <- length(ax)
