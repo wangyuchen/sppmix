@@ -40,7 +40,7 @@ if (require(spatstat)){
 
 # estimate and plot the estimated intensity surface
 if (require(spatstat)){
-  surf1 <- est_intensity_np(mix1, win=square(5), h=0.05, L=100)
+  surf1 <- est_intensity_np(pattern1, win=square(5), h=0.05, L=100)
   plot(surf1)
 }
 }
