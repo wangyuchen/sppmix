@@ -1,4 +1,55 @@
 est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
+  sample_mu <- function(j, zmultinom, pp, old_mu, sigma,
+                        kappa, ksi, truncate) {
+    # sample mu from proposal for one component
+    sum1 <- sum(zmultinom == j)
+    if (sum1 > 0) {
+      newmu <- colMeans(pp[zmultinom == j,])
+    } else {
+      newmu <- c(0, 0)
+    }
+
+    #sample mus
+    sig1 <- sigmas[[i-1]][, , j]
+    invsig1 <- solve(sig1)
+    cov1 <- solve(sum1*invsig1 + kappa)
+    mu1 <- cov1 %*% (sum1*invsig1 %*% newmu + kappa %*% ksi)
+    propmu <- mvtnorm::rmvnorm(1, mu1, cov1)
+    if (truncate == TRUE) {
+      ### add code
+    } else {
+      ratio <- 1
+    }
+
+    return(ifelse(runif(1) < ratio, propmu, old_mu))
+  }
+
+  sample_sigma <- function(j, zmultinom, pp, mu, old_sigma,
+                           a, beta) {
+    # sample sigma from proposal distribution for one component
+    sum1 <- sum(zmultinom == j)
+    if (sum1 > 0) {
+      sumxmu <- 0
+      for (r in 1:sum1) {
+        sumxmu <- sumxmu +
+          t(as.matrix(pp[zmultinom == j,][r,] - mus[[i]][j,])) %*%
+          (as.matrix(pp[zmultinom == j,][r,] - mus[[i]][j,]))
+      }
+    }
+
+    ps2 <- solve(2*beta[ , , 1] + sumxmu)
+    invsig11 <- rWishart(1, 2*a + sum1, ps2)
+    propsigma <- solve(invsig11[, , 1])
+
+    if (truncate == TRUE) {
+      ### add code
+    } else {
+      ratio <- 1
+    }
+
+    return(ifelse(runif(1) < ratio, propsigma, old_sigma))
+  }
+
   pattern <- cells
   win <- square(1)
   m <- 5
@@ -37,6 +88,9 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
   meanlambda <- mean(lambdas)
   lognfac <- log(sqrt(2*pi*n)) + n*log(n) - n
   logdens1 <- -lognfac + n*log(meanlambda) - meanlambda
+
+  zmultinom <- sample(1:m, size = n, replace = T)
+
   ## start main mcmc ##
   for (i in 2:L) {
     #sample B matrix
@@ -53,58 +107,17 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
     mus <- append(mus, list(matrix(NA, m, 2)))
     sigmas <- append(sigmas, list(array(NA, dim = c(2, 2, m))))
 
-    zmultinom <- sample(1:m, size = n, replace = T)
+
     for (j in 1:m) {
-      # calculate component centers
-      sum1 <- sum(zmultinom == j)
-      if (sum1 > 0) {
-        newmu <- colMeans(pp[zmultinom == j,])
-      } else {
-        newmu <- c(0, 0)
-      }
+      mus[[i]][j,] <- sample_mu(j, zmultinom, pp,
+                                old_mu = mus[[i-1]][j, ],
+                                sigmas[[i-1]][, , j],
+                                kappa, ksi, truncate)
 
-      #sample mus
-      sig1 <- sigmas[[i-1]][, , j]
-      invsig1 <- solve(sig1)
-      cov1 <- solve(sum1*invsig1 + kappa)
-      mu1 <- cov1 %*% (sum1*invsig1 %*% newmu + kappa %*% ksi)
-      propmu <- mvtnorm::rmvnorm(1,mu1,cov1)
-      if (truncate == TRUE) {
-        ### add code
-      } else {
-        ratio <- 1
-      }
-      if (runif(1) < ratio) {
-        mus[[i]][j,] <- propmu
-      } else {
-        mus[[i]][j,] <- mus[[i-1]][j,]
-      }
-
-      #sample sigmas
-      if (sum1 > 0) {
-        sumxmu <- 0
-        for (r in 1:sum1) {
-          sumxmu <- sumxmu +
-            t(as.matrix(pp[zmultinom == j,][r,] - mus[[i]][j,])) %*%
-            (as.matrix(pp[zmultinom == j,][r,] - mus[[i]][j,]))
-        }
-      }
-
-      ps2 <- solve(2*beta[ , , 1] + sumxmu)
-      invsig11 <- rWishart(1, 2*a + sum1, ps2)
-      propsigma <- solve(invsig11[, , 1])
-
-      if (truncate == TRUE) {
-        ### add code
-      } else {
-        ratio <- 1
-      }
-
-      if (runif(1) < ratio) {
-        sigmas[[i]][, , j] <- propsigma
-      } else {
-        sigma[[i]][, , j] <- sigma[[i-1]][, , j]
-      }
+      sigmas[[i]][, , j] <- sample_sigma(j, zmultinom, pp,
+                                         mu = mus[[i]][j, ],
+                                         old_sigma = sigmas[[i-1]][ , , j],
+                                         a, beta, truncate)
     }
   }
 }
