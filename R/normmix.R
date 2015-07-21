@@ -175,3 +175,15 @@ summary.normmix <- function(mix) {
   }
 }
 
+
+as.normmix <- function(ps, mus, sigmas) {
+  # coerce mus and sigmas in DAMCMC format into normmix
+  mu <- list()
+  sigma <- list()
+  for (i in 1:nrow(mus)) {
+    mu[[i]] <- mus[i, ]
+    sigma[[i]] <- sigmas[, , i]
+  }
+  return(normmix(ps, mu, sigma))
+}
+
