@@ -24,6 +24,7 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
   gam <- 1
   hmat <- 100*g/a*kappa
   hmat <- a/(100*g)*kappainv
+  consts <- matrix(0, L, m)
 
   #starting value
   mus <- list(pp[sample(1:n, size = m, replace = T),])
@@ -48,6 +49,8 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
     sumsig <- apply(invsigmas, 1:2, sum)
     ps1 <- solve(2*hmat + 2*sumsig)
     beta <- rWishart(1, 2*g + 2*n*a, ps1)
+    ds <- rep(0,m)
+    approx <- rep(1,m)
 
     #sample mus and sigmas
     mus <- append(mus, list(matrix(NA, m, 2)))
@@ -105,6 +108,20 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
       } else {
         sigma[[i]][, , j] <- sigma[[i-1]][, , j]
       }
+
+      ds[j] <- gam + sum1
+
+      #sample indicators zij
+      sig1 <- sigmas[[i]][, , j]
+      invsig1 <- solve(sig1)
+      if (truncate == TRUE) {
+        ###add code
+      }
+      consts[i, j] <- (1/approx[j])*det(2*pi*sig1)^(-0.5)
     }
+    ps[i, ]=rdirichlet(1, ds)
+  }
+  for (dat in 1:n) {
+
   }
 }
