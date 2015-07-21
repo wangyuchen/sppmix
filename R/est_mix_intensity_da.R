@@ -112,16 +112,15 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
 
 
     for (j in 1:m) {
-      mus[[i]][j,] <- sample_mu(j, zmultinom, pp,
-                                old_mu = mus[[i-1]][j, ],
-                                sigmas[[i-1]][, , j],
-                                kappa, ksi, truncate)
+      mus[[i]][j, ] <- sample_mu(j, zmultinom, pp,
+                                 old_mu = mus[[i-1]][j, ],
+                                 sigmas[[i-1]][, , j],
+                                 kappa, ksi, truncate)
 
       sigmas[[i]][, , j] <- sample_sigma(j, zmultinom, pp,
                                          mu = mus[[i]][j, ],
                                          old_sigma = sigmas[[i-1]][ , , j],
                                          a, beta, truncate)
-
 
       ds[j] <- gam + sum1
 
@@ -135,7 +134,13 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
     }
     ps[i, ]=rdirichlet(1, ds)
   }
-  for (dat in 1:n) {
-
+  mix <- as.normmix(ps[i, ],mus[[i]],sigmas[[i]])
+  den <- matrix(NA_real_, n, mix$m)
+  for (k in 1:mix$m) {
+    den[, k] <- mvtnorm::dmvnorm(pp, mix$mus[[k]], mix$sigmas[[k]])
+    den[, k] <- den[, k] * mix$ps[k]
   }
+  qij <- t(apply(den, 1, function(x) x / sum(x)))
+  propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
+
 }
