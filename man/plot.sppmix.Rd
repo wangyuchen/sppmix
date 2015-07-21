@@ -9,7 +9,7 @@
 \arguments{
 \item{spp}{A point pattern of class sppmix or \code{\link[spatstat]{ppp}}.}
 
-\item{...}{Parameters passed to \code{\link[ggplot2]{qplot}}.}
+\item{...}{Parameters passed to \code{\link[ggplot2]{ggplot}}.}
 }
 \description{
 Plot funciton for spatial point pattern generated from mixture. It's an
