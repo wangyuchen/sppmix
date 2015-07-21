@@ -65,6 +65,7 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
   if (L <= burnin) {
     stop("wrong L or burnin")
   }
+  MHjump <- 0
   ksi <- colMeans(pp)
   R1 <- diff(range(pp$x))
   R2 <- diff(range(pp$y))
@@ -143,4 +144,15 @@ est_mix_intensity <- function(pattern, win, m, L, burnin, truncate) {
   qij <- t(apply(den, 1, function(x) x / sum(x)))
   propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
 
+  ratio <- ifelse(any(summary(as.factro(propz)) < 2), 0, 1)
+
+  if (runif(1) < ratio) {
+    MHjump <- MHjump + 1
+    zmultinom <- propz
+  }
+postmus <- Reduce("+",mus[-(1:burnin)])/(L - burnin)
+postsigmas <- Reduce("+",sigmas[-(1:burnin)])/(L - burnin)
+postps <- colMeans(ps[-(1:burnin)])
+post.mix <- as.normmix(postps,postmus,postsigmas)
+return(post.mix)
 }
