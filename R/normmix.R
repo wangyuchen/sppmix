@@ -175,36 +175,3 @@ summary.normmix <- function(mix) {
   }
 }
 
-#' Plot mixture density.
-#'
-#' Plot the density surface of a mixture.
-#'
-#' @param mix An object of class \code{\link{normmix}}.
-#' @param win An object of class \code{\link[spatstat]{owin}}.
-#' @param L Length of grid on x and y axes.
-#' @param truncate Whether the density is truncated in the window (truncate)
-#'  or not.
-#' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
-#'
-#' @examples
-#' if (require(spatstat)) {
-#'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = T)
-#'   plot(mix1, square(2))
-#' }
-plot.normmix <- function(mix, win, L = 100, truncate = TRUE, ...) {
-  xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
-  ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
-
-  z <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
-
-
-  # assign colors to heights for each point
-  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
-                                   "#7FFF7F", "yellow", "#FF7F00", "red",
-                                   "#7F0000"))
-  col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
-
-  rgl::open3d()
-  rgl::persp3d(x = xcoord, y = ycoord, z = z,
-               color = col, alpha = .8, ...)
-}

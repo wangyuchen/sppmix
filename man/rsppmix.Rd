@@ -16,7 +16,7 @@ rsppmix(lambda, mix, win, truncate = TRUE)
 \item{truncate}{Whether to truncate the points outside the domain, default to TRUE.}
 }
 \value{
-A point pattern of class spatstat::ppp
+A point pattern of class \code{c("sppmix", "ppp")}.
 }
 \description{
 Generate a spatial point pattern from a given mixture with normal components.
