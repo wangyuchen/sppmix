@@ -1,5 +1,16 @@
 est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
                               truncate = TRUE) {
+
+  sample_beta <- function (m, sigma, hmat, g, a, n) {
+    invsigmas <- array(dim = c(2, 2, m))
+    for (j in 1:m) {
+      invsigmas[, , j] <- solve(sigma[, , j])
+    }
+    sumsig <- apply(invsigmas, 1:2, sum)
+    ps1 <- solve(2*hmat + 2*sumsig)
+    return(rWishart(1, 2*g + 2*n*a, ps1))
+  }
+
   sample_mu <- function(j, zmultinom, pp, old_mu, sigma,
                         kappa, ksi, truncate) {
     # sample mu from proposal for one component
