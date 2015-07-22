@@ -130,7 +130,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     }
 
     # sample ps
-    ds <- gam + colSums(sapply(1:5, function(x) zmultinom == x))
+    ds <- gam + colSums(sapply(1:m, function(x) zmultinom == x))
 
     ps[i, ] <- rdirichlet(1, ds)
 
