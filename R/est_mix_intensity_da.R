@@ -12,8 +12,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     return(rWishart(1, 2*g + 2*m*a, ps1))
   }
 
-  sample_mu <- function(j, zmultinom, pp, old_mu, sigma,
-                        kappa, ksi, truncate) {
+  sample_mu <- function(j, old_mu, approx_old_mu, sigma) {
     # sample mu from proposal for one component
     sum1 <- sum(zmultinom == j)
     if (sum1 > 0) {
@@ -28,7 +27,9 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     mu1 <- cov1 %*% (sum1*invsig1 %*% newmu + kappa %*% ksi)
     propmu <- mvtnorm::rmvnorm(1, mu1, cov1)
     if (truncate == TRUE) {
-      ### add code
+      mix_prop_mu <- as.normmix(ps[i-1, ], propmu, sigmas[[i-1]])
+      approx_prop_mu <- approx_normmix(mix_prop_mu, win)[j]
+      ratio <- approx_old_mu / approx_prop_mu
     } else {
       ratio <- 1
     }
@@ -37,8 +38,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     return(new_mu)
   }
 
-  sample_sigma <- function(j, zmultinom, pp, mu, old_sigma,
-                           a, beta, truncate) {
+  sample_sigma <- function(j, mu, old_sigma) {
     # sample sigma from proposal distribution for one component
     sum1 <- sum(zmultinom == j)
     xmu <- scale(pp[zmultinom == j, ], center = mu, scale = F)
@@ -51,7 +51,11 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     propsigma <- solve(invsig11[, , 1])
 
     if (truncate == TRUE) {
-      ### add code
+      mix_old_sigma <- as.normmix(ps[i-1, ], mu, old_sigma)
+      approx_old_sigma <- approx_normmix(mix_old_sigma, win)[j]
+      mix_prop_sigma <- as.normmix(ps[i-1, ], mu, propsigma)
+      approx_prop_sigma <- approx_normmix(mix_prop_sigma, win)[j]
+      ratio <- mix_old_sigma / mix_prop_sigma
     } else {
       ratio <- 1
     }
@@ -109,17 +113,15 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     #sample mus and sigmas
     mus <- append(mus, list(matrix(NA, m, 2)))
     sigmas <- append(sigmas, list(array(NA, dim = c(2, 2, m))))
-
+    mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
+    approx_old_mu <- approx_normmix(mix_old_mu, win)
     for (j in 1:m) {
-      mus[[i]][j, ] <- sample_mu(j, zmultinom, pp,
-                                 old_mu = mus[[i-1]][j, ],
-                                 sigmas[[i-1]][, , j],
-                                 kappa, ksi, truncate)
+      mus[[i]][j, ] <- sample_mu(j, old_mu = mus[[i-1]][j, ],
+                                 approx_old_mu[j],
+                                 sigmas[[i-1]][, , j])
 
-      sigmas[[i]][, , j] <- sample_sigma(j, zmultinom, pp,
-                                         mu = mus[[i]][j, ],
-                                         old_sigma = sigmas[[i-1]][ , , j],
-                                         a, beta, truncate)
+      sigmas[[i]][, , j] <- sample_sigma(j, mu = mus[[i]][j, ],
+                                         old_sigma = sigmas[[i-1]][ , , j])
       #sample indicators zij
 #       sig1 <- sigmas[[i]][, , j]
 #       invsig1 <- solve(sig1)
@@ -157,6 +159,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
   }
 
   close(pb)
+
 
   postmus <- Reduce("+",mus[-(1:burnin)])/(L - burnin)
   postsigmas <- Reduce("+",sigmas[-(1:burnin)])/(L - burnin)
