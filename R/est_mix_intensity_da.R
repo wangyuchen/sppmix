@@ -22,45 +22,52 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     }
 
     #sample mus
-    invsig1 <- solve(sigma)
+    invsig1 <- solve(sigma[, , j])
     cov1 <- solve(sum1*invsig1 + kappa)
     mu1 <- cov1 %*% (sum1*invsig1 %*% newmu + kappa %*% ksi)
-    propmu <- mvtnorm::rmvnorm(1, mu1, cov1)
+    propmu <- old_mu
+    propmu[j, ] <- mvtnorm::rmvnorm(1, mu1, cov1)
+
     if (truncate == TRUE) {
-      mix_prop_mu <- as.normmix(ps[i-1, ], propmu, sigmas[[i-1]])
+      mix_prop_mu <- as.normmix(ps[i-1, ], propmu, sigma)
       approx_prop_mu <- approx_normmix(mix_prop_mu, win)[j]
       ratio <- approx_old_mu / approx_prop_mu
     } else {
       ratio <- 1
     }
 
-    if (runif(1) < ratio) new_mu <- propmu else new_mu <- old_mu
-    return(new_mu)
+    if (runif(1) < ratio) new_mu <- propmu[j, ] else new_mu <- old_mu[j, ]
+    return(as.numeric(new_mu))
   }
 
   sample_sigma <- function(j, mu, old_sigma) {
     # sample sigma from proposal distribution for one component
     sum1 <- sum(zmultinom == j)
-    xmu <- as.matrix(pp[zmultinom == j,] - mu)
+    xmu <- as.matrix(pp[zmultinom == j,] - mu[j, ])
 
     # sumxmu is a 2 by 2 matrix
     sumxmu <- crossprod(as.matrix(xmu))
 
     ps2 <- solve(2*beta[ , , 1] + sumxmu)
     invsig11 <- rWishart(1, 2*a + sum1, ps2)
-    propsigma <- solve(invsig11[, , 1])
+    propsigma <- old_sigma
+    propsigma[, , j] <- solve(invsig11[, , 1])
 
     if (truncate == TRUE) {
       mix_old_sigma <- as.normmix(ps[i-1, ], mu, old_sigma)
       approx_old_sigma <- approx_normmix(mix_old_sigma, win)[j]
       mix_prop_sigma <- as.normmix(ps[i-1, ], mu, propsigma)
       approx_prop_sigma <- approx_normmix(mix_prop_sigma, win)[j]
-      ratio <- mix_old_sigma / mix_prop_sigma
+      ratio <- approx_old_sigma / approx_prop_sigma
     } else {
       ratio <- 1
     }
 
-    if (runif(1) < ratio) new_sigma <- propsigma else new_sigma <- old_sigma
+    if (runif(1) < ratio) {
+      new_sigma <- propsigma[, , j]
+    } else {
+      new_sigma <- old_sigma[, , j]
+    }
     return(new_sigma)
   }
 
@@ -82,7 +89,6 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
   g <- 0.3
   gam <- 1
   hmat <- 100*g/a*kappa
-  consts <- matrix(0, L, m)
 
   #starting value
   mus <- list(pp[sample(1:n, size = m, replace = T), ])
@@ -116,35 +122,32 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
     approx_old_mu <- approx_normmix(mix_old_mu, win)
     for (j in 1:m) {
-      mus[[i]][j, ] <- sample_mu(j, old_mu = mus[[i-1]][j, ],
+      mus[[i]][j, ] <- sample_mu(j, old_mu = mus[[i-1]],
                                  approx_old_mu[j],
-                                 sigmas[[i-1]][, , j])
+                                 sigma = sigmas[[i-1]])
 
-      sigmas[[i]][, , j] <- sample_sigma(j, mu = mus[[i]][j, ],
-                                         old_sigma = sigmas[[i-1]][ , , j])
-      #sample indicators zij
-#       sig1 <- sigmas[[i]][, , j]
-#       invsig1 <- solve(sig1)
-#       if (truncate == TRUE) {
-#         ###add code
-#       }
-#       consts[i, j] <- (1/approx[j])*det(2*pi*sig1)^(-0.5)
+      sigmas[[i]][, , j] <- sample_sigma(j, mu = mus[[i]],
+                                         old_sigma = sigmas[[i-1]])
     }
-
     # sample ps
     ds <- gam + summary(as.factor(zmultinom))
     ps[i, ] <- rdirichlet(1, ds)
 
+    # sample zij
     mix <- as.normmix(ps[i, ], mus[[i]], sigmas[[i]])
     den <- matrix(NA_real_, n, mix$m)
     for (k in 1:mix$m) {
       den[, k] <- mvtnorm::dmvnorm(pp, mix$mus[[k]], mix$sigmas[[k]])
       den[, k] <- den[, k] * mix$ps[k]
     }
-
+    if (truncate == TRUE) {
+      consts <- approx_normmix(mix, win)
+    } else {
+      consts <- rep(1,m)
+    }
     qij <- t(apply(den, 1, function(x) x / sum(x)))
+    qij <- scale(qij,center = F, scale = consts)
     propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
-
     ratio <- ifelse(any(summary(as.factor(propz)) < 2), 0, 1)
 
     if (runif(1) < ratio) {
@@ -165,4 +168,5 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
   postps <- colMeans(ps[-(1:burnin), ])
   post.mix <- as.normmix(postps, postmus, postsigmas)
   return(post.mix)
+
 }
