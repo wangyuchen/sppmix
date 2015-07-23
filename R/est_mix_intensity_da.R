@@ -1,8 +1,8 @@
-
+#' @export
 est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
                               truncate = TRUE) {
 
-  sample_beta <- function (m, sigma, hmat, g, a) {
+  sample_beta <- function (m, sigma, hmat, g, a, n) {
     invsigmas <- array(dim = c(2, 2, m))
     for (j in 1:m) {
       invsigmas[, , j] <- solve(sigma[, , j])
@@ -41,10 +41,10 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
   sample_sigma <- function(j, mu, old_sigma) {
     # sample sigma from proposal distribution for one component
     sum1 <- sum(zmultinom == j)
-    xmu <- scale(pp[zmultinom == j, ], center = mu, scale = F)
+    xmu <- as.matrix(pp[zmultinom == j,] - mu)
 
     # sumxmu is a 2 by 2 matrix
-    sumxmu <- crossprod(xmu)
+    sumxmu <- crossprod(as.matrix(xmu))
 
     ps2 <- solve(2*beta[ , , 1] + sumxmu)
     invsig11 <- rWishart(1, 2*a + sum1, ps2)
@@ -100,13 +100,13 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
   zmultinom <- sample(1:m, size = n, replace = T)
 
   ## start main mcmc ##
-  pb <- txtProgressBar(min = 1, max = L, initial = 2, char = ">")
+  pb <- txtProgressBar(min = 1, max = L, initial = 2)
 
   for (i in 2:L) {
     setTxtProgressBar(pb, i)
     #sample B matrix
 
-    beta <- sample_beta(m, sigmas[[i-1]], hmat, g, a)
+    beta <- sample_beta(m, sigmas[[i-1]], hmat, g, a, n)
 
     approx <- rep(1, m)
 
@@ -132,8 +132,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     }
 
     # sample ps
-    ds <- gam + colSums(sapply(1:m, function(x) zmultinom == x))
-
+    ds <- gam + summary(as.factor(zmultinom))
     ps[i, ] <- rdirichlet(1, ds)
 
     mix <- as.normmix(ps[i, ], mus[[i]], sigmas[[i]])
@@ -165,6 +164,5 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
   postsigmas <- Reduce("+",sigmas[-(1:burnin)])/(L - burnin)
   postps <- colMeans(ps[-(1:burnin), ])
   post.mix <- as.normmix(postps, postmus, postsigmas)
-
   return(post.mix)
 }

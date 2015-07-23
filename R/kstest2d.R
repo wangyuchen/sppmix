@@ -15,7 +15,7 @@
 #' astronomy", Monthly Notices Royal Astronomy Society 202 (1983)615-627.
 #'
 #' Adapted from Matlab code by Dylan Muir.
-#'
+#' @export
 #' @examples
 #' # genrating two point patterns
 #' if(require(spatstat)){
@@ -26,11 +26,7 @@
 #' }
 #' # Test for goodness of fit
 #' kstest2d(pp1,pp2)
-
-
-
 kstest2d <- function(x1, x2) {
-
   ecdf2d <- function(x,edge){
     count=cbind(as.numeric(x$x>=edge[1] & x$y>=edge[2]),
                 as.numeric(x$x<=edge[1] & x$y>=edge[2]),

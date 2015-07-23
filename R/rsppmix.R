@@ -14,7 +14,7 @@
 #' When \code{truncate = TRUE}, a point pattern with \code{n} points will be generated from the mixture first. Then if not all the points are in the domain, it will generate another \code{n} points until there are more than \code{n} points in the domain. The first \code{n} points are returned as the generated spatial point pattern.
 #'
 #' @return A point pattern of class \code{c("sppmix", "ppp")}.
-#'
+#' @export
 #' @examples
 #' # generate a mixture with given ps, mus and sigmas
 #' mix1 <- normmix(ps=c(.5, .5),

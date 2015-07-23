@@ -15,6 +15,7 @@
 #'  \item{mus}{List of mean vectors of components.}
 #'  \item{sigmas}{List of covariance matrix of components.}
 #' @seealso \code{\link{rnormmix}} for generating random mixture.
+#' @export
 #' @examples
 #' mix1 <- normmix(ps=c(.3, .7), mus=list(c(0, 0), c(1, 1)),
 #'                 sigmas=list(.01*diag(2), .01*diag(2)))
@@ -41,7 +42,6 @@ normmix <- function(ps, mus, sigmas) {
   return(RVAL)
 }
 
-#' @rdname normmix
 is.normmix <- function(mix) {
   # check class of object, if TRUE, assuming it's created by normmix() and
   # subject to all its constraints.
@@ -49,6 +49,7 @@ is.normmix <- function(mix) {
 }
 
 #' @rdname normmix
+#' @export
 print.normmix <- function(mix) {
   print(paste("Normal Mixture with", mix$m, "component"))
 }
@@ -64,7 +65,7 @@ print.normmix <- function(mix) {
 #' @param rand_m Whether the number of components are random or fixed (default).
 #'
 #' @return Object of class \code{normmix}.
-#'
+#' @export
 #' @examples
 #' mix1 <- rnormmix(3, .01, 5, square(5))
 #' mix2 <- rnormmix(8, .01, 10, square(1), rand_m = TRUE)
@@ -107,7 +108,7 @@ rnormmix <- function(m, sig0, sigdf,
 #'
 #' @seealso \code{\link[spatstat]{summary.im}} and
 #'  \code{\link[spatstat]{plot.im}} for manipulating with pixel image object.
-#'
+#' @export
 #' @examples
 #' if (require(spatstat)) {
 #'   mix1 <- rnormmix(8, sig0 = .01, 10, square(2))
@@ -145,7 +146,7 @@ dnormmix <- function(mix, win, x, y, L = 128, truncate = TRUE) {
 #'
 #' @return A pixel image of class \code{\link[spatstat]{im}} with the values
 #'  corresponding to the intensity at given locations.
-#'
+#' @export
 #' @examples
 #' if (require(spatstat)) {
 #'   mix1 <- rnormmix(8, sig0 = .01, 10, square(2))
@@ -165,6 +166,7 @@ inormmix <- function(lambda, mix, win, x, y, L = 128, truncate = TRUE) {
 }
 
 #' @rdname normmix
+#' @export
 summary.normmix <- function(mix) {
   cat(paste("Normal Mixture with", mix$m, "components:\n"))
   for (i in 1:mix$m) {

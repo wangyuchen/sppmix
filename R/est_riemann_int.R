@@ -7,6 +7,7 @@
 #' @param ylimits A vector with two values defining the range of the domain on y-axis.
 #' @param L A numerical value controls how many sub-regions are partitioned on each axis, default to 100.
 #' @return The estimated value of Riemann integral of the function on that domain.
+#' @export
 #' @examples
 #' func <- function(x, y) exp(-.5 * x^2 - .5 * y^2) / (2 * pi)
 #' est_riemann_int(func, c(-3, 3), c(-3, 3))
@@ -44,7 +45,7 @@ est_riemann_int <- function(func, xlimits, ylimits, L=100) {
 #'
 #' @return A numerical vector corresponding to the density of each component
 #'  within the window.
-#'
+#' @export
 #' @examples
 #' if (require("spatstat")) {
 #'   mix1 <- normmix(ps=c(.3, .7),

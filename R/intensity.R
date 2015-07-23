@@ -14,9 +14,9 @@
 #' @param truncate Locgical flag indicating whether truncation is used for
 #'  \code{pattern}. The default is TRUE.
 #'
-#'  @return An object of class \code{\link[spatstat]{im}}.
-#'
-#'  @examples
+#' @return An object of class \code{\link[spatstat]{im}}.
+#' @export
+#' @examples
 # generate a point pattern
 #' if (require(spatstat)){
 #'   mix1 <- rnormmix(3, .01, 5, square(5))
@@ -28,9 +28,6 @@
 #'   surf1 <- est_intensity_np(pattern1, win=square(5), h=0.05, L=100)
 #'   plot(surf1)
 #' }
-
-
-
 est_intensity_np <- function(pattern, win, h, L=10, kernel=c("Epanechnikov"),
                              edgecorrect=TRUE, truncate=TRUE){
   kernel <- match.arg(kernel)

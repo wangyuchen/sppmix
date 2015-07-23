@@ -4,8 +4,7 @@
 #'
 #' @param n Number of generator
 #' @param alpha Parameter for Dirichlet distribution
-#'
-#'
+#' @export
 rdirichlet <- function (n, alpha) {
   l <- length(alpha)
   x <- matrix(rgamma(l * n, alpha), ncol = l, byrow = TRUE)
