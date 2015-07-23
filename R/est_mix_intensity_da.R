@@ -107,6 +107,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
 
   ## start main mcmc ##
   pb <- txtProgressBar(min = 1, max = L, initial = 2)
+  el2 <- el3 <- el4 <- 0
 
   for (i in 2:L) {
     setTxtProgressBar(pb, i)
@@ -116,9 +117,11 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
 
     approx <- rep(1, m)
 
+    t1 <- Sys.time()
     #sample mus and sigmas
     mus <- append(mus, list(matrix(NA, m, 2)))
     sigmas <- append(sigmas, list(array(NA, dim = c(2, 2, m))))
+
     mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
     approx_old_mu <- approx_normmix(mix_old_mu, win)
     for (j in 1:m) {
@@ -129,6 +132,10 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
       sigmas[[i]][, , j] <- sample_sigma(j, mu = mus[[i]],
                                          old_sigma = sigmas[[i-1]])
     }
+
+    t2 <- Sys.time()
+    el2 <- el2 + t2 - t1
+
     # sample ps
     ds <- gam + summary(as.factor(zmultinom))
     ps[i, ] <- rdirichlet(1, ds)
@@ -145,6 +152,10 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     } else {
       consts <- rep(1,m)
     }
+
+    t3 <- Sys.time()
+    el3 <- el3 + t3 - t2
+
     qij <- t(apply(den, 1, function(x) x / sum(x)))
     qij <- scale(qij,center = F, scale = consts)
     propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
@@ -158,10 +169,17 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
       mus[[i]] <- mus[[i-1]]
       ps[i, ] <- ps[i-1, ]
     }
+
+
+    t4 <- Sys.time()
+    el4 <- el4 + t4 - t3
   }
 
   close(pb)
 
+  print(el2)
+  print(el3)
+  print(el4)
 
   postmus <- Reduce("+",mus[-(1:burnin)])/(L - burnin)
   postsigmas <- Reduce("+",sigmas[-(1:burnin)])/(L - burnin)

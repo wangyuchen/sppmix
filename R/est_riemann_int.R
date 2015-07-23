@@ -42,6 +42,7 @@ est_riemann_int <- function(func, xlimits, ylimits, L=100) {
 #'
 #' @param mix An object of class \code{\link{normmix}}
 #' @param win An object of class \code{\link[spatstat]{owin}}
+#' @param ... Further arguments passed to \code{\link{est_riemann_int}}.
 #'
 #' @return A numerical vector corresponding to the density of each component
 #'  within the window.
@@ -55,7 +56,7 @@ est_riemann_int <- function(func, xlimits, ylimits, L=100) {
 #'   plot(dnormmix(mix1, win1))
 #'   approx_normmix(mix1, win1)
 #' }
-approx_normmix <- function(mix, win) {
+approx_normmix <- function(mix, win, ...) {
   if (!is.normmix(mix)) {
     stop("mix must be an object of class normmix.")
   }
@@ -69,7 +70,7 @@ approx_normmix <- function(mix, win) {
   for (k in 1:mix$m) {
     func <- function(x, y) mvtnorm::dmvnorm(cbind(x, y),
                                             mix$mus[[k]], mix$sigmas[[k]])
-    approx[k] <- est_riemann_int(func, win$xrange, win$yrange)
+    approx[k] <- est_riemann_int(func, win$xrange, win$yrange, ...)
   }
   return(approx)
 }
