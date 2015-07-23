@@ -181,7 +181,7 @@ as.normmix <- function(ps, mus, sigmas) {
   mu <- list()
   sigma <- list()
   for (i in 1:nrow(mus)) {
-    mu[[i]] <- mus[i, ]
+    mu[[i]] <- as.numeric(mus[i, ])
     sigma[[i]] <- sigmas[, , i]
   }
   return(normmix(ps, mu, sigma))
