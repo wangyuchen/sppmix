@@ -1,14 +1,18 @@
 #' @export
-est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
+est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
                               truncate = TRUE) {
-  sample_beta <- function (m, sigma, hmat, g, a, n) {
-    invsigmas <- array(dim = c(2, 2, m))
-    for (j in 1:m) {
-      invsigmas[, , j] <- solve(sigma[, , j])
-    }
-    sumsig <- apply(invsigmas, 1:2, sum)
-    ps1 <- solve(2*hmat + 2*sumsig)
-    return(rWishart(1, 2*g + 2*m*a, ps1))
+  inv <- function(x) {
+    # for faster 2 by 2 matrix inverse
+    matrix(c(x[4], -x[2], -x[3], x[1]), 2, 2) / (x[1] * x[4] - x[2] * x[3])
+  }
+
+  sample_beta <- function (m, sigma) {
+    # internal function for sample beta
+    invsigmas <- apply(sigma, 3, inv)
+
+    sumsig <- matrix(rowSums(invsigmas), 2, 2)
+    ps1 <- inv(2*hmat + 2*sumsig)
+    return(rWishart(1, 2*g + 2*m*a, ps1)[, , 1])
   }
 
   sample_mu <- function(j, sigma) {
@@ -36,7 +40,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     # sumxmu is a 2 by 2 matrix
     sumxmu <- crossprod(xmu)
 
-    ps2 <- solve(2*beta[ , , 1] + sumxmu)
+    ps2 <- solve(2 * beta + sumxmu)
     invsig11 <- rWishart(1, 2*a + sum1, ps2)
     propsigma <- solve(invsig11[, , 1])
     return(propsigma)
@@ -84,7 +88,7 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     setTxtProgressBar(pb, i)
 
     #sample B matrix
-    beta <- sample_beta(m, sigmas[[i-1]], hmat, g, a, n)
+    beta <- sample_beta(m, sigmas[[i-1]])
 
     approx <- rep(1, m)
 
@@ -111,10 +115,6 @@ est_mix_intensity <- function(pattern, win, m, L = 10000, burnin = 2000,
     mus[[i]][accept, ] <- propmus[accept, ]
 
     # sample sigmas
-    #     for (j in 1:m) {
-    #       sigmas[[i]][, , j] <- sample_sigma(j, mu = mus[[i]],
-    #                                          old_sigma = sigmas[[i-1]])
-    #     }
 
     propsigmas <- sapply(1:m, sample_sigma, mu = mus[[i]])
 

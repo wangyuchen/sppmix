@@ -74,10 +74,3 @@ approx_normmix <- function(mix, win, ...) {
   }
   return(approx)
 }
-
-
-
-
-
-
-
