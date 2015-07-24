@@ -6,22 +6,22 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     matrix(c(x[4], -x[2], -x[3], x[1]), 2, 2) / (x[1] * x[4] - x[2] * x[3])
   }
 
+  count_ind <- function(zmultinom, total, which = 1:total) {
+    # returns a vector indicating how many points are in the components
+    colSums(sapply(which, function(j) zmultinom == j))
+  }
+
   sample_beta <- function (m, sigma) {
     # internal function for sample beta
     invsigmas <- apply(sigma, 3, inv)
-
     sumsig <- matrix(rowSums(invsigmas), 2, 2)
     ps1 <- inv(2*hmat + 2*sumsig)
     return(rWishart(1, 2*g + 2*m*a, ps1)[, , 1])
   }
 
   sample_mu <- function(j, sigma) {
-    sum1 <- sum(zmultinom == j)
-    if (sum1 > 0) {
-      newmu <- colMeans(pp[zmultinom == j, ])
-    } else {
-      newmu <- c(0, 0)
-    }
+    sum1 <- count_ind(zmultinom, which = j)
+    if (sum1 > 0) newmu <- colMeans(pp[zmultinom == j, ]) else newmu <- c(0, 0)
 
     #sample mus
     invsig1 <- solve(sigma[, , j])
@@ -140,7 +140,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
 
     # sample ps
-    ds <- gam + colSums(sapply(1:m, function(j) zmultinom == j))
+    ds <- gam + count_ind(zmultinom, total = m)
     ps[i, ] <- rdirichlet(1, ds)
 
     # sample zij
@@ -161,7 +161,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     qij <- t(apply(den, 1, function(x) x / sum(x)))
     qij <- scale(qij,center = F, scale = consts)
     propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
-    ratio <- ifelse(any(summary(as.factor(propz)) < 2), 0, 1)
+
+    ratio <- ifelse(any(count_ind(zmultinom, total = m) < 2), 0, 1)
 
     if (runif(1) < ratio) {
       MHjump <- MHjump + 1
