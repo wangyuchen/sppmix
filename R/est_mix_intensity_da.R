@@ -21,7 +21,11 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
   sample_mu <- function(j, sigma) {
     sum1 <- count_ind(zmultinom, which = j)
-    if (sum1 > 0) newmu <- colMeans(pp[zmultinom == j, ]) else newmu <- c(0, 0)
+    if (sum1 > 0) {
+      newmu <- colMeans(pp[zmultinom == j, ])
+    } else {
+      newmu <- c(0, 0)
+    }
 
     invsig1 <- inv(sigma[, , j])
     cov1 <- inv(sum1*invsig1 + kappa)
@@ -45,14 +49,17 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     return(propsigma)
   }
 
+  if (truncate==TRUE) {
+    pattern <- pattern[spatstat::inside.owin(pattern$x, pattern$y, win)]
+  }
+
   pp <- as.data.frame(pattern)
   n <- npoints(pattern)
-  if (truncate==TRUE) {
-    pattern <- pattern[spatstat::inside.owin(pattern$x,pattern$y,win)]
-  }
+
   if (L <= burnin) {
     stop("wrong L or burnin")
   }
+
   MHjump <- 0
   ksi <- colMeans(pp)
   R1 <- diff(range(pp$x))
@@ -66,7 +73,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
   #starting value
   mus <- list(pp[sample(1:n, size = m, replace = T), ])
-  sigmas <- list(array(kappainv,dim = c(2, 2, m)))
+  sigmas <- list(array(kappainv, dim = c(2, 2, m)))
   ps <- matrix(1/m, L, m)
 
   #posterior sample for lambda
@@ -74,13 +81,14 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   blambda <- 10000
   lambdas <- rgamma(L, n + alambda, scale = blambda/(blambda+1))
   meanlambda <- mean(lambdas)
-  lognfac <- log(sqrt(2*pi*n)) + n*log(n) - n
-  logdens1 <- -lognfac + n*log(meanlambda) - meanlambda
+
+  # lognfac <- log(sqrt(2*pi*n)) + n*log(n) - n
+  # logdens1 <- -lognfac + n*log(meanlambda) - meanlambda
 
   zmultinom <- sample(1:m, size = n, replace = T)
 
   ## start main mcmc ##
-  pb <- txtProgressBar(min = 1, max = L, initial = 2)
+  pb <- txtProgressBar(min = 1, max = L, initial = 2, style = 3)
   el2 <- el3 <- el4 <- 0
 
   for (i in 2:L) {
@@ -96,25 +104,27 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     sigmas <- append(sigmas, list(sigmas[[i-1]]))
 
     # sample mus
-    mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
-    approx_old_mu <- approx_normmix(mix_old_mu, win)
-
     propmus <- t(sapply(1:m, sample_mu, sigma = sigmas[[i-1]]))
 
     # truncate
     if (truncate == TRUE) {
+      mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
+      approx_old_mu <- approx_normmix(mix_old_mu, win)
+
       mix_prop_mu <- as.normmix(ps[i-1, ], propmus, sigmas[[i-1]])
       approx_prop_mu <- approx_normmix(mix_prop_mu, win)
+
       ratio <- approx_old_mu / approx_prop_mu
     } else {
       ratio <- 1
     }
 
-    accept <- runif(m) < ratio
+    accept[is.nan(ratio)] <- FALSE
+    accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
     mus[[i]][accept, ] <- propmus[accept, ]
 
-    # sample sigmas
 
+    # sample sigmas
     propsigmas <- sapply(1:m, sample_sigma, mu = mus[[i]])
 
     if (truncate == TRUE) {
@@ -129,14 +139,15 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       mix_prop_sigma <- as.normmix(ps[i-1, ], mus[[i]],
                                    array(propsigmas, dim = c(2, 2, m)))
       approx_prop_sigma <- approx_normmix(mix_prop_sigma, win)
+
       ratio <- approx_old_sigma / approx_prop_sigma
     } else {
       ratio <- 1
     }
 
-    accept <- runif(m) < ratio
+    accept[is.nan(ratio)] <- FALSE
+    accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
     sigmas[[i]][, , accept] <- propsigmas[, accept]
-
 
     # sample ps
     ds <- gam + count_ind(zmultinom, total = m)
@@ -150,37 +161,37 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       den[, k] <- den[, k] * mix$ps[k]
     }
 
+    # qij is n by m
+    qij <- t(apply(den, 1, function(x) x / sum(x)))
+
     if (truncate == TRUE) {
-      consts <- approx_normmix(mix, win)
-    } else {
-      consts <- rep(1,m)
+      qij <- scale(qij, center = F, scale = approx_normmix(mix, win))
     }
 
-
-    qij <- t(apply(den, 1, function(x) x / sum(x)))
-    qij <- scale(qij,center = F, scale = consts)
     propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
 
     ratio <- ifelse(any(count_ind(zmultinom, total = m) < 2), 0, 1)
 
     if (runif(1) < ratio) {
-      MHjump <- MHjump + 1
+      if (i > burnin) {
+        MHjump <- MHjump + 1
+      }
       zmultinom <- propz
-    } else {
-      sigmas[[i]] <- sigmas[[i-1]]
-      mus[[i]] <- mus[[i-1]]
-      ps[i, ] <- ps[i-1, ]
     }
 
-
   }
-
   close(pb)
 
-  postmus <- Reduce("+",mus[-(1:burnin)])/(L - burnin)
-  postsigmas <- Reduce("+",sigmas[-(1:burnin)])/(L - burnin)
+  postmus <- Reduce("+", mus[-(1:burnin)])/(L - burnin)
+  postsigmas <- Reduce("+", sigmas[-(1:burnin)])/(L - burnin)
   postps <- colMeans(ps[-(1:burnin), ])
-  post.mix <- as.normmix(postps, postmus, postsigmas)
-  return(post.mix)
+  post_mix <- as.normmix(postps, postmus, postsigmas)
 
+  RVAL <- list(ps = ps[-(1:burnin), ],
+               mus = mus[-(1:burnin)],
+               sigmas = sigmas[-(1:burnin)],
+               post_mix = post_mix,
+               accept_rate = MHjump / (L - burnin))
+  class(RVAL) <- "dares"
+  return(RVAL)
 }
