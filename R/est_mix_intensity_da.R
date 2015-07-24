@@ -23,9 +23,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     sum1 <- count_ind(zmultinom, which = j)
     if (sum1 > 0) newmu <- colMeans(pp[zmultinom == j, ]) else newmu <- c(0, 0)
 
-    #sample mus
-    invsig1 <- solve(sigma[, , j])
-    cov1 <- solve(sum1*invsig1 + kappa)
+    invsig1 <- inv(sigma[, , j])
+    cov1 <- inv(sum1*invsig1 + kappa)
     mu1 <- cov1 %*% (sum1*invsig1 %*% newmu + kappa %*% ksi)
 
     propmu <- mvtnorm::rmvnorm(1, mu1, cov1)
@@ -40,9 +39,9 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     # sumxmu is a 2 by 2 matrix
     sumxmu <- crossprod(xmu)
 
-    ps2 <- solve(2 * beta + sumxmu)
-    invsig11 <- rWishart(1, 2*a + sum1, ps2)
-    propsigma <- solve(invsig11[, , 1])
+    ps2 <- inv(2 * beta + sumxmu)
+    invsig11 <- rWishart(1, 2*a + sum1, ps2)[, , 1]
+    propsigma <- inv(invsig11)
     return(propsigma)
   }
 
