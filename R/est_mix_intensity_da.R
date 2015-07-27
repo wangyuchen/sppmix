@@ -86,6 +86,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   # logdens1 <- -lognfac + n*log(meanlambda) - meanlambda
 
   zmultinom <- sample(1:m, size = n, replace = T)
+  propz <- zmultinom
 
   ## start main mcmc ##
   pb <- txtProgressBar(min = 1, max = L, initial = 2, style = 3)
@@ -155,20 +156,22 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
     # sample zij
     mix <- as.normmix(ps[i, ], mus[[i]], sigmas[[i]])
-    den <- matrix(NA_real_, n, mix$m)
+    approx <- approx_normmix(mix, win)
+    den <- matrix(NA_real_, n, m)
     for (k in 1:mix$m) {
       den[, k] <- mvtnorm::dmvnorm(pp, mix$mus[[k]], mix$sigmas[[k]])
       den[, k] <- den[, k] * mix$ps[k]
+      if (truncate) {
+        den[, k] <- den[, k] / approx[k]
+      }
     }
 
     # qij is n by m
     qij <- t(apply(den, 1, function(x) x / sum(x)))
+    cond <- abs(rowSums(qij) - 1) < .0001
+    propz[cond] <- apply(qij[cond, ], 1, sample,
+                         x = 1:m, size = 1, replace = T)
 
-    if (truncate == TRUE) {
-      qij <- scale(qij, center = F, scale = approx_normmix(mix, win))
-    }
-
-    propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
 
     ratio <- ifelse(any(count_ind(zmultinom, total = m) < 2), 0, 1)
 
