@@ -17,7 +17,7 @@ A numerical vector corresponding to the density of each component
 }
 \description{
 Approximate the density of each component in a normal mixture within the
-domain using Riemann integral.
+domain using multivariate normal density function.
 }
 \examples{
 if (require("spatstat")) {
