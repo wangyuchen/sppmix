@@ -118,7 +118,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     } else {
       ratio <- 1
     }
-
+    accept <- rep(TRUE, m)
     accept[is.nan(ratio)] <- FALSE
     accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
     mus[[i]][accept, ] <- propmus[accept, ]
