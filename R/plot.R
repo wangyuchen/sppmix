@@ -66,3 +66,29 @@ plot.dares <- function(dares) {
   plot.ts(dares$ps)
 }
 
+#' @export
+plot_contour <- function(mix, points = TRUE, pattern, win, L = 100,
+                                  truncate = TRUE, ...) {
+  xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
+  ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
+
+  z <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
+
+  # assign colors to heights for each point
+  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                                   "#7FFF7F", "yellow", "#FF7F00", "red",
+                                   "#7F0000"))
+  #col <- jet.colors(1000)[findInterval(z$v, seq(min(z$v), max(z$v), length = 1000))]
+
+  #plot(z, col = col)
+  if (points == TRUE){
+    filled.contour(x=xcoord,y=ycoord, z=t(z),color = jet.colors,
+                   plot.axes = { axis(1); axis(2);
+                  points(pattern$x, pattern$y,pch = 16) },
+                  frame.plot = FALSE,asp = 1 ,axes = TRUE, ... )
+  } else {
+    filled.contour(x=xcoord,y=ycoord, z=t(z),
+                   color = jet.colors,
+                   frame.plot = FALSE, asp = 1,axes = TRUE, ...)
+  }
+}
