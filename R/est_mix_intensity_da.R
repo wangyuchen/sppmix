@@ -190,7 +190,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   postps <- colMeans(ps[-(1:burnin), ])
   post_mix <- as.normmix(postps, postmus, postsigmas)
 
-  RVAL <- list(ps = ps[-(1:burnin), ],
+  RVAL <- list(lambda = meanlambda,
+               ps = ps[-(1:burnin), ],
                mus = mus[-(1:burnin)],
                sigmas = sigmas[-(1:burnin)],
                post_mix = post_mix,
