@@ -123,8 +123,9 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     accept <- rep(TRUE, m)
     accept[is.nan(ratio)] <- FALSE
     accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
-    mus[[i]][accept, ] <- propmus[accept, ]
-
+    if (any(accept != FALSE)){
+      mus[[i]][accept, ] <- propmus[accept, ]
+    }
 
     # sample sigmas
     propsigmas <- sapply(1:m, sample_sigma, mu = mus[[i]])
@@ -192,7 +193,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
   postmus <- Reduce("+", mus[-(1:burnin)])/(L - burnin)
   postsigmas <- Reduce("+", sigmas[-(1:burnin)])/(L - burnin)
-  postps <- colMeans(ps[-(1:burnin), ])
+  postps <- colMeans(as.matrix(ps[-(1:burnin), ]))
   post_mix <- as.normmix(postps, postmus, postsigmas)
 
   RVAL <- list(lambda = meanlambda,
