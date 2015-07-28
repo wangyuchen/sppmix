@@ -87,7 +87,6 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
   zmultinom <- sample(1:m, size = n, replace = T)
   propz <- zmultinom
-  qij <- zmultinom
 
   ## start main mcmc ##
   pb <- txtProgressBar(min = 1, max = L, initial = 2, style = 3)
