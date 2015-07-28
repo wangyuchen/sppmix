@@ -168,9 +168,13 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     }
 
     # qij is n by m
-    qij <- t(apply(den, 1, function(x) x / sum(x)))
+    if (m == 1){
+      qij <- matrix(apply(den, 1, function(x) x / sum(x)), n, 1)
+    } else{
+      qij <- t(apply(den, 1, function(x) x / sum(x)))
+    }
     cond <- abs(rowSums(qij) - 1) < .0001
-    propz[cond] <- apply(qij[cond, ], 1, sample,
+    propz[cond] <- apply(as.matrix(qij[cond, ]), 1, sample,
                          x = 1:m, size = 1, replace = T)
 
 
