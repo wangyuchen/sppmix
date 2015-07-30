@@ -84,7 +84,7 @@ plot_contour <- function(mix, points = TRUE, pattern, win, L = 100,
   if (points == TRUE){
     filled.contour(x=xcoord,y=ycoord, z=t(z),color = jet.colors,
                    plot.axes = { axis(1); axis(2);
-                  points(pattern$x, pattern$y,pch = 16) },
+                  points(pattern$x, pattern$y,pch = 20) },
                   frame.plot = FALSE,asp = 1 ,axes = TRUE, ... )
   } else {
     filled.contour(x=xcoord,y=ycoord, z=t(z),
