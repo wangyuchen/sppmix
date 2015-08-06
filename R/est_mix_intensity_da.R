@@ -179,13 +179,17 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
                          x = 1:m, size = 1, replace = T)
 
 
-    ratio <- ifelse(any(count_ind(zmultinom, total = m) < 2), 0, 1)
+    ratio <- ifelse(any(count_ind(propz, total = m) < 2), 0, 1)
 
     if (runif(1) < ratio) {
       if (i > burnin) {
         MHjump <- MHjump + 1
       }
       zmultinom <- propz
+    } else {
+      ps[i, ] <- ps[i-1, ]
+      sigmas[[i]] <- sigmas[[i-1]]
+      mus[[i]] <- mus[[i-1]]
     }
 
   }
