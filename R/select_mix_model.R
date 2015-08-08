@@ -1,3 +1,4 @@
+#' @export
 selectMix <- function(pattern, win, Ms, L = 1000,
                         burnin = 200, truncate = TRUE){
   if (truncate==TRUE) {
