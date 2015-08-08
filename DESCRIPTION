@@ -12,4 +12,5 @@ LazyData: true
 Imports: spatstat,
     mvtnorm,
     rgl,
-    ggplot2
+    ggplot2,
+    psych
