@@ -1,6 +1,6 @@
 #' @export
 est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
-                              truncate = TRUE) {
+                              truncate = TRUE, marginal = FALSE) {
   inv <- function(x) {
     # for faster 2 by 2 matrix inverse
     matrix(c(x[4], -x[2], -x[3], x[1]), 2, 2) / (x[1] * x[4] - x[2] * x[3])
@@ -49,6 +49,32 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     return(propsigma)
   }
 
+  cal_marginal <- function(mus, sigmas, ps) {
+    quad1 <- 0
+    quad2 <- 0
+    nj <- count_ind(zmultinom, total = m)
+    xbarj <- aggregate(pp,list(zmultinom), mean)[, -1]
+    xbarj <- as.matrix(xbarj)
+    xbar <- colMeans(pp)
+    sig1 <- sigmas
+    invsig1 <- apply(sig1, 3, inv)
+    invsig1 <- array(invsig1,dim = c(2,2,m))
+    diff1 <- scale(xbarj, center = xbar, scale = F)
+    diff2 <- -scale(mus, center = xbar, scale = F)
+    diff3 <- scale(pp, center=xbar, scale = F)
+    Aj <- aggregate(rowSums(diff3^2), list(zmultinom), sum)$x
+    for(j in 1:m) {
+      quad1 <- quad1 + 2*nj[j]*matrix(diff1[j, ],1,2)%*%
+        as.matrix(invsig1[ , ,j])%*%matrix(diff2[j, ],2,1)
+      quad2 <- quad2 + nj[j]*matrix(diff2[j, ],1,2)%*%
+        as.matrix(invsig1[ , ,j])%*%matrix(diff2[j, ],2,1)
+      logdens1 <- logdens1 + nj[j]*log(ps[j]) - log(approx[j])-
+        0.5*nj[j]*log(det(2*ps[j]*as.matrix(sig1[ , , j])))-
+        0.5*psych::tr(Aj[j]*as.matrix(invsig1[ , , j])) - 0.5*quad1 - 0.5*quad2
+    }
+    return(logdens1)
+  }
+
   if (truncate==TRUE) {
     pattern <- pattern[spatstat::inside.owin(pattern$x, pattern$y, win)]
   }
@@ -71,10 +97,12 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   gam <- 1
   hmat <- 100*g/a*kappa
 
+
   #starting value
   mus <- list(pp[sample(1:n, size = m, replace = T), ])
   sigmas <- list(array(kappainv, dim = c(2, 2, m)))
   ps <- matrix(1/m, L, m)
+  marginalsum <- 0
 
   #posterior sample for lambda
   alambda <- 1
@@ -82,8 +110,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   lambdas <- rgamma(L, n + alambda, scale = blambda/(blambda+1))
   meanlambda <- mean(lambdas)
 
-  # lognfac <- log(sqrt(2*pi*n)) + n*log(n) - n
-  # logdens1 <- -lognfac + n*log(meanlambda) - meanlambda
+  lognfac <- log(sqrt(2*pi*n)) + n*log(n) - n
+  logdens1 <- -lognfac + n*log(meanlambda) - meanlambda
 
   zmultinom <- sample(1:m, size = n, replace = T)
   propz <- zmultinom
@@ -192,6 +220,11 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       mus[[i]] <- mus[[i-1]]
     }
 
+  # calculate marginal distribution if necessary
+    if (marginal == TRUE){
+      marginalsum <- marginalsum+cal_marginal(mus[[i]],sigmas[[i]],
+                                              ps[i, ])
+    }
   }
   close(pb)
 
@@ -199,11 +232,13 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   postsigmas <- Reduce("+", sigmas[-(1:burnin)])/(L - burnin)
   postps <- colMeans(as.matrix(ps[-(1:burnin), ]))
   post_mix <- as.normmix(postps, postmus, postsigmas)
+  marginalmean <- marginalsum/(L-burnin)
 
   RVAL <- list(lambda = meanlambda,
                ps = ps[-(1:burnin), ],
                mus = mus[-(1:burnin)],
                sigmas = sigmas[-(1:burnin)],
+               marginal = marginalmean,
                post_mix = post_mix,
                accept_rate = MHjump / (L - burnin))
   class(RVAL) <- "dares"
