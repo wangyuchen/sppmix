@@ -222,8 +222,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
   # calculate marginal distribution if necessary
     if (marginal == TRUE){
-      marginalsum <- marginalsum+cal_marginal(mus[[i]],sigmas[[i]],
-                                              ps[i, ])
+      marginalsum <- marginalsum+exp(cal_marginal(mus[[i]],sigmas[[i]],
+                                              ps[i, ]))
     }
   }
   close(pb)
