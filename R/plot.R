@@ -67,8 +67,8 @@ plot.dares <- function(dares) {
 }
 
 #' @export
-plot_contour <- function(mix, points = TRUE, pattern, win, L = 100,
-                                  truncate = TRUE, ...) {
+plot_contour <- function(mix, pattern, win, L = 100,
+                         points = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
