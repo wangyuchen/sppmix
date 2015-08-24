@@ -242,7 +242,11 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   mlesigs <- sigmas[[logmle_index]]
   invK <- inv(100*kappainv)
   Bhat <- betas[[logmle_index]]
+  if (m == 1) {
+    mleps = 1
+  } else {
   mleps = ps[-(1:burnin), ][logmle_index, ]
+  }
   logmle1 <- loglik[-(1:burnin)][logmle_index]
   logmle2 <- sum(mvtnorm::dmvnorm(mlemus, mean = c(mean(pp[, 1]), mean(pp[, 2])),
                      sigma =invK ,log = TRUE)) +
@@ -472,7 +476,10 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
                                             zmultinom =
                                               zmultinom3[-(1:burnin), ][x, ])))
   # Run a sub-sequence of reduced Gibbs for mleps by given other parameters
-
+  if (m == 1) {
+    ps4 <- matrix(1/m, L, m)
+    zmultinom4 <- matrix(1, L, n)
+  } else {
   ps4 <- matrix(1/m, L, m)
   zmultinom4 <- matrix(0, L, n)
   zmultinom4[1, ] <- sample(1:m, size = n, replace = T)
@@ -519,6 +526,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       ps4[i, ] <- ps4[i-1, ]
     }
   }
+  }
   den_ps <- function(ps, zmultinom) {
     sum1 <- count_ind(zmultinom, total = m)
     den <- exp(sum((sum1 -1)*log(ps)) +
@@ -526,7 +534,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     return(den)
   }
   density_ps <- mean(sapply(1:(L-burnin),
-                       function(x) den_ps(ps4[-(1:burnin), ][x, ],
+                       function(x) den_ps(as.matrix(ps4[-(1:burnin), ])[x, ],
                                           zmultinom4[-(1:burnin), ][x, ])))
   # estimate the posterior density ordinate
   marginal <- exp(logmle1 + logmle2)/(density_ps*density_mu*density_sigma*
