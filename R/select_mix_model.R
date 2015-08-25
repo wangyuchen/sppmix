@@ -17,8 +17,10 @@ selectMix <- function(pattern, win, Ms, L = 1000,
   AIC <- rep(0, mmax)
   BIC <- rep(0, mmax)
   marginal <- rep(0, mmax)
+  models <- list()
   for (m in 1:mmax) {
    mix <- est_mix_intensity(pattern, win, m = Ms[m], marginal = TRUE)
+   models <- append(models, mix)
    loglikelihood <- n*log(mix$lambda) - mix$lambda
    den <- dnormmix(mix$post_mix,win = win)$v
    loglikelihood <- loglikelihood + sum(log(den))
@@ -29,7 +31,11 @@ selectMix <- function(pattern, win, Ms, L = 1000,
   }
   index <- as.matrix(expand.grid(1:mmax,1:mmax))
   bayes_factor <- apply(index,1,function(x) marginal[x[2]]/marginal[x[1]])
+  bayes_factor <- matrix(bayes_factor, mmax, mmax,
+                         dimnames = list(paste("denominator",Ms),
+                                         paste("numerator",Ms)))
   RVAL <- list(AIC = AIC,
                BIC = BIC,
-               bayes_factor = bayes_factor)
+               bayes_factor = bayes_factor,
+               models = models)
 }
