@@ -20,7 +20,7 @@ selectMix <- function(pattern, win, Ms, L = 1000,
   models <- list()
   for (m in 1:mmax) {
    mix <- est_mix_intensity(pattern, win, m = Ms[m], marginal = TRUE)
-   models <- append(models, mix)
+   models <- append(models, list(mix))
    loglikelihood <- n*log(mix$lambda) - mix$lambda
    den <- dnormmix(mix$post_mix,win = win)$v
    loglikelihood <- loglikelihood + sum(log(den))
