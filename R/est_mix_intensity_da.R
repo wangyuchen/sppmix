@@ -27,7 +27,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     return(MCMCpack::dwish(beta, 2*g + 2*m*a, ps1))
   }
 
-  sample_mu <- function(j, sigma) {
+  sample_mu <- function(j, sigma, zmultinom) {
     sum1 <- count_ind(zmultinom, which = j)
     if (sum1 > 0) {
       newmu <- colMeans(pp[zmultinom == j, ])
@@ -43,7 +43,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     return(propmu)
   }
 
-  sample_sigma <- function(j, mu, beta = beta) {
+  sample_sigma <- function(j, mu, beta = beta, zmultinom) {
     # sample sigma from proposal distribution for one component
     sum1 <- sum(zmultinom == j)
     xmu <- scale(pp[zmultinom == j,], as.numeric(mu[j, ]), scale = F)
@@ -58,7 +58,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   }
 
   # estimated the posterior density of sigmas
-  den_sigma <- function(j, mu, beta, sigma) {
+  den_sigma <- function(j, mu, beta, sigma, zmultinom) {
     # sample sigma from proposal distribution for one component
     nj <- sum(zmultinom == j)
     xmu <- scale(pp[zmultinom == j,], as.numeric(mu[j, ]), scale = F)
@@ -94,8 +94,6 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   g <- 0.3
   gam <- 1
   hmat <- 100*g/a*kappa
-  perms <-  matrix(unlist(permn(m)), ncol = m, byrow = T)
-  nperms <-  dim(perms)[1]
   loglik <- rep(0, L)
 
   #starting value
@@ -144,51 +142,63 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     sigmas <- append(sigmas, list(sigmas[[i-1]]))
 
     # sample mus
-    propmus <- t(sapply(1:m, sample_mu, sigma = sigmas[[i-1]]))
+    propmus <- t(sapply(1:m, sample_mu, sigma = sigmas[[i-1]],
+                        zmultinom = zmultinom))
 
     # truncate
     if (truncate == TRUE) {
       mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
-      approx_old_mu <- approx_normmix(mix_old_mu, win)
+      approx_old_mu <- sum(approx_normmix(mix_old_mu, win))
 
       mix_prop_mu <- as.normmix(ps[i-1, ], propmus, sigmas[[i-1]])
-      approx_prop_mu <- approx_normmix(mix_prop_mu, win)
+      approx_prop_mu <- sum(approx_normmix(mix_prop_mu, win))
 
       ratio <- approx_old_mu / approx_prop_mu
     } else {
       ratio <- 1
     }
-    accept <- rep(TRUE, m)
-    accept[is.nan(ratio)] <- FALSE
-    accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
-    if (any(accept != FALSE)){
-      mus[[i]][accept, ] <- propmus[accept, ]
+    # accept <- rep(TRUE, m)
+    # accept[is.nan(ratio)] <- FALSE
+    # accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
+    # if (any(accept != FALSE)){
+      # mus[[i]][accept, ] <- propmus[accept, ]
+    # }
+    ratio[is.nan(ratio)] <- 0
+    if (runif(1) < ratio){
+      mus[[i]] <- propmus
     }
 
     # sample sigmas
-    propsigmas <- sapply(1:m, sample_sigma, mu = mus[[i]], beta)
+    propsigmas <- sapply(1:m, sample_sigma, mu = mus[[i]], beta,
+                         zmultinom = zmultinom)
 
     if (truncate == TRUE) {
-      if (all(accept)) {
-        # all mus proposed are accepted
-        approx_old_sigma <- approx_prop_mu
-      } else {
+#       if (all(accept)) {
+#         # all mus proposed are accepted
+#         approx_old_sigma <- approx_prop_mu
+#       } else {
         mix_old_sigma <- as.normmix(ps[i-1, ], mus[[i]], sigmas[[i-1]])
-        approx_old_sigma <- approx_normmix(mix_old_sigma, win)
-      }
+        approx_old_sigma <- sum(approx_normmix(mix_old_sigma, win))
+#       }
 
       mix_prop_sigma <- as.normmix(ps[i-1, ], mus[[i]],
                                    array(propsigmas, dim = c(2, 2, m)))
-      approx_prop_sigma <- approx_normmix(mix_prop_sigma, win)
+      approx_prop_sigma <- sum(approx_normmix(mix_prop_sigma, win))
 
       ratio <- approx_old_sigma / approx_prop_sigma
+
     } else {
       ratio <- 1
     }
 
-    accept[is.nan(ratio)] <- FALSE
-    accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
-    sigmas[[i]][, , accept] <- propsigmas[, accept]
+#     accept[is.nan(ratio)] <- FALSE
+#     accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
+#     sigmas[[i]][, , accept] <- propsigmas[, accept]
+
+    ratio[is.nan(ratio)] <- 0
+    if (runif(1) < ratio){
+      sigmas[[i]] <- array(propsigmas, dim = c(2, 2, m))
+    }
 
     # sample ps
     ds <- gam + count_ind(zmultinom, total = m)
@@ -213,6 +223,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       qij <- t(apply(den, 1, function(x) x / sum(x)))
     }
     cond <- abs(rowSums(qij) - 1) < .0001
+    qij[is.nan(qij)]=0
     propz[cond] <- apply(as.matrix(qij[cond, ]), 1, sample,
                          x = 1:m, size = 1, replace = T)
 
@@ -235,7 +246,6 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       loglik[i] <- sum(log(apply(den, 1, sum)))
     }
   }
-  #close(pb)
 
   postmus <- Reduce("+", mus[-(1:burnin)])/(L - burnin)
   postsigmas <- Reduce("+", sigmas[-(1:burnin)])/(L - burnin)
@@ -272,8 +282,9 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     mus2 <- list(pp[sample(1:n, size = m, replace = T), ])
     sigmas2 <- list(array(kappainv, dim = c(2, 2, m)))
     ps2 <- matrix(1/m, L, m)
-    zmultinom2 <- sample(1:m, size = n, replace = T)
-    propz <- zmultinom2
+    zmultinom2 <- matrix(0, L, n)
+    zmultinom2[1, ] <- sample(1:m, size = n, replace = T)
+    propz <- zmultinom2[1, ]
 
     for (i in 2:L) {
       approx <- rep(1, m)
@@ -284,7 +295,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       sigmas2 <- append(sigmas2, list(sigmas2[[i-1]]))
 
       # sample mus
-      propmus <- t(sapply(1:m, sample_mu, sigma = sigmas2[[i-1]]))
+      propmus <- t(sapply(1:m, sample_mu, sigma = sigmas2[[i-1]],
+                          zmultinom = zmultinom2[i-1, ]))
 
       # truncate
       if (truncate == TRUE) {
@@ -306,7 +318,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       }
 
       # sample sigmas
-      propsigmas <- sapply(1:m, sample_sigma, mu = mus2[[i]], beta = Bhat)
+      propsigmas <- sapply(1:m, sample_sigma, mu = mus2[[i]], beta = Bhat,
+                           zmultinom = zmultinom2[i-1, ])
 
       if (truncate == TRUE) {
         if (all(accept)) {
@@ -331,7 +344,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       sigmas2[[i]][, , accept] <- propsigmas[, accept]
 
       # sample ps
-      ds <- gam + count_ind(zmultinom2, total = m)
+      ds <- gam + count_ind(zmultinom2[i-1, ], total = m)
       ps2[i, ] <- rdirichlet(1, ds)
 
       # sample zij
@@ -353,6 +366,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
         qij <- t(apply(den, 1, function(x) x / sum(x)))
       }
       cond <- abs(rowSums(qij) - 1) < .0001
+      qij[is.nan(qij)]=0
       propz[cond] <- apply(as.matrix(qij[cond, ]), 1, sample,
                            x = 1:m, size = 1, replace = T)
 
@@ -363,23 +377,25 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
         if (i > burnin) {
           MHjump <- MHjump + 1
         }
-        zmultinom2 <- propz
+        zmultinom2[i, ] <- propz
       } else {
         ps2[i, ] <- ps2[i-1, ]
         sigmas2[[i]] <- sigmas2[[i-1]]
         mus2[[i]] <- mus2[[i-1]]
       }
     }
-    sigm <- function(m, mu, beta, sigma) {
+    sigm <- function(m, mu, beta, sigma, zmultinom) {
       logsum<- exp(sum(log(sapply(1:m, den_sigma, mu = mu,
-                                  beta = beta, sigma = sigma))))
+                                  beta = beta, sigma = sigma,
+                                  zmultinom=zmultinom))))
       return(logsum)
     }
     density_sigma <- mean(sapply(1:(L-burnin),
                                  function(x) sigm(m = m,
                                                   mu = mus2[-(1:burnin)][[x]],
                                                   beta = Bhat,
-                                                  sigma = mlesigs)))
+                                                  sigma = mlesigs,
+                                                  zmultinom = zmultinom2[-(1:burnin), ][x, ])))
 
     # Run a subsequence of reduced Gibbs for mlemus by given Bhat and mlesigs
 
@@ -395,7 +411,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
       #sample mus
       mus3 <- append(mus3, list(mus3[[i-1]]))
-      propmus <- t(sapply(1:m, sample_mu, sigma = mlesigs))
+      propmus <- t(sapply(1:m, sample_mu, sigma = mlesigs,
+                          zmultinom = zmultinom3[i-1, ]))
 
       # truncate
       if (truncate == TRUE) {
@@ -439,6 +456,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
         qij <- t(apply(den, 1, function(x) x / sum(x)))
       }
       cond <- abs(rowSums(qij) - 1) < .0001
+      qij[is.nan(qij)]=0
       propz[cond] <- apply(as.matrix(qij[cond, ]), 1, sample,
                            x = 1:m, size = 1, replace = T)
 
@@ -524,6 +542,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
           qij <- t(apply(den, 1, function(x) x / sum(x)))
         }
         cond <- abs(rowSums(qij) - 1) < .0001
+        qij[is.nan(qij)]=0
         propz[cond] <- apply(as.matrix(qij[cond, ]), 1, sample,
                              x = 1:m, size = 1, replace = T)
 
