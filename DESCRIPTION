@@ -13,4 +13,5 @@ Imports: spatstat,
     mvtnorm,
     rgl,
     ggplot2,
-    psych
+    psych,
+    combinat
