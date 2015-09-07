@@ -71,6 +71,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     return(den)
   }
 
+  time1 <- time2 <- time3 <- 0
+
   # Data truncation
   if (truncate==TRUE) {
     pattern <- pattern[spatstat::inside.owin(pattern$x, pattern$y, win)]
@@ -131,6 +133,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   for (i in 2:L) {
     setTxtProgressBar(pb, i)
 
+
     #sample B matrix
     beta <- sample_beta(m, sigmas[[i-1]])
     betas <- append(betas, list(beta))
@@ -141,64 +144,78 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     mus <- append(mus, list(mus[[i-1]]))
     sigmas <- append(sigmas, list(sigmas[[i-1]]))
 
+
     # sample mus
     propmus <- t(sapply(1:m, sample_mu, sigma = sigmas[[i-1]],
                         zmultinom = zmultinom))
 
+    t1 <- Sys.time()
+
     # truncate
     if (truncate == TRUE) {
       mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
-      approx_old_mu <- sum(approx_normmix(mix_old_mu, win))
+      approx_old_mu <- approx_normmix(mix_old_mu, win)
 
       mix_prop_mu <- as.normmix(ps[i-1, ], propmus, sigmas[[i-1]])
-      approx_prop_mu <- sum(approx_normmix(mix_prop_mu, win))
+      approx_prop_mu <- approx_normmix(mix_prop_mu, win)
 
       ratio <- approx_old_mu / approx_prop_mu
     } else {
       ratio <- 1
     }
-    # accept <- rep(TRUE, m)
-    # accept[is.nan(ratio)] <- FALSE
+
+    #     accept <- rep(TRUE, m)
+    #     accept[is.nan(ratio)] <- FALSE
     # accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
-    # if (any(accept != FALSE)){
-    # mus[[i]][accept, ] <- propmus[accept, ]
-    # }
-    ratio[is.nan(ratio)] <- 0
-    if (runif(1) < ratio){
-      mus[[i]] <- propmus
+    accept <- runif(m) < ratio
+    if (any(accept == TRUE)){
+      mus[[i]][accept, ] <- propmus[accept, ]
     }
 
+    #     ratio[is.nan(ratio)] <- 0
+    #     if (runif(1) < ratio){
+    #       mus[[i]] <- propmus
+    #     }
+
+    t2 <- Sys.time()
+    time1 <- time1 + t2 - t1
+
+
     # sample sigmas
-    propsigmas <- sapply(1:m, sample_sigma, mu = mus[[i]], beta,
-                         zmultinom = zmultinom)
+    propsigmas <- sapply(1:m, sample_sigma,
+                         mu = mus[[i]], beta, zmultinom = zmultinom)
+
 
     if (truncate == TRUE) {
-      #       if (all(accept)) {
-      #         # all mus proposed are accepted
-      #         approx_old_sigma <- approx_prop_mu
-      #       } else {
-      mix_old_sigma <- as.normmix(ps[i-1, ], mus[[i]], sigmas[[i-1]])
-      approx_old_sigma <- sum(approx_normmix(mix_old_sigma, win))
-      #       }
+      if (all(accept)) {
+        # all mus proposed are accepted
+        approx_old_sigma <- approx_prop_mu
+      } else {
+        mix_old_sigma <- as.normmix(ps[i-1, ], mus[[i]], sigmas[[i-1]])
+        approx_old_sigma <- approx_normmix(mix_old_sigma, win)
+      }
 
       mix_prop_sigma <- as.normmix(ps[i-1, ], mus[[i]],
                                    array(propsigmas, dim = c(2, 2, m)))
-      approx_prop_sigma <- sum(approx_normmix(mix_prop_sigma, win))
+      approx_prop_sigma <- approx_normmix(mix_prop_sigma, win)
 
       ratio <- approx_old_sigma / approx_prop_sigma
-
     } else {
       ratio <- 1
     }
 
     #     accept[is.nan(ratio)] <- FALSE
     #     accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
-    #     sigmas[[i]][, , accept] <- propsigmas[, accept]
+    accept <- runif(m) < ratio
+    sigmas[[i]][, , accept] <- propsigmas[, accept]
 
-    ratio[is.nan(ratio)] <- 0
-    if (runif(1) < ratio){
-      sigmas[[i]] <- array(propsigmas, dim = c(2, 2, m))
-    }
+#     ratio[is.nan(ratio)] <- 0
+#     if (runif(1) < ratio){
+#       sigmas[[i]] <- array(propsigmas, dim = c(2, 2, m))
+#     }
+
+    t3 <- Sys.time()
+    time2 <- time2 + t3 - t2
 
     # sample ps
     ds <- gam + count_ind(zmultinom, total = m)
@@ -216,21 +233,22 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       }
     }
 
+
     # qij is n by m
     if (m == 1){
       qij <- matrix(apply(den, 1, function(x) x / sum(x)), n, 1)
     } else{
       qij <- t(apply(den, 1, function(x) x / sum(x)))
     }
-    cond <- abs(rowSums(qij) - 1) < .0001
-    qij[is.na(qij)] <- 0
-    propz[cond] <- apply(as.matrix(qij[cond, ]), 1, sample,
-                         x = 1:m, size = 1, replace = T)
+
+    t4 <- Sys.time()
+    time3 <- time3 + t4 - t3
+    # cond <- abs(rowSums(qij) - 1) < .0001
+#     qij[is.na(qij)] <- 0
+    propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
 
 
-    ratio <- ifelse(any(count_ind(propz, total = m) < 2), 0, 1)
-
-    if (runif(1) < ratio) {
+    if (all(count_ind(propz, total = m) >= 2)) {
       if (i > burnin) {
         MHjump <- MHjump + 1
       }
@@ -360,8 +378,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
       } else{
         qij <- t(apply(den, 1, function(x) x / sum(x)))
       }
-#       print(sum(is.na(qij)))
-#       print(sum(is.nan(qij)))
+      #       print(sum(is.na(qij)))
+      #       print(sum(is.nan(qij)))
       cond <- abs(rowSums(qij) - 1) < .0001
       qij[is.na(qij)] <- 0
       propz[cond] <- apply(as.matrix(qij[cond, ]), 1, sample,
@@ -571,6 +589,9 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
                                           density_beta)
   }
   close(pb)
+
+  print(c(time1, time2, time3))
+
   RVAL <- list(lambda = meanlambda,
                ps = ps[-(1:burnin), ],
                mus = mus[-(1:burnin)],
