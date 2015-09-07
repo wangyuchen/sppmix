@@ -23,7 +23,7 @@ support Epanechnikov kernel.}
 \item{edgecorrect}{Logical flag indicating whether to use edge-correction in
 estimating intensity surface. The default is TRUE.}
 
-\item{truncate}{Locgical flag indicating whether truncation is used for
+\item{truncate}{Logical flag indicating whether truncation is used for
  \code{pattern}. The default is TRUE.}
 }
 \value{

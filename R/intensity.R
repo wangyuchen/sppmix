@@ -11,7 +11,7 @@
 #'  support Epanechnikov kernel.
 #' @param edgecorrect Logical flag indicating whether to use edge-correction in
 #'  estimating intensity surface. The default is TRUE.
-#' @param truncate Locgical flag indicating whether truncation is used for
+#' @param truncate Logical flag indicating whether truncation is used for
 #'  \code{pattern}. The default is TRUE.
 #'
 #' @return An object of class \code{\link[spatstat]{im}}.

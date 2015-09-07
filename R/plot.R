@@ -66,7 +66,32 @@ plot.dares <- function(dares) {
   plot.ts(dares$ps)
 }
 
-#' @export
+
+#' Plot contour for intensity surface
+#'
+#' Create a contour plot for the intensity surface with or without realizations
+#' on it.
+#'
+#' @param mix Object of class normmix.
+#' @param pattern Object of class \code{\link{ppp}}
+#' @param win Object of class \code{\link{owin}}
+#' @param L number of grids on each coordinate.  The default is L=100.
+#' @param points Logical flag indicating whether plot realizations, i.e.
+#' locations, with the contour plot. The default is TRUE.
+#' @param truncate Logical flag indicating whether truncation is used for
+#'  \code{pattern}. The default is TRUE.
+#' @param ... Further arguments passed to \code{\link[rgl]{filled.contour}}.
+#'
+#'  @export
+#'  @examples
+#' # generate a mixture with given ps, mus and sigmas
+#' mix1 <- normmix(ps=c(.5, .5),
+#'                 mus=list(c(.2, .2), c(.7, .7)),
+#'                 sigmas=list(.01*diag(2), .02*diag(2)))
+#' # generate a realization from mixture mix1
+#' pp1 <- rsppmix(200, mix1, spatstat::square(1))
+#' # plot the theoretical intensity surface with a realization
+#' plot_contour(mix1,pp1,spatstat::square(1))
 plot_contour <- function(mix, pattern, win, L = 100,
                          points = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
