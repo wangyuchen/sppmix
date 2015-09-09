@@ -592,7 +592,8 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
   print(c(time1, time2, time3))
 
-  RVAL <- list(lambda = meanlambda,
+  RVAL <- list(post_lambda = meanlambda,
+               lambdas = lambdas[-(1:burnin)],
                ps = ps[-(1:burnin), ],
                mus = mus[-(1:burnin)],
                sigmas = sigmas[-(1:burnin)],
