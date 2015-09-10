@@ -1,6 +1,7 @@
 #' @export
 est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
                               truncate = TRUE, marginal = FALSE) {
+
   inv <- function(x) {
     # for faster 2 by 2 matrix inverse
     matrix(c(x[4], -x[2], -x[3], x[1]), 2, 2) / (x[1] * x[4] - x[2] * x[3])
@@ -71,8 +72,6 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     return(den)
   }
 
-  time1 <- time2 <- time3 <- 0
-
   # Data truncation
   if (truncate==TRUE) {
     pattern <- pattern[spatstat::inside.owin(pattern$x, pattern$y, win)]
@@ -130,7 +129,12 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   }
   pb <- txtProgressBar(min = 1, max = Lmax, initial = 2, style = 3)
   el2 <- el3 <- el4 <- 0
+
+  time1 <- time2 <- time3 <- time4 <- 0
+
   for (i in 2:L) {
+    t1 <- Sys.time()
+
     setTxtProgressBar(pb, i)
 
 
@@ -149,7 +153,6 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     propmus <- t(sapply(1:m, sample_mu, sigma = sigmas[[i-1]],
                         zmultinom = zmultinom))
 
-    t1 <- Sys.time()
 
     # truncate
     if (truncate == TRUE) {
@@ -243,6 +246,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
 
     t4 <- Sys.time()
     time3 <- time3 + t4 - t3
+
     # cond <- abs(rowSums(qij) - 1) < .0001
 #     qij[is.na(qij)] <- 0
     propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
@@ -263,6 +267,10 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     if (marginal == TRUE){
       loglik[i] <- sum(log(apply(den, 1, sum)))
     }
+
+    t5 <- Sys.time()
+    time4 <- time4 + t5 - t4
+
   }
 
   postmus <- Reduce("+", mus[-(1:burnin)])/(L - burnin)
@@ -590,7 +598,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
   }
   close(pb)
 
-  print(c(time1, time2, time3))
+  print(c(time1, time2, time3, time4))
 
   RVAL <- list(post_lambda = meanlambda,
                lambdas = lambdas[-(1:burnin)],
