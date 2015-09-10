@@ -14,4 +14,7 @@ Imports: spatstat,
     rgl,
     ggplot2,
     psych,
-    combinat
+    combinat,
+    Rcpp,
+LinkingTo: Rcpp,
+    RcppArmadillo
