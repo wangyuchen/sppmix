@@ -41,3 +41,19 @@ DAMCMC2d <- function(data, xlims, ylims, m, L, burnin, truncate) {
     .Call('sppmix_DAMCMC2d', PACKAGE = 'sppmix', data, xlims, ylims, m, L, burnin, truncate)
 }
 
+rcpparma_hello_world <- function() {
+    .Call('sppmix_rcpparma_hello_world', PACKAGE = 'sppmix')
+}
+
+rcpparma_outerproduct <- function(x) {
+    .Call('sppmix_rcpparma_outerproduct', PACKAGE = 'sppmix', x)
+}
+
+rcpparma_innerproduct <- function(x) {
+    .Call('sppmix_rcpparma_innerproduct', PACKAGE = 'sppmix', x)
+}
+
+rcpparma_bothproducts <- function(x) {
+    .Call('sppmix_rcpparma_bothproducts', PACKAGE = 'sppmix', x)
+}
+
