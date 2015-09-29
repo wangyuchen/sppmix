@@ -17,7 +17,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     invsigmas <- apply(sigma, 3, inv)
     sumsig <- matrix(rowSums(invsigmas), 2, 2)
     ps1 <- inv(2*hmat + 2*sumsig)
-    return(rWishart(1, 2*g + 2*m*a, ps1)[, , 1])
+    return(stats::rWishart(1, 2*g + 2*m*a, ps1)[, , 1])
   }
 
   den_beta <- function (m, beta, sigma) {
@@ -53,7 +53,7 @@ est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
     sumxmu <- crossprod(xmu)
 
     ps2 <- inv(2 * beta + sumxmu)
-    invsig11 <- rWishart(1, 2*a + sum1, ps2)[, , 1]
+    invsig11 <- stats::rWishart(1, 2*a + sum1, ps2)[, , 1]
     propsigma <- inv(invsig11)
     return(propsigma)
   }
