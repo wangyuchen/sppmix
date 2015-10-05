@@ -1,4 +1,4 @@
-#include "sppmix.h"
+#include "../inst/include/sppmix.h"
 //data, x-y limits, m=num of comps to fit
 //L=num iter, burnin
 //function [marginal,meanlamda,meanmus,meansigmas,
@@ -8,7 +8,7 @@
 //trueps,truemus,truesigmas,truncate,skiplots)
 //just get realizations no plotting here
 
-List DAMCMC2d_sppmix(mat const& data, 
+List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,
                      int const& m,int const& L,
@@ -32,7 +32,7 @@ List DAMCMC2d_sppmix(mat const& data,
   mat meanmus=zeros(m,2);
   cube meansigmas=zeros(2,2,m);
   //  Rcout << "meansigmas0="<<meansigmas.slice(0)<< std::endl ;
-  
+
   int i,j,r,dat;
   ivec which=randi(m, distr_param(0,n-1));
   //process data for hyperparam values
@@ -105,7 +105,7 @@ List DAMCMC2d_sppmix(mat const& data,
   vec qij(m),approx=zeros(m),
     ds,qs=zeros(m),mu1=zeros(2),
     newmu=zeros(2);
-  
+
   double MHjump=0,ratio=1,sumd,approxcompj;//,quad;
   //setup grid for truncation
   int sum1;
@@ -119,7 +119,7 @@ List DAMCMC2d_sppmix(mat const& data,
   for(j=0;j<LL-1;j++)
     for(i=0;i<LL-1;i++)
       areas(i,j)=(ticsx(i+1)-ticsx(i))*(ticsy(j+1)-ticsy(j));
-  
+
   int countiter=0;
   //start MCMC
   Rcout << "Preliminaries done. Starting MCMC" << std::endl ;
@@ -176,7 +176,7 @@ List DAMCMC2d_sppmix(mat const& data,
                                          mu1,trans(genmutemp),gensigmas(i,j),
                                          geninvsigmas(i,j)),sum1);
       }
-      else 
+      else
         ratio=1;
       if(rUnif_sppmix()<ratio)
       {
@@ -208,7 +208,7 @@ List DAMCMC2d_sppmix(mat const& data,
                                           propsigma,gensigmas(i,j),
                                           geninvsigmas(i,j)),sum1);
       }
-      else 
+      else
         ratio=1;
       if(rUnif_sppmix()<ratio)
       {
@@ -241,7 +241,7 @@ List DAMCMC2d_sppmix(mat const& data,
     //   Rcout << "1 "<<sum(zmultinomial.col(0))<< std::endl ;
     //   Rcout << "2 "<<sum(zmultinomial.col(1))<< std::endl ;
     //    Rcout << consts.row(i+1)<< std::endl ;
-    
+
     //sample indicators zij
     for(dat=0;dat<n;dat++)
     {
@@ -336,12 +336,12 @@ List DAMCMC2d_sppmix(mat const& data,
   meanps=meanps/countiter;
   meanmus=meanmus/countiter;
   meansigmas=meansigmas/countiter;
-  
+
   //  Rcout <<gensigmas(1,0)<< std::endl ;
   //compute the average of the posterior surfaces
   //needs to be multiplied by the lamdas
   mat AvgPostIntensity = zeros(LL,LL),
-    PostIntensityAvg = zeros(LL,LL);   
+    PostIntensityAvg = zeros(LL,LL);
   List mix1(m);//list containing mixture ps,mus,sigs
   vec xy(2);
   double intensityatxy;
@@ -390,7 +390,7 @@ List DAMCMC2d_sppmix(mat const& data,
     }
     allgens[i]=mix;
   }
-  
+
   return List::create(
     Named("allgens") = allgens,
     Named("genps") = genps,

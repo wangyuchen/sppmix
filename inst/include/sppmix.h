@@ -16,7 +16,7 @@ using namespace Rcpp;
 //invmat2d_sppmix,rWishart_sppmix,ApproxMHRatiomu_sppmix,
 //ApproxMHRatiosig_sppmix,ApproxCompMass_sppmix,
 //rDirichlet_sppmix,densNormMixatx_sppmix
-List DAMCMC2d_sppmix(mat const& data, 
+List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,
                      int const& m,int const& L,

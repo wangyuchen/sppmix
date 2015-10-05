@@ -17,4 +17,5 @@ Imports: spatstat,
     combinat,
     Rcpp,
 LinkingTo: Rcpp,
-    RcppArmadillo
+    RcppArmadillo,
+    sppmix

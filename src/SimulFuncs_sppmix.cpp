@@ -1,4 +1,4 @@
-#include "sppmix.h"
+#include "../inst/include/sppmix.h"
 
 ivec rMultinomial_sppmix(int const& n,vec const& ps){
   int j,i,k=ps.size();

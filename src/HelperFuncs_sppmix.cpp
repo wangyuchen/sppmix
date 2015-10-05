@@ -1,4 +1,4 @@
-#include "sppmix.h"
+#include "../inst/include/sppmix.h"
 
 mat invmat2d_sppmix(mat const& A){
   mat B=zeros(2,2);
@@ -48,7 +48,7 @@ mat dNormMix_sppmix(List const& mix, vec const& x,
 {
   int xnum=x.size(),ynum=y.size();
   //  int m = mix.size();
-  //  List mth_comp;  
+  //  List mth_comp;
   int i,j;
   mat z=zeros(xnum,ynum);
   vec atxy=zeros(2);
@@ -90,7 +90,7 @@ mat ApproxAvgPostIntensity(List const& genmix,
   //needs to be multiplied by the lamdas
   int countiter=0,i,L  = genmix.size();
   mat AvgPostIntensity = zeros(LL,LL);
-  //,PostIntensityAvg = zeros(LL,LL);   
+  //,PostIntensityAvg = zeros(LL,LL);
   vec xy(2);
   //  Rcout << muk<< std::endl ;
   //  List mixcomp;//list containing mixture ps,mus,sigs
@@ -113,7 +113,7 @@ mat ApproxAvgPostIntensity(List const& genmix,
       }
       //      AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)/(L-burnin);
       countiter++;
-    }  
+    }
     return AvgPostIntensity;
   //,Named("PostIntensityofAvg") = PostIntensityAvg);
 }
