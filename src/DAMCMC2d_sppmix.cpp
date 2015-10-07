@@ -8,6 +8,7 @@
 //trueps,truemus,truesigmas,truncate,skiplots)
 //just get realizations no plotting here
 
+//[[Rcpp::export]]
 List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,

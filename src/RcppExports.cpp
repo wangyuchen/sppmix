@@ -7,6 +7,24 @@
 
 using namespace Rcpp;
 
+// DAMCMC2d_sppmix
+List DAMCMC2d_sppmix(mat const& data, vec const& xlims, vec const& ylims, int const& m, int const& L, int const& burnin, int const& LL, bool const& truncate);
+RcppExport SEXP sppmix_DAMCMC2d_sppmix(SEXP dataSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP burninSEXP, SEXP LLSEXP, SEXP truncateSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< mat const& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
+    Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int const& >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
+    Rcpp::traits::input_parameter< bool const& >::type truncate(truncateSEXP);
+    __result = Rcpp::wrap(DAMCMC2d_sppmix(data, xlims, ylims, m, L, burnin, LL, truncate));
+    return __result;
+END_RCPP
+}
 // rcpparma_hello_world
 arma::mat rcpparma_hello_world();
 RcppExport SEXP sppmix_rcpparma_hello_world() {
