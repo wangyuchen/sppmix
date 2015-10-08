@@ -4,7 +4,8 @@
 \alias{plot.normmix}
 \title{Plot mixture density.}
 \usage{
-\method{plot}{normmix}(mix, win, L = 100, truncate = TRUE, ...)
+\method{plot}{normmix}(mix, win, L = 100, truncate = TRUE,
+  title1 = "Poisson Process Intensity", pos = c(0, 0, 0), ...)
 }
 \arguments{
 \item{mix}{An object of class \code{\link{normmix}}.}

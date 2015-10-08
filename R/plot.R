@@ -14,24 +14,76 @@
 #'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = T)
 #'   plot(mix1, square(2))
 #' }
-plot.normmix <- function(mix, win, L = 100, truncate = TRUE, ...) {
+plot.normmix <- function(mix, win, L = 100, truncate = TRUE,
+                         title1="Poisson Process Intensity",
+                         pos=c(0,0,0), ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
   z <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
 
-
-  # assign colors to heights for each point
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
   col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
 
-  rgl::open3d()
+  #  title2=as.character(title1)
+  #  library(rgl)
+  #  rgl::rgl.bringtotop()
+  #  rgl::par3d(params=rgl::r3dDefaults)
+  #   scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
+  #   scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
+  #   height=as.numeric(scr_height[length(scr_height)-1])
+  #   width=as.numeric(scr_width[length(scr_width)-1])
+  height = 300
+  width = 500
+  #  height=as.integer(system("wmic desktopmonitor get screenheight"));
+  #  width=as.integer(system("wmic desktopmonitor get screenwidth"));
+  #  cat(width/2.0)
+  rgl::open3d(windowRect=c(width/5,
+                           height/7,
+                           4*width/5,
+                           6*height/7),
+              zoom=1.2)
+  #rotation about the x-axis, 45 degrees
+  #              ,userMatrix =
+  #              rgl::rotationMatrix(pi/4,1, 0, 0))
+  U=rgl::par3d("userMatrix")
+  rgl::par3d(userMatrix=
+               rgl::rotate3d(U,pi/4,0,0,1))
   rgl::persp3d(x = xcoord, y = ycoord, z = z,
-               color = col, alpha = .8, ...)
+               color = col, xlab="x",ylab="y",
+               zlab="", box = FALSE,
+               axes = FALSE)
+  rgl::axis3d('x')
+  rgl::axis3d('y')
+  rgl::axis3d('z-+'#-=low x-coord, +=high y-coord
+              ,pos = c(min(xcoord), max(ycoord), 0))
+  Rangex=max(xcoord)-min(xcoord);
+  Rangey=max(ycoord)-min(ycoord);
+  Rangez=max(z)-min(z);
+  zmax=max(z)
+  #  rgl::observer3d(-xmax, -ymax, zmax,auto = TRUE)
+  rgl::title3d(main=NULL)
+  rgl::text3d(Rangex/2+pos[1],
+              Rangey/2+pos[2],
+              zmax+0.1*Rangez,texts=title1)
+  #  rgl::text3d(xmax+pos[1],ymax+pos[2],
+  #              zmax+pos[3],texts=title1)
+  #  rgl::axes3d(edges=c('x','y+','z'),pos=c(0,0,0),box=FALSE)
+  #  rgl::axis3d(edge='x',pos=c(0,0,0))
+  #  rgl::axis3d(edge='y',pos=c(0,0,0))
+  #  rgl::axis3d(edge='z',pos=c(0,0,0))
+  #  rgl::decorate3d(main=title1)
 }
-
+Plots_off<- function()
+{
+  graphics.off()
+  while (rgl::rgl.cur()>0)
+  {
+    rgl::rgl.close()
+  }
+}
 
 #' Plot spatial point pattern generated from mixture.
 #'
