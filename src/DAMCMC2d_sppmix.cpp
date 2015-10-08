@@ -1,4 +1,4 @@
-#include "../inst/include/sppmix.h"
+#include "sppmix.h"
 //data, x-y limits, m=num of comps to fit
 //L=num iter, burnin
 //function [marginal,meanlamda,meanmus,meansigmas,
@@ -9,7 +9,6 @@
 //just get realizations no plotting here
 //' @export
 // [[Rcpp::export]]
-
 List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,

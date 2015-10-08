@@ -17,14 +17,19 @@
 \item{truncate}{Whether the density is truncated in the window (truncate)
 or not.}
 
+\item{title1}{The title (on top) for the density plot.}
+
 \item{...}{Further arguments passed to \code{\link[rgl]{persp3d}}.}
+
+\item{poc}{The point coodinates for the title. The default is the top middle
+in the 3-D plot.}
 }
 \description{
 Plot the density surface of a mixture.
 }
 \examples{
 if (require(spatstat)) {
-  mix1 <- rnormmix(8, .01, 10, square(2), rand_m = T)
+  mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
   plot(mix1, square(2))
 }
 }

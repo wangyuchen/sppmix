@@ -1,4 +1,4 @@
-#include "../inst/include/sppmix.h"
+#include "sppmix.h"
 
 mat invmat2d_sppmix(mat const& A){
   mat B=zeros(2,2);
