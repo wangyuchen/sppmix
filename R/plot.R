@@ -7,11 +7,15 @@
 #' @param L Length of grid on x and y axes.
 #' @param truncate Whether the density is truncated in the window (truncate)
 #'  or not.
+#' @param title1 The title (on top) for the density plot.
+#' @param poc The point coodinates for the title. The default is the top middle
+#' in the 3-D plot.
 #' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
+#'
 #' @export
 #' @examples
 #' if (require(spatstat)) {
-#'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = T)
+#'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
 #'   plot(mix1, square(2))
 #' }
 plot.normmix <- function(mix, win, L = 100, truncate = TRUE,
@@ -27,27 +31,16 @@ plot.normmix <- function(mix, win, L = 100, truncate = TRUE,
                                    "#7F0000"))
   col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
 
-  #  title2=as.character(title1)
-  #  library(rgl)
-  #  rgl::rgl.bringtotop()
-  #  rgl::par3d(params=rgl::r3dDefaults)
-  #   scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
-  #   scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
-  #   height=as.numeric(scr_height[length(scr_height)-1])
-  #   width=as.numeric(scr_width[length(scr_width)-1])
+
   height = 300
   width = 500
-  #  height=as.integer(system("wmic desktopmonitor get screenheight"));
-  #  width=as.integer(system("wmic desktopmonitor get screenwidth"));
-  #  cat(width/2.0)
+
   rgl::open3d(windowRect=c(width/5,
                            height/7,
                            4*width/5,
                            6*height/7),
               zoom=1.2)
-  #rotation about the x-axis, 45 degrees
-  #              ,userMatrix =
-  #              rgl::rotationMatrix(pi/4,1, 0, 0))
+
   U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
                rgl::rotate3d(U,pi/4,0,0,1))
@@ -63,18 +56,11 @@ plot.normmix <- function(mix, win, L = 100, truncate = TRUE,
   Rangey=max(ycoord)-min(ycoord);
   Rangez=max(z)-min(z);
   zmax=max(z)
-  #  rgl::observer3d(-xmax, -ymax, zmax,auto = TRUE)
+
   rgl::title3d(main=NULL)
   rgl::text3d(Rangex/2+pos[1],
               Rangey/2+pos[2],
               zmax+0.1*Rangez,texts=title1)
-  #  rgl::text3d(xmax+pos[1],ymax+pos[2],
-  #              zmax+pos[3],texts=title1)
-  #  rgl::axes3d(edges=c('x','y+','z'),pos=c(0,0,0),box=FALSE)
-  #  rgl::axis3d(edge='x',pos=c(0,0,0))
-  #  rgl::axis3d(edge='y',pos=c(0,0,0))
-  #  rgl::axis3d(edge='z',pos=c(0,0,0))
-  #  rgl::decorate3d(main=title1)
 }
 Plots_off<- function()
 {
