@@ -25,11 +25,9 @@ List DAMCMC2d_sppmix(mat const& data,
 
 //Simulation functions
 //file: SimulFuncs_sppmix.cpp
-ivec rMultinomial_sppmix(int const& n,vec const& ps);
-List genNormMix_sppmix(int const& n,List const& mix);
+double rUnif_sppmix();
 double rUnifab_sppmix(double const& a,
                       double const& b);
-double rUnif_sppmix();
 mat rnorm2_sppmix(int n, vec mu,mat sigma);
 mat rWishart_sppmix(int const& df, mat const& A);
 int rDiscrete_sppmix(int const& start,
@@ -41,33 +39,46 @@ double rGamma_sppmix(double const& a,
                      double const& b);
 double rExp_sppmix(double const& a);
 vec rDirichlet_sppmix(vec const& d);
+ivec rMultinomial_sppmix(int const& n,vec const& ps);
+List rNormMix_sppmix(int const& lamda,List const& mix);
+vec rPerm_sppmix(int const& n);
+
+//Approximation functions
+//file: ApproxFuncs_sppmix.cpp
+mat ApproxAvgPostIntensity(List const& genmix,
+    vec const& lamdas,int const& LL,int const& burnin,
+    vec const& ticsx,vec const& ticsy);
+double ApproxCompMass_sppmix(int const& LL,vec const& ticsx,
+    vec const& ticsy,mat const& areas,vec const& mu,
+    mat const& sig,mat const& siginv);
+double ApproxMHRatiomu_sppmix(int const& LL,vec const& ticsx,
+    vec const& ticsy,mat const& areas,
+    vec const& curmu,vec const& propmu,
+    mat const& sig,mat const& siginv);
+double ApproxMHRatiosig_sppmix(int const& LL,vec const& ticsx,
+    vec const& ticsy,mat const& areas,
+    vec const& mu1,mat const& propsigma,
+    mat const& sig,mat const& siginv);
+
+//Operations on posterior realizations
+//file: OpsPostGens_sppmix.cpp
+List GetStats_sppmix(vec const& gens,double const& alpha);
+vec GetRealiz_ps_sppmix(List const& allgens,
+                        int const& realiz);
+mat GetRealiz_mus_sppmix(List const& allgens,
+                         int const& realiz);
+mat GetRealiz_sigmas_sppmix(List const& allgens,
+                            int const& realiz);
+List PostGen_sppmix(List const& allgens);
 
 //Helper functions
 //file: HelperFuncs_sppmix.cpp
 mat invmat2d_sppmix(mat const& A);
-double densNormMixatx_sppmix(vec const& atx,
-                             List const& mix);
+double densNormMixatx_sppmix(vec const& atx,List const& mix);
 mat dNormMix_sppmix(List const& mix, vec const& x,
                     vec const& y);
-List GetStats_sppmix(vec const& gens,
-                     double const& alpha);
-mat ApproxAvgPostIntensity(List const& genmix,
-                           int const& LL,
-                           int const& burnin,
-                           vec const& ticsx,
-                           vec const& ticsy);
-double ApproxCompMass_sppmix(int const& LL,vec const& ticsx,
-                             vec const& ticsy,mat const& areas,
-                             vec const& mu,
-                             mat const& sig,mat const& siginv);
-double ApproxMHRatiomu_sppmix(int const& LL,vec const& ticsx,
-                              vec const& ticsy,mat const& areas,
-                              vec const& curmu,vec const& propmu,
-                              mat const& sig,mat const& siginv);
-double ApproxMHRatiosig_sppmix(int const& LL,vec const& ticsx,
-                               vec const& ticsy,mat const& areas,
-                               vec const& mu1,mat const& propsigma,
-                               mat const& sig,mat const& siginv);
+vec Permute_vec_sppmix(vec const& oldvec,vec const& perm);
+mat Permute_mat_sppmix(mat const& oldmat,vec const& perm);
 
 
 #endif

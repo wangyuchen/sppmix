@@ -8,7 +8,7 @@
 //trueps,truemus,truesigmas,truncate,skiplots)
 //just get realizations no plotting here
 //' @export
-// [[Rcpp::export]]
+//[[Rcpp::export]]
 List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,
@@ -331,7 +331,7 @@ List DAMCMC2d_sppmix(mat const& data,
     }
   }
   printf("\rDone                                                      \n");
-  printf("\rMH acceptance %3.1f%%",1.0*MHjump/L);
+  printf("\rMH acceptance %3.1f%%",100.0*MHjump/L);
   //compute means
   meanz=genz/countiter;
   meanps=meanps/countiter;
@@ -341,45 +341,51 @@ List DAMCMC2d_sppmix(mat const& data,
   //  Rcout <<gensigmas(1,0)<< std::endl ;
   //compute the average of the posterior surfaces
   //needs to be multiplied by the lamdas
-  mat AvgPostIntensity = zeros(LL,LL),
-    PostIntensityAvg = zeros(LL,LL);
+  /*  mat AvgPostIntensity = zeros(LL,LL),
+  PostIntensityAvg = zeros(LL,LL);
+  if(0)
+  {
   List mix1(m);//list containing mixture ps,mus,sigs
   vec xy(2);
   double intensityatxy;
   countiter=0;
   for(int x1=0;x1<LL;x1++)
-    for(int y1=0;y1<LL;y1++)
-    {
-      printf("\rComputing intensity surfaces: %3.1f%% complete",100.0*countiter/(LL*LL));
-      xy(0)=ticsx(x1);
-      xy(1)=ticsy(y1);
-      //for each realization, compute the intensity
-      //surface at the point xy
-      for(i=burnin;i<L;i++)
-      {
-        for(j=0;j<m;j++)
-        {
-          mu1(0)=genmus(j,0,i);
-          mu1(1)=genmus(j,1,i);
-          mix1[j]=List::create(
-            Named("p") = genps(i,j),
-            Named("mu") = mu1,
-            Named("sigma") = gensigmas(i,j));
-        }
-        intensityatxy=densNormMixatx_sppmix(xy,mix1);
-        AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)+intensityatxy/(L-burnin);
-      }
-      //      AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)/(L-burnin);
-      countiter++;
-    }
-    //create a list, with each element corresponding
-    //to a single realization, which itself is a list
-    //with each element contaning the mixture ps, mus, sigs,
-    //as a list of m elements
-    List allgens(L),
-    mix(m);//list containing mixture ps,mus,sigs
+  for(int y1=0;y1<LL;y1++)
+  {
+  printf("\rComputing intensity surfaces: %3.1f%% complete",100.0*countiter/(LL*LL));
+  xy(0)=ticsx(x1);
+  xy(1)=ticsy(y1);
+  //for each realization, compute the intensity
+  //surface at the point xy
+  for(i=burnin;i<L;i++)
+  {
+  for(j=0;j<m;j++)
+  {
+  mu1(0)=genmus(j,0,i);
+  mu1(1)=genmus(j,1,i);
+  mix1[j]=List::create(
+    Named("p") = genps(i,j),
+  Named("mu") = mu1,
+  Named("sigma") = gensigmas(i,j));
+  }
+  intensityatxy=densNormMixatx_sppmix(xy,mix1);
+  AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)+intensityatxy/(L-burnin);
+  }
+  //      AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)/(L-burnin);
+  countiter++;
+  }
+  }
+  // Rcout <<intensityatxy<< std::endl ;
+  */
+  //create a list, with each element corresponding
+  //to a single realization, which itself is a list
+  //with each element containing the mixture ps, mus, sigs,
+  //as a list of m elements
+  List allgens(L);
+  // ,mix(m);//list containing mixture ps,mus,sigs
   for(i=0;i<L;i++)
   {
+    List mix(m);
     for(j=0;j<m;j++)
     {
       mu1(0)=genmus(j,0,i);
@@ -392,6 +398,25 @@ List DAMCMC2d_sppmix(mat const& data,
     allgens[i]=mix;
   }
 
+  //this ends up giving the same plots
+  //AvgPostIntensity=ApproxAvgPostIntensity(allgens,LL,burnin,ticsx,ticsy);
+
+
+  /*  List mix3,mix2=mix1[0];
+  float ppj0=as<double>(mix2["p"]);
+  Rcout <<ppj0<< std::endl ;
+  mix2=allgens[L-1];
+  mix3=mix2[0];
+  ppj0=as<double>(mix3["p"]);
+  Rcout <<ppj0<< std::endl ;
+  */
+  //sample lambdas
+  double alamda=1,blamda=10000;
+  vec lamdas=//randg<vec>(L, distr_param(alamda,blamda) );
+    //    gamrnd(n+alamda,1/(1+1/blamda),[L,1]);
+    rgamma( L,n+ alamda,1/(1+1/blamda));
+  double meanlamda=mean(lamdas);
+
   return List::create(
     Named("allgens") = allgens,
     Named("genps") = genps,
@@ -401,10 +426,12 @@ List DAMCMC2d_sppmix(mat const& data,
     Named("meanps") = meanps,
     Named("meanmus") = meanmus,
     Named("meansigmas") = meansigmas,
+    Named("genlamdas") = lamdas,
+    Named("meanlamda") = meanlamda,
     Named("ticsnum") = LL,
     Named("ticsx") = ticsx,
     Named("ticsy") = ticsy,
-    Named("ticsareas") = areas,
-    Named("AvgofPostIntensity") = AvgPostIntensity,
-    Named("PostIntensityofAvg") = PostIntensityAvg);
+    Named("ticsareas") = areas);//,
+  //    Named("AvgofPostIntensity") = AvgPostIntensity,
+  //    Named("PostIntensityofAvg") = PostIntensityAvg);
 }
