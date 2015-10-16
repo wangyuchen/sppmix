@@ -141,7 +141,7 @@ plot_contour <- function(mix, pattern, win, L = 100,
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
-  #col <- jet.colors(1000)[findInterval(z$v, seq(min(z$v), max(z$v), length = 1000))]
+  #col <- jet.colors(100)[findInterval(z$v, seq(min(z$v), max(z$v), length = 100))]
 
   #plot(z, col = col)
   if (points == TRUE){
