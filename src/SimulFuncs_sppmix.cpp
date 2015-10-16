@@ -6,7 +6,7 @@ double rUnif_sppmix()
 {
   // double u=randu<vec>(1)[0];
   //  return randu<vec>(1)[0];
-  return ((double) rand() / (RAND_MAX+1));
+  return ((double) rand() / (RAND_MAX+1.0));
 }
 
 // [[Rcpp::export]]
