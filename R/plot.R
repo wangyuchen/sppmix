@@ -141,7 +141,6 @@ plot_contour <- function(mix, pattern, win, L = 100,
   z <- surf$v
   grid <- expand.grid(xcoord,ycoord)
   temp <- data.frame(grid$Var1,grid$Var2,as.vector(t(z)))
-  temp <- data.frame(xcoord,ycoord,t(z))
   names(temp) <- c("x","y","z")
 
   # assign colors to heights for each point
@@ -164,7 +163,7 @@ plot_contour <- function(mix, pattern, win, L = 100,
     }
   } else {
     if (points == TRUE) {
-      m <- ggplot(temp,aes(x,y,z = z)) + labs(x = "X", y = "Y",
+      m <- ggplot2::ggplot(temp,aes(x,y,z = z)) + labs(x = "X", y = "Y",
                                               title = paste("Contour of the intensity surface with",
                                                             pattern$n, "Points"))
       m + ggplot2::stat_contour(aes(colour = ..level..)) +
