@@ -4,8 +4,8 @@
 \alias{plot_contour}
 \title{Plot contour for intensity surface}
 \usage{
-plot_contour(mix, pattern, win, L = 100, points = TRUE, filled = TRUE,
-  truncate = TRUE, ...)
+plot_contour(mix, pattern, win, L = 100, points = TRUE, truncate = TRUE,
+  ...)
 }
 \arguments{
 \item{mix}{Object of class normmix.}

@@ -88,7 +88,7 @@ rnormmix <- function(m, sig0, sigdf,
   for (k in 1:m) {
     mus[[k]] <- c(runif(1, win$xrange[1], win$xrange[2]),
                   runif(1, win$yrange[1], win$yrange[2]))
-    sigmas[[k]] <- rWishart(1, sigdf, sig0 * diag(2))[, , 1]
+    sigmas[[k]] <- stats::rWishart(1, sigdf, sig0 * diag(2))[, , 1]
   }
 
   return(normmix(ps, mus, sigmas))
