@@ -18,5 +18,5 @@ plot_ind <- function(dares) {
   ggplot2::qplot(point, ind, data = ind_df, geom = "segment",
                  xend = point, yend = ind - 1, size = I(1.5)) +
     ylim(0, ncol(data)) +
-    ggplot2::ggtitle("Plot of membership indicatort")
+    ggplot2::ggtitle("Plot of membership indicator")
 }
