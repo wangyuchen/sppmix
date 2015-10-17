@@ -131,27 +131,46 @@ plot.dares <- function(dares) {
 #' # plot the theoretical intensity surface with a realization
 #' plot_contour(mix1,pp1,spatstat::square(1))
 plot_contour <- function(mix, pattern, win, L = 100,
-                         points = TRUE, truncate = TRUE, ...) {
+                         points = TRUE, filled = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
-  z <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
+  surf <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)
+  z <- surf$v
+  grid <- expand.grid(xcoord,ycoord)
+  temp <- data.frame(grid$Var1,grid$Var2,as.vector(t(z)))
+  temp <- data.frame(xcoord,ycoord,t(z))
+  names(temp) <- c("x","y","z")
 
   # assign colors to heights for each point
-  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+  jet.colors <- grDevices::colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
   #col <- jet.colors(1000)[findInterval(z$v, seq(min(z$v), max(z$v), length = 1000))]
 
   #plot(z, col = col)
-  if (points == TRUE){
-    filled.contour(x=xcoord,y=ycoord, z=t(z),color = jet.colors,
-                   plot.axes = { axis(1); axis(2);
-                  points(pattern$x, pattern$y,pch = 20) },
-                  frame.plot = FALSE,asp = 1 ,axes = TRUE, ... )
+  if (filled == TRUE){
+    if (points == TRUE){
+      filled.contour(x=xcoord,y=ycoord, z=t(z),color = jet.colors,
+                     plot.axes = { axis(1); axis(2);
+                       points(pattern$x, pattern$y,pch = 20) },
+                     frame.plot = FALSE,asp = 1 ,axes = TRUE, ... )
+    } else {
+      filled.contour(x=xcoord,y=ycoord, z=t(z),
+                     color = jet.colors,
+                     frame.plot = FALSE, asp = 1,axes = TRUE, ...)
+    }
   } else {
-    filled.contour(x=xcoord,y=ycoord, z=t(z),
-                   color = jet.colors,
-                   frame.plot = FALSE, asp = 1,axes = TRUE, ...)
+    if (points == TRUE) {
+      m <- ggplot(temp,aes(x,y,z = z)) + labs(x = "X", y = "Y",
+                title = paste("Contour of the intensity surface with",
+                              pattern$n, "Points"))
+      m + ggplot2::stat_contour(aes(colour = ..level..)) +
+        geom_point(data=as.data.frame(pattern),aes(x, y, z=0))
+    } else {
+      m <- ggplot(temp,aes(x,y,z = z)) + labs(x = "X", y = "Y",
+                title = "Contour of the intensity surface")
+      m + ggplot2::stat_contour(aes(colour = ..level..))
+    }
   }
 }
