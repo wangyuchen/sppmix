@@ -1,5 +1,0 @@
-FILE QUARANTINED
-
-Microsoft Forefront Protection for Exchange Server removed a file since it was found to match a filter.
-File name: "src.zip->sppmix.dll"
-Filter name: "FILE FILTER= Delete Execuatble Files: *"

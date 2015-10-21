@@ -40,8 +40,8 @@ rsppmix <- function(lambda, mix, win, truncate=TRUE) {
   }
 
   gen_n_from_mix <- function(n, mix) {
-    comp <- sample(1:mix$m, size = n, replace=TRUE, prob=mix$ps)
-    spp <- list()
+    comp <- sample(1:mix$m, size = n, replace = TRUE, prob = mix$ps)
+    spp <- vector("list", length(unique(comp)))
     for (k in unique(comp)) {
       spp[[k]] <- mvtnorm::rmvnorm(sum(comp == k),
                                    mix$mus[[k]], mix$sigmas[[k]])
@@ -56,11 +56,11 @@ rsppmix <- function(lambda, mix, win, truncate=TRUE) {
       spp <- rbind(spp, gen_n_from_mix(n, mix))
     }
     spp <- spp[spatstat::inside.owin(spp[, 1], spp[, 2], win), ][1:n, ]
+  } else {
+    warning(paste(sum(!spatstat::inside.owin(spp[, 1], spp[, 2], win)),
+                  "points are outside window."))
   }
 
-  if (truncate == FALSE)
-    print(paste(sum(!spatstat::inside.owin(spp[, 1], spp[, 2], win)),
-                "points are outside window."))
   RVAL <- as.ppp(spp, W=win, check = truncate)
   class(RVAL) <- c("sppmix", "ppp")
   return(RVAL)
