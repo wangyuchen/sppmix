@@ -1,6 +1,7 @@
 #' @export
-est_mix_intensity <- function(pattern, win, m, L = 1000, burnin = 200,
-                              truncate = TRUE, marginal = FALSE) {
+est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
+                                         burnin = 200, truncate = TRUE,
+                                         marginal = FALSE) {
 
   inv <- function(x) {
     # for faster 2 by 2 matrix inverse
