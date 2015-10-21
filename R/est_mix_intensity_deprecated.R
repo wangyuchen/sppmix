@@ -1,4 +1,3 @@
-#' @export
 est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
                                          burnin = 200, truncate = TRUE,
                                          marginal = FALSE) {
