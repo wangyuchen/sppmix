@@ -7,11 +7,11 @@ Authors@R: as.person(c(
     "Athanasios Christou Micheas <amicheas@stat.missouri.edu> [aut]"
   ))
 Description: What the package does (one paragraph)
-Depends: R (>= 3.2.1)
+Depends: R (>= 3.2.1),
+    spatstat
 License: GPL-2
 LazyData: true
-Imports: spatstat,
-    mvtnorm,
+Imports: mvtnorm,
     rgl,
     ggplot2,
     psych,
