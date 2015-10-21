@@ -3,7 +3,8 @@ Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
 Authors@R: as.person(c(
     "Yuchen Wang <ycwang0712@gmail.com> [aut]",
-    "Jiaxun Chen <chenjiaxun9@hotmail.com> [aut, cre]"
+    "Jiaxun Chen <chenjiaxun9@hotmail.com> [aut, cre]",
+    "Athanasios Christou Micheas <amicheas@stat.missouri.edu> [aut]"
   ))
 Description: What the package does (one paragraph)
 Depends: R (>= 3.2.1)

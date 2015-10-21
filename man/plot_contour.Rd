@@ -4,8 +4,8 @@
 \alias{plot_contour}
 \title{Plot contour for intensity surface}
 \usage{
-plot_contour(mix, pattern, win, L = 100, points = TRUE, truncate = TRUE,
-  ...)
+plot_contour(mix, pattern, win, L = 100, points = TRUE, filled = TRUE,
+  truncate = TRUE, ...)
 }
 \arguments{
 \item{mix}{Object of class normmix.}
@@ -18,6 +18,9 @@ plot_contour(mix, pattern, win, L = 100, points = TRUE, truncate = TRUE,
 
 \item{points}{Logical flag indicating whether plot realizations, i.e.
 locations, with the contour plot. The default is TRUE.}
+
+\item{filled}{Logical flag indicating whether plot filled contour plot.
+The default is TRUE.}
 
 \item{truncate}{Logical flag indicating whether truncation is used for
 \code{pattern}. The default is TRUE.}

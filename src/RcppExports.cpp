@@ -94,6 +94,158 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// invmat2d
+arma::mat invmat2d(arma::mat const& A);
+RcppExport SEXP sppmix_invmat2d(SEXP ASEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat const& >::type A(ASEXP);
+    __result = Rcpp::wrap(invmat2d(A));
+    return __result;
+END_RCPP
+}
+// rnorm2
+arma::mat rnorm2(int n, arma::vec mu, arma::mat sigma);
+RcppExport SEXP sppmix_rnorm2(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP);
+    __result = Rcpp::wrap(rnorm2(n, mu, sigma));
+    return __result;
+END_RCPP
+}
+// rDirichlet
+arma::vec rDirichlet(arma::vec const& d);
+RcppExport SEXP sppmix_rDirichlet(SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec const& >::type d(dSEXP);
+    __result = Rcpp::wrap(rDirichlet(d));
+    return __result;
+END_RCPP
+}
+// rWishart
+arma::mat rWishart(int const& df, arma::mat const& A);
+RcppExport SEXP sppmix_rWishart(SEXP dfSEXP, SEXP ASEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type A(ASEXP);
+    __result = Rcpp::wrap(rWishart(df, A));
+    return __result;
+END_RCPP
+}
+// rBinom
+int rBinom(int const& n, double const& p);
+RcppExport SEXP sppmix_rBinom(SEXP nSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double const& >::type p(pSEXP);
+    __result = Rcpp::wrap(rBinom(n, p));
+    return __result;
+END_RCPP
+}
+// ApproxCompMass
+double ApproxCompMass(int const& LL, arma::vec const& ticsx, arma::vec const& ticsy, arma::mat const& areas, arma::vec const& mu, arma::mat const& sig, arma::mat const& siginv);
+RcppExport SEXP sppmix_ApproxCompMass(SEXP LLSEXP, SEXP ticsxSEXP, SEXP ticsySEXP, SEXP areasSEXP, SEXP muSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type ticsx(ticsxSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type ticsy(ticsySEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type areas(areasSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type sig(sigSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type siginv(siginvSEXP);
+    __result = Rcpp::wrap(ApproxCompMass(LL, ticsx, ticsy, areas, mu, sig, siginv));
+    return __result;
+END_RCPP
+}
+// ApproxMHRatiomu
+double ApproxMHRatiomu(int const& LL, arma::vec const& ticsx, arma::vec const& ticsy, arma::mat const& areas, arma::vec const& curmu, arma::vec const& propmu, arma::mat const& sig, arma::mat const& siginv);
+RcppExport SEXP sppmix_ApproxMHRatiomu(SEXP LLSEXP, SEXP ticsxSEXP, SEXP ticsySEXP, SEXP areasSEXP, SEXP curmuSEXP, SEXP propmuSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type ticsx(ticsxSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type ticsy(ticsySEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type areas(areasSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type curmu(curmuSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type propmu(propmuSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type sig(sigSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type siginv(siginvSEXP);
+    __result = Rcpp::wrap(ApproxMHRatiomu(LL, ticsx, ticsy, areas, curmu, propmu, sig, siginv));
+    return __result;
+END_RCPP
+}
+// ApproxMHRatiosig
+double ApproxMHRatiosig(int const& LL, arma::vec const& ticsx, arma::vec const& ticsy, arma::mat const& areas, arma::vec const& mu1, arma::mat const& propsigma, arma::mat const& sig, arma::mat const& siginv);
+RcppExport SEXP sppmix_ApproxMHRatiosig(SEXP LLSEXP, SEXP ticsxSEXP, SEXP ticsySEXP, SEXP areasSEXP, SEXP mu1SEXP, SEXP propsigmaSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type ticsx(ticsxSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type ticsy(ticsySEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type areas(areasSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type mu1(mu1SEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type propsigma(propsigmaSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type sig(sigSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type siginv(siginvSEXP);
+    __result = Rcpp::wrap(ApproxMHRatiosig(LL, ticsx, ticsy, areas, mu1, propsigma, sig, siginv));
+    return __result;
+END_RCPP
+}
+// rMultinomial
+arma::vec rMultinomial(int const& n, arma::vec const& p);
+RcppExport SEXP sppmix_rMultinomial(SEXP nSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type p(pSEXP);
+    __result = Rcpp::wrap(rMultinomial(n, p));
+    return __result;
+END_RCPP
+}
+// DAMCMC2d
+List DAMCMC2d(arma::mat const& data, arma::vec const& xlims, arma::vec const& ylims, int const& m, int const& L, int const& burnin, bool const& truncate);
+RcppExport SEXP sppmix_DAMCMC2d(SEXP dataSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP burninSEXP, SEXP truncateSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat const& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type xlims(xlimsSEXP);
+    Rcpp::traits::input_parameter< arma::vec const& >::type ylims(ylimsSEXP);
+    Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int const& >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< bool const& >::type truncate(truncateSEXP);
+    __result = Rcpp::wrap(DAMCMC2d(data, xlims, ylims, m, L, burnin, truncate));
+    return __result;
+END_RCPP
+}
+// Factorial_sppmix
+double Factorial_sppmix(int x);
+RcppExport SEXP sppmix_Factorial_sppmix(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type x(xSEXP);
+    __result = Rcpp::wrap(Factorial_sppmix(x));
+    return __result;
+END_RCPP
+}
 // invmat2d_sppmix
 mat invmat2d_sppmix(mat const& A);
 RcppExport SEXP sppmix_invmat2d_sppmix(SEXP ASEXP) {
@@ -154,6 +306,89 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// GetAllPermutations_sppmix
+mat GetAllPermutations_sppmix(int const& m);
+RcppExport SEXP sppmix_GetAllPermutations_sppmix(SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
+    __result = Rcpp::wrap(GetAllPermutations_sppmix(m));
+    return __result;
+END_RCPP
+}
+// GetAPermutation_sppmix
+vec GetAPermutation_sppmix(int const& m, int const& which);
+RcppExport SEXP sppmix_GetAPermutation_sppmix(SEXP mSEXP, SEXP whichSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int const& >::type which(whichSEXP);
+    __result = Rcpp::wrap(GetAPermutation_sppmix(m, which));
+    return __result;
+END_RCPP
+}
+// GetGrid_sppmix
+List GetGrid_sppmix(int const& len, vec const& mins, vec const& maxs);
+RcppExport SEXP sppmix_GetGrid_sppmix(SEXP lenSEXP, SEXP minsSEXP, SEXP maxsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int const& >::type len(lenSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type mins(minsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type maxs(maxsSEXP);
+    __result = Rcpp::wrap(GetGrid_sppmix(len, mins, maxs));
+    return __result;
+END_RCPP
+}
+// EqVec_sppmix
+bool EqVec_sppmix(vec const& v1, vec const& v2, double const& tol);
+RcppExport SEXP sppmix_EqVec_sppmix(SEXP v1SEXP, SEXP v2SEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< vec const& >::type v1(v1SEXP);
+    Rcpp::traits::input_parameter< vec const& >::type v2(v2SEXP);
+    Rcpp::traits::input_parameter< double const& >::type tol(tolSEXP);
+    __result = Rcpp::wrap(EqVec_sppmix(v1, v2, tol));
+    return __result;
+END_RCPP
+}
+// logGammaFunc_sppmix
+double logGammaFunc_sppmix(double const& x);
+RcppExport SEXP sppmix_logGammaFunc_sppmix(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double const& >::type x(xSEXP);
+    __result = Rcpp::wrap(logGammaFunc_sppmix(x));
+    return __result;
+END_RCPP
+}
+// GammaFunc_sppmix
+double GammaFunc_sppmix(double const& x);
+RcppExport SEXP sppmix_GammaFunc_sppmix(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double const& >::type x(xSEXP);
+    __result = Rcpp::wrap(GammaFunc_sppmix(x));
+    return __result;
+END_RCPP
+}
+// dDirichlet_sppmix
+double dDirichlet_sppmix(vec const& ps, vec const& ds);
+RcppExport SEXP sppmix_dDirichlet_sppmix(SEXP psSEXP, SEXP dsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< vec const& >::type ps(psSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type ds(dsSEXP);
+    __result = Rcpp::wrap(dDirichlet_sppmix(ps, ds));
+    return __result;
+END_RCPP
+}
 // GetStats_sppmix
 List GetStats_sppmix(vec const& gens, double const& alpha);
 RcppExport SEXP sppmix_GetStats_sppmix(SEXP gensSEXP, SEXP alphaSEXP) {
@@ -202,14 +437,26 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// PostGen_sppmix
-List PostGen_sppmix(List const& allgens);
-RcppExport SEXP sppmix_PostGen_sppmix(SEXP allgensSEXP) {
+// PostGenGetBestPerm_sppmix
+List PostGenGetBestPerm_sppmix(List const& allgens);
+RcppExport SEXP sppmix_PostGenGetBestPerm_sppmix(SEXP allgensSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< List const& >::type allgens(allgensSEXP);
-    __result = Rcpp::wrap(PostGen_sppmix(allgens));
+    __result = Rcpp::wrap(PostGenGetBestPerm_sppmix(allgens));
+    return __result;
+END_RCPP
+}
+// GetAllMeans_sppmix
+List GetAllMeans_sppmix(List const& allgens, int const& burnin);
+RcppExport SEXP sppmix_GetAllMeans_sppmix(SEXP allgensSEXP, SEXP burninSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List const& >::type allgens(allgensSEXP);
+    Rcpp::traits::input_parameter< int const& >::type burnin(burninSEXP);
+    __result = Rcpp::wrap(GetAllMeans_sppmix(allgens, burnin));
     return __result;
 END_RCPP
 }
@@ -351,6 +598,49 @@ BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< int const& >::type n(nSEXP);
     __result = Rcpp::wrap(rPerm_sppmix(n));
+    return __result;
+END_RCPP
+}
+// rcpparma_hello_world
+arma::mat rcpparma_hello_world();
+RcppExport SEXP sppmix_rcpparma_hello_world() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(rcpparma_hello_world());
+    return __result;
+END_RCPP
+}
+// rcpparma_outerproduct
+arma::mat rcpparma_outerproduct(const arma::colvec& x);
+RcppExport SEXP sppmix_rcpparma_outerproduct(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
+    __result = Rcpp::wrap(rcpparma_outerproduct(x));
+    return __result;
+END_RCPP
+}
+// rcpparma_innerproduct
+double rcpparma_innerproduct(const arma::colvec& x);
+RcppExport SEXP sppmix_rcpparma_innerproduct(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
+    __result = Rcpp::wrap(rcpparma_innerproduct(x));
+    return __result;
+END_RCPP
+}
+// rcpparma_bothproducts
+Rcpp::List rcpparma_bothproducts(const arma::colvec& x);
+RcppExport SEXP sppmix_rcpparma_bothproducts(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
+    __result = Rcpp::wrap(rcpparma_bothproducts(x));
     return __result;
 END_RCPP
 }
