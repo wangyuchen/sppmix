@@ -69,23 +69,16 @@ mat GetRealiz_mus_sppmix(List const& allgens,
                          int const& realiz);
 mat GetRealiz_sigmas_sppmix(List const& allgens,
                             int const& realiz);
-List PostGenGetBestPerm_sppmix(List const& allgens);
-List GetAllMeans_sppmix(List const& allgens,int const& burnin);
+List PostGen_sppmix(List const& allgens);
 
 //Helper functions
 //file: HelperFuncs_sppmix.cpp
-double Factorial_sppmix(int x);
 mat invmat2d_sppmix(mat const& A);
 double densNormMixatx_sppmix(vec const& atx,List const& mix);
-mat dNormMix_sppmix(List const& mix, vec const& x,vec const& y);
+mat dNormMix_sppmix(List const& mix, vec const& x,
+                    vec const& y);
 vec Permute_vec_sppmix(vec const& oldvec,vec const& perm);
 mat Permute_mat_sppmix(mat const& oldmat,vec const& perm);
-mat GetAllPermutations_sppmix(int const& m);
-vec GetAPermutation_sppmix(int const& m,int const& which);
-List GetGrid_sppmix(int const& len,vec const& mins,vec const& maxs);
-bool EqVec_sppmix(vec const& v1,vec const& v2,double const& tol=0.000001);
-double dDirichlet_sppmix(vec const& ps,vec const& ds);
-double logGammaFunc_sppmix(double const& x);
-double GammaFunc_sppmix(double const& x);
+
 
 #endif

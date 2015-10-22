@@ -22,50 +22,6 @@ DAMCMC2d_sppmix <- function(data, xlims, ylims, m, L, burnin, LL, truncate) {
     .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', data, xlims, ylims, m, L, burnin, LL, truncate)
 }
 
-invmat2d <- function(A) {
-    .Call('sppmix_invmat2d', PACKAGE = 'sppmix', A)
-}
-
-rnorm2 <- function(n, mu, sigma) {
-    .Call('sppmix_rnorm2', PACKAGE = 'sppmix', n, mu, sigma)
-}
-
-rDirichlet <- function(d) {
-    .Call('sppmix_rDirichlet', PACKAGE = 'sppmix', d)
-}
-
-rWishart <- function(df, A) {
-    .Call('sppmix_rWishart', PACKAGE = 'sppmix', df, A)
-}
-
-rBinom <- function(n, p) {
-    .Call('sppmix_rBinom', PACKAGE = 'sppmix', n, p)
-}
-
-ApproxCompMass <- function(LL, ticsx, ticsy, areas, mu, sig, siginv) {
-    .Call('sppmix_ApproxCompMass', PACKAGE = 'sppmix', LL, ticsx, ticsy, areas, mu, sig, siginv)
-}
-
-ApproxMHRatiomu <- function(LL, ticsx, ticsy, areas, curmu, propmu, sig, siginv) {
-    .Call('sppmix_ApproxMHRatiomu', PACKAGE = 'sppmix', LL, ticsx, ticsy, areas, curmu, propmu, sig, siginv)
-}
-
-ApproxMHRatiosig <- function(LL, ticsx, ticsy, areas, mu1, propsigma, sig, siginv) {
-    .Call('sppmix_ApproxMHRatiosig', PACKAGE = 'sppmix', LL, ticsx, ticsy, areas, mu1, propsigma, sig, siginv)
-}
-
-rMultinomial <- function(n, p) {
-    .Call('sppmix_rMultinomial', PACKAGE = 'sppmix', n, p)
-}
-
-DAMCMC2d <- function(data, xlims, ylims, m, L, burnin, truncate) {
-    .Call('sppmix_DAMCMC2d', PACKAGE = 'sppmix', data, xlims, ylims, m, L, burnin, truncate)
-}
-
-Factorial_sppmix <- function(x) {
-    .Call('sppmix_Factorial_sppmix', PACKAGE = 'sppmix', x)
-}
-
 invmat2d_sppmix <- function(A) {
     .Call('sppmix_invmat2d_sppmix', PACKAGE = 'sppmix', A)
 }
@@ -86,35 +42,6 @@ Permute_mat_sppmix <- function(oldmat, perm) {
     .Call('sppmix_Permute_mat_sppmix', PACKAGE = 'sppmix', oldmat, perm)
 }
 
-GetAllPermutations_sppmix <- function(m) {
-    .Call('sppmix_GetAllPermutations_sppmix', PACKAGE = 'sppmix', m)
-}
-
-GetAPermutation_sppmix <- function(m, which) {
-    .Call('sppmix_GetAPermutation_sppmix', PACKAGE = 'sppmix', m, which)
-}
-
-#' @export
-GetGrid_sppmix <- function(len, mins, maxs) {
-    .Call('sppmix_GetGrid_sppmix', PACKAGE = 'sppmix', len, mins, maxs)
-}
-
-EqVec_sppmix <- function(v1, v2, tol) {
-    .Call('sppmix_EqVec_sppmix', PACKAGE = 'sppmix', v1, v2, tol)
-}
-
-logGammaFunc_sppmix <- function(x) {
-    .Call('sppmix_logGammaFunc_sppmix', PACKAGE = 'sppmix', x)
-}
-
-GammaFunc_sppmix <- function(x) {
-    .Call('sppmix_GammaFunc_sppmix', PACKAGE = 'sppmix', x)
-}
-
-dDirichlet_sppmix <- function(ps, ds) {
-    .Call('sppmix_dDirichlet_sppmix', PACKAGE = 'sppmix', ps, ds)
-}
-
 GetStats_sppmix <- function(gens, alpha) {
     .Call('sppmix_GetStats_sppmix', PACKAGE = 'sppmix', gens, alpha)
 }
@@ -131,14 +58,8 @@ GetRealiz_sigmas_sppmix <- function(allgens, realiz) {
     .Call('sppmix_GetRealiz_sigmas_sppmix', PACKAGE = 'sppmix', allgens, realiz)
 }
 
-#' @export
-PostGenGetBestPerm_sppmix <- function(allgens) {
-    .Call('sppmix_PostGenGetBestPerm_sppmix', PACKAGE = 'sppmix', allgens)
-}
-
-#' @export
-GetAllMeans_sppmix <- function(allgens, burnin) {
-    .Call('sppmix_GetAllMeans_sppmix', PACKAGE = 'sppmix', allgens, burnin)
+PostGen_sppmix <- function(allgens) {
+    .Call('sppmix_PostGen_sppmix', PACKAGE = 'sppmix', allgens)
 }
 
 rUnif_sppmix <- function() {
@@ -187,21 +108,5 @@ rNormMix_sppmix <- function(lamda, mix) {
 
 rPerm_sppmix <- function(n) {
     .Call('sppmix_rPerm_sppmix', PACKAGE = 'sppmix', n)
-}
-
-rcpparma_hello_world <- function() {
-    .Call('sppmix_rcpparma_hello_world', PACKAGE = 'sppmix')
-}
-
-rcpparma_outerproduct <- function(x) {
-    .Call('sppmix_rcpparma_outerproduct', PACKAGE = 'sppmix', x)
-}
-
-rcpparma_innerproduct <- function(x) {
-    .Call('sppmix_rcpparma_innerproduct', PACKAGE = 'sppmix', x)
-}
-
-rcpparma_bothproducts <- function(x) {
-    .Call('sppmix_rcpparma_bothproducts', PACKAGE = 'sppmix', x)
 }
 
