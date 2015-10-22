@@ -14,9 +14,9 @@
 plot_ind <- function(dares) {
   data <- dares$meanz
   ind_df <- data.frame(point = 1:nrow(data),
-                       ind = apply(data, 1, which.max))
+                       ind = apply(data, 1, which.max) - .5)
   ggplot2::qplot(point, ind, data = ind_df, geom = "segment",
-                 xend = point, yend = ind - 1, size = I(1.5)) +
-    ylim(0, ncol(data)) +
+                 xend = point, yend = ind + 1, size = I(1.5)) +
+    ylim(.5, ncol(data) + .5) + ggplot2::theme_bw() +
     ggplot2::ggtitle("Plot of membership indicator")
 }
