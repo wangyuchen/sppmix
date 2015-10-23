@@ -5,13 +5,20 @@
 #' @param lambda Intensity of the spatial point pattern
 #' @param mix Object of class normmix
 #' @param win Object of class spatstat::owin
-#' @param truncate Whether to truncate the points outside the domain, default to TRUE.
+#' @param truncate Whether to truncate the points outside the domain,
+#' default to TRUE.
 #' @details
-#' If \code{truncate = FALSE} is set, the returned point pattern will not check whether the points are inside the domain.
+#' If \code{truncate = FALSE} is set, the returned point pattern will not check
+#' whether the points are inside the domain.
 #'
-#' The number of points \code{n} follows Poisson distribution with intensity lambda * area of window.
+#' The number of points \code{n} follows Poisson distribution with intensity
+#' lambda * area of window.
 #'
-#' When \code{truncate = TRUE}, a point pattern with \code{n} points will be generated from the mixture first. Then if not all the points are in the domain, it will generate another \code{n} points until there are more than \code{n} points in the domain. The first \code{n} points are returned as the generated spatial point pattern.
+#' When \code{truncate = TRUE}, a point pattern with \code{n} points will be
+#' generated from the mixture first. Then if not all the points are in the
+#' domain, it will generate another \code{n} points until there are more than
+#'  \code{n} points in the domain. The first \code{n} points are returned as
+#'   the generated spatial point pattern.
 #'
 #' @return A point pattern of class \code{c("sppmix", "ppp")}.
 #' @export

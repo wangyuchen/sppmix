@@ -71,8 +71,7 @@ print.normmix <- function(mix) {
 #' mix2 <- rnormmix(8, .01, 10, square(1), rand_m = TRUE)
 #'
 rnormmix <- function(m, sig0, sigdf,
-                     win,
-                     rand_m=FALSE) {
+                     win, rand_m = FALSE) {
   if (!spatstat::is.owin(win)) {
     stop("win must be of class owin.")
   }

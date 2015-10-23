@@ -13,7 +13,8 @@ rsppmix(lambda, mix, win, truncate = TRUE)
 
 \item{win}{Object of class spatstat::owin}
 
-\item{truncate}{Whether to truncate the points outside the domain, default to TRUE.}
+\item{truncate}{Whether to truncate the points outside the domain,
+default to TRUE.}
 }
 \value{
 A point pattern of class \code{c("sppmix", "ppp")}.
@@ -22,11 +23,17 @@ A point pattern of class \code{c("sppmix", "ppp")}.
 Generate a spatial point pattern from a given mixture with normal components.
 }
 \details{
-If \code{truncate = FALSE} is set, the returned point pattern will not check whether the points are inside the domain.
+If \code{truncate = FALSE} is set, the returned point pattern will not check
+whether the points are inside the domain.
 
-The number of points \code{n} follows Poisson distribution with intensity lambda * area of window.
+The number of points \code{n} follows Poisson distribution with intensity
+lambda * area of window.
 
-When \code{truncate = TRUE}, a point pattern with \code{n} points will be generated from the mixture first. Then if not all the points are in the domain, it will generate another \code{n} points until there are more than \code{n} points in the domain. The first \code{n} points are returned as the generated spatial point pattern.
+When \code{truncate = TRUE}, a point pattern with \code{n} points will be
+generated from the mixture first. Then if not all the points are in the
+domain, it will generate another \code{n} points until there are more than
+ \code{n} points in the domain. The first \code{n} points are returned as
+  the generated spatial point pattern.
 }
 \examples{
 # generate a mixture with given ps, mus and sigmas

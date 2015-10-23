@@ -22,6 +22,10 @@ DAMCMC2d_sppmix <- function(data, xlims, ylims, m, L, burnin, LL, truncate) {
     .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', data, xlims, ylims, m, L, burnin, LL, truncate)
 }
 
+Factorial_sppmix <- function(x) {
+    .Call('sppmix_Factorial_sppmix', PACKAGE = 'sppmix', x)
+}
+
 invmat2d_sppmix <- function(A) {
     .Call('sppmix_invmat2d_sppmix', PACKAGE = 'sppmix', A)
 }
@@ -42,6 +46,35 @@ Permute_mat_sppmix <- function(oldmat, perm) {
     .Call('sppmix_Permute_mat_sppmix', PACKAGE = 'sppmix', oldmat, perm)
 }
 
+GetAllPermutations_sppmix <- function(m) {
+    .Call('sppmix_GetAllPermutations_sppmix', PACKAGE = 'sppmix', m)
+}
+
+GetAPermutation_sppmix <- function(m, which) {
+    .Call('sppmix_GetAPermutation_sppmix', PACKAGE = 'sppmix', m, which)
+}
+
+#' @export
+GetGrid_sppmix <- function(len, mins, maxs) {
+    .Call('sppmix_GetGrid_sppmix', PACKAGE = 'sppmix', len, mins, maxs)
+}
+
+EqVec_sppmix <- function(v1, v2, tol) {
+    .Call('sppmix_EqVec_sppmix', PACKAGE = 'sppmix', v1, v2, tol)
+}
+
+logGammaFunc_sppmix <- function(x) {
+    .Call('sppmix_logGammaFunc_sppmix', PACKAGE = 'sppmix', x)
+}
+
+GammaFunc_sppmix <- function(x) {
+    .Call('sppmix_GammaFunc_sppmix', PACKAGE = 'sppmix', x)
+}
+
+dDirichlet_sppmix <- function(ps, ds) {
+    .Call('sppmix_dDirichlet_sppmix', PACKAGE = 'sppmix', ps, ds)
+}
+
 GetStats_sppmix <- function(gens, alpha) {
     .Call('sppmix_GetStats_sppmix', PACKAGE = 'sppmix', gens, alpha)
 }
@@ -58,8 +91,14 @@ GetRealiz_sigmas_sppmix <- function(allgens, realiz) {
     .Call('sppmix_GetRealiz_sigmas_sppmix', PACKAGE = 'sppmix', allgens, realiz)
 }
 
-PostGen_sppmix <- function(allgens) {
-    .Call('sppmix_PostGen_sppmix', PACKAGE = 'sppmix', allgens)
+#' @export
+PostGenGetBestPerm_sppmix <- function(allgens) {
+    .Call('sppmix_PostGenGetBestPerm_sppmix', PACKAGE = 'sppmix', allgens)
+}
+
+#' @export
+GetAllMeans_sppmix <- function(allgens, burnin) {
+    .Call('sppmix_GetAllMeans_sppmix', PACKAGE = 'sppmix', allgens, burnin)
 }
 
 rUnif_sppmix <- function() {
