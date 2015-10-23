@@ -17,6 +17,15 @@ ApproxMHRatiosig_sppmix <- function(LL, ticsx, ticsy, areas, mu1, propsigma, sig
     .Call('sppmix_ApproxMHRatiosig_sppmix', PACKAGE = 'sppmix', LL, ticsx, ticsy, areas, mu1, propsigma, sig, siginv)
 }
 
+ApproxBayesianModelAvgIntensity_sppmix <- function(genBDmix, lamdas, numcomp, distr_numcomp, mincomp, maxcomp, ticsx, ticsy) {
+    .Call('sppmix_ApproxBayesianModelAvgIntensity_sppmix', PACKAGE = 'sppmix', genBDmix, lamdas, numcomp, distr_numcomp, mincomp, maxcomp, ticsx, ticsy)
+}
+
+#' @export
+BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, burnin, LL, truncate, lamda, lamdab, hyper) {
+    .Call('sppmix_BDMCMC2d_sppmix', PACKAGE = 'sppmix', maxnumcomp, data, xlims, ylims, L, burnin, LL, truncate, lamda, lamdab, hyper)
+}
+
 #' @export
 DAMCMC2d_sppmix <- function(data, xlims, ylims, m, L, burnin, LL, truncate) {
     .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', data, xlims, ylims, m, L, burnin, LL, truncate)
@@ -75,6 +84,25 @@ dDirichlet_sppmix <- function(ps, ds) {
     .Call('sppmix_dDirichlet_sppmix', PACKAGE = 'sppmix', ps, ds)
 }
 
+SumVec_sppmix <- function(v, start, end) {
+    .Call('sppmix_SumVec_sppmix', PACKAGE = 'sppmix', v, start, end)
+}
+
+#' @export
+SubstituteVec_sppmix <- function(v, subv, start) {
+    .Call('sppmix_SubstituteVec_sppmix', PACKAGE = 'sppmix', v, subv, start)
+}
+
+#' @export
+SubVec_sppmix <- function(v, start, end) {
+    .Call('sppmix_SubVec_sppmix', PACKAGE = 'sppmix', v, start, end)
+}
+
+#' @export
+GetMixtureMaxz_sppmix <- function(genmix) {
+    .Call('sppmix_GetMixtureMaxz_sppmix', PACKAGE = 'sppmix', genmix)
+}
+
 GetStats_sppmix <- function(gens, alpha) {
     .Call('sppmix_GetStats_sppmix', PACKAGE = 'sppmix', gens, alpha)
 }
@@ -101,6 +129,14 @@ GetAllMeans_sppmix <- function(allgens, burnin) {
     .Call('sppmix_GetAllMeans_sppmix', PACKAGE = 'sppmix', allgens, burnin)
 }
 
+GetCompDistr_sppmix <- function(numcomp, maxnumcomp) {
+    .Call('sppmix_GetCompDistr_sppmix', PACKAGE = 'sppmix', numcomp, maxnumcomp)
+}
+
+GetBDCompRealiz_sppmix <- function(genBDmix, genlamdas, numcomp, comp) {
+    .Call('sppmix_GetBDCompRealiz_sppmix', PACKAGE = 'sppmix', genBDmix, genlamdas, numcomp, comp)
+}
+
 rUnif_sppmix <- function() {
     .Call('sppmix_rUnif_sppmix', PACKAGE = 'sppmix')
 }
@@ -117,8 +153,8 @@ rWishart_sppmix <- function(df, A) {
     .Call('sppmix_rWishart_sppmix', PACKAGE = 'sppmix', df, A)
 }
 
-rDiscrete_sppmix <- function(start, end, probs) {
-    .Call('sppmix_rDiscrete_sppmix', PACKAGE = 'sppmix', start, end, probs)
+rDiscrete_sppmix <- function(start, probs) {
+    .Call('sppmix_rDiscrete_sppmix', PACKAGE = 'sppmix', start, probs)
 }
 
 rBinom_sppmix <- function(n, p) {

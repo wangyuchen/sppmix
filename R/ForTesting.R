@@ -16,7 +16,9 @@ meansmix<- function(data,truemix,lamda=50,m=1,xlims=c(0,10),ylims=c(0,10),L=1000
   #matrix(rnorm(4), 2, 2)
   #getEigenValues(m)
   #mvrnormArma(10,c(0,0),diag(2))
-  # microbenchmark(DAMCMC2d(n,mu,sig))
+  #library(microbenchmark)
+# microbenchmark(sppmix::rUniform_sppmix(5000),sppmix::rUniform_sppmix1(5000),runif(5000),times=1000)
+
 #build a list of lists
 #  x=rMultinomial_sppmix(1,rDirichlet_sppmix(rep(1,m)))
 
@@ -89,19 +91,14 @@ PlotNormalMixture(mix1=truemix,data=data,
                      m=m,lamda=lamda,xlims=xlims,
                      ylims=ylims,L=100,
                      title1=paste(
-            "True Mixture Intensity,",
+            "True mixture intensity,",
                 m,"components,",n,"points"))
 
-mix=vector("list", m)
-for(i in 1:m)
-{
-  mix[[i]]=list(p = gens$meanps[i],
-             mu = gens$meanmus[i,],
-             sigma = gens$meansigmas[,,i])
-}
+mix=MakeMixtureList(gens);
+
 z<-PlotNormalMixture(mix1=mix,data=data,
    m=m,lamda=gens$meanlamda,xlims=xlims,ylims=ylims,
-   L=100,title1=paste("Mixture Intensity of posterior means,",m,"components,",n,"points"))
+   L=100,title1=paste("Mixture intensity of posterior means,",m,"components,",n,"points"))
 
 #library(graphics)
 #windows()
@@ -110,10 +107,6 @@ z<-PlotNormalMixture(mix1=mix,data=data,
 #title2=paste("Mixture with",m,"components",
 #    "\n",n,"points")
 LL=length(gens$ticsx);
-#Plot3d_sppmix(x = as.vector(gens$ticsx),
-#             y = as.vector(gens$ticsy),
-#             z = gens$AvgofPostIntensity,
-#             title1=paste("Average of",L-burnin,"posterior realizations of the intensity function"))
 
 ApproxAvgPostIntensityz<<-ApproxAvgPostIntensity(
   gens$allgens,gens$genlamdas,LL,burnin,
@@ -122,7 +115,8 @@ ApproxAvgPostIntensityz<<-ApproxAvgPostIntensity(
 Plot3d_sppmix(x = as.vector(gens$ticsx),
               y = as.vector(gens$ticsy),
               z = ApproxAvgPostIntensityz,
-              title1=paste("Average of",L-burnin,"posterior realizations of the intensity function"))
+              title1=paste("Average of",L-burnin,"posterior realizations of the intensity function")
+              ,xlims,ylims,zlims)
 
 #Plot3d_sppmix(x = as.vector(gens$ticsx),
 #              y = as.vector(gens$ticsy),
@@ -173,9 +167,11 @@ if(1)
 
 #' @export
 GenNormalMixture<- function(lamda=50,m=1,
-                            xlims=c(-3,3),ylims=c(-3,3),r=20,trunc=FALSE)
+    xlims=c(-3,3),ylims=c(-3,3),r=20,trunc=FALSE,
+    xlab1="x",ylab1="y")
 {
   #  truemix=GenNormalMixture(lamda,m,xlims=c(0,10),ylims=c(0,10),r=5,false)
+  windows()
   ps<<-rDirichlet_sppmix(rep(1,m))
   mix=vector("list", m)
   Rangex=xlims[2]-xlims[1];
@@ -207,12 +203,14 @@ GenNormalMixture<- function(lamda=50,m=1,
 
   titleLines <- list(
     bquote(paste(lambda,"=",.(lamda),", n=",.(n))),
-    bquote(paste("Mixture Intensity with ",.(m)," components"))
+    bquote(paste("True Mixture has ",.(m)," components"))
   )
 #  Now output each line The text in the list is converted to expressions do.call
 
-  plot(gendata,pch=20,xlab="longitude",
-       ylab="latitude",xlim=xlims,
+  plot(gendata,pch=20,
+       xlab=xlab1,#xlab="longitude",
+       ylab=ylab1,#ylab="latitude",
+       xlim=xlims,
        ylim=ylims,main="")
   mtext(do.call(expression, titleLines),side=3,line=0:1)
 #  bquote("Mixture Intensity, m =" ~.(m)~","
@@ -231,40 +229,62 @@ PlotNormalMixture<- function(mix1,data,
                              m=1,lamda=100,
                              xlims=c(-3,3),
                              ylims=c(-3,3),L=100,
-                             title1="Mixture Intensity")
+                             title1="Mixture intensity",
+                             xlab1="x",ylab1="y",
+                             zlims=c(0,1))
 {
-  #  PlotNormalMixture(truemix,gendata,m,lamda,xlims=c(0,10),ylims=c(0,10),L=100)
+  #  z=sppmix::PlotNormalMixture(truemix,gendata,m,lamda,xlims=c(0,10),ylims=c(0,10),L=100,title1="Mixture",zlims=c(0,1))
+  windows()
   n=nrow(data)
 #  opar <- par()      # make a copy of current settings
   par(mfrow=c(1,1))
   #  par(pch="20")
   #  windows()
 
-  plot(data,pch=20,xlab="longitude",
-       ylab="latitude",xlim=xlims, ylim=ylims,
-       main=paste("Mixture with",m,"components",
-                  "\n",n,"points"));
-  #       ,sub=paste(n,"points"))
+  titleLines <- list(
+    bquote(paste(lambda,"=",.(lamda),", n=",.(n),", m=",.(m)," components")),
+#    bquote(paste("Mixture Intensity with ",.(m)," components"))
+    title1
+  )
+  #  Now output each line The text in the list is converted to expressions do.call
+
+  plot(data,pch=20,
+       xlab=xlab1,#xlab="longitude",
+       ylab=ylab1,#ylab="latitude",
+       xlim=xlims,
+       ylim=ylims,main="")
+  mtext(do.call(expression, titleLines),side=3,line=0:1)
+  #  bquote("Mixture Intensity, m =" ~.(m)~","
+  #        ~lambda ==.(lamda)~", n " == .(n)))
+
   for(i in 1:m)
   {
-    points(mix1[[i]]$mu[1],mix1[[i]]$mu[2],pch=20,col="red");
+    points(mix1[[i]]$mu[1],mix1[[i]]$mu[2],pch=20,col="red")
   }
+
+#  plot(data,pch=20,xlab="longitude",
+#       ylab="latitude",xlim=xlims, ylim=ylims,
+#       main=paste("Mixture with",m,"components",
+ #                 "\n",n,"points"));
 
   xcoord <- seq(xlims[1], xlims[2], length.out = L);
   ycoord <- seq(ylims[1], ylims[2], length.out = L);
 
-  z <- lamda*dNormMix_sppmix(mix1, xcoord, ycoord);
+  zcoord <- lamda*dNormMix_sppmix(mix1, xcoord, ycoord);
 
-  Plot3d_sppmix(x = xcoord,y = ycoord,
-                z = z,title1=title1)
+  Plot3d_sppmix(xcoord,ycoord,zcoord,
+                title1=paste(title1,"intensity"),
+                xlims,ylims,zlims)
+  #,pos1=c(xlims[1],ylims[2],0))
   #              paste("Mixture with",
    #            m,"components,",n,"points"))
-  return(z)
+  return(zcoord)
 }
 
 #' @export
 Plot3d_sppmix<- function(xcoord,ycoord,z,
-      title1="Poisson Process Intensity",pos=c(0,0,0))
+      title1="Poisson Process Intensity",
+      xlims=c(0,1),ylims=c(0,1),zlims=c(0,1))
 {
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
@@ -300,23 +320,25 @@ Plot3d_sppmix<- function(xcoord,ycoord,z,
   U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
             rgl::rotate3d(U,pi/4,0,0,1))
+  zmax=max(z)
+  Rangez=zmax-min(z);
   rgl::persp3d(x = xcoord, y = ycoord, z = z,
-               color = col, xlab="x",ylab="y",
-               zlab="", box = FALSE,
-               axes = FALSE)
+     color = col, xlab="x",ylab="y",zlab="",
+     zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez),
+     box = FALSE, axes = FALSE)
   rgl::axis3d('x')
   rgl::axis3d('y')
   rgl::axis3d('z-+'#-=low x-coord, +=high y-coord
-              ,pos = c(min(xcoord), max(ycoord), 0))
-  Rangex=max(xcoord)-min(xcoord);
-  Rangey=max(ycoord)-min(ycoord);
-  Rangez=max(z)-min(z);
-  zmax=max(z)
+#              ,zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez)
+              ,pos = c(xlims[1], ylims[2], 0))
+#  Rangex=max(xcoord)-min(xcoord);
+#  Rangey=max(ycoord)-min(ycoord);
+#  Rangez=max(z)-min(z);
+#  zmax=max(z)
 #  rgl::observer3d(-xmax, -ymax, zmax,auto = TRUE)
   rgl::title3d(main=NULL)
-  rgl::text3d(Rangex/2+pos[1],
-              Rangey/2+pos[2],
-              zmax+0.1*Rangez,texts=title1)
+  rgl::text3d(xlims[2],ylims[2],
+              zmax+0.2*Rangez,texts=title1)
 #  rgl::text3d(xmax+pos[1],ymax+pos[2],
 #              zmax+pos[3],texts=title1)
 #  rgl::axes3d(edges=c('x','y+','z'),pos=c(0,0,0),box=FALSE)
@@ -354,78 +376,99 @@ xlims<<-c(0,10)
 ylims<<-c(0,10)
 L<<-5000
 m<<-3
-burnin<<-4990
+burnin<<-1000
 lamda<<-100
 r<<-30
 truncated<<-FALSE
-LL<<-31
+LL<<-50
 # data=rnorm2_sppmix(n,mu,sig)
 #  Plots_off()
  truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
-  PlotNormalMixture(truemix,gendata,m,lamda,xlims,ylims,L=100)
-  gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,burnin,LL,trunc=FALSE)
-
-# windows()
-#  meansmix(gendata,truemix,n,m,xlims,ylims,L,burnin,LL=51,trunc=TRUE)
-#  meansmix(gendata,truemix,n,m,xlims,ylims,L,burnin,LL,trunc)
-  for (i in 1:m)
-  {
-    #  cat("\n posterior meanp\n",meanp[i])
-    #  cat("\n posterior mean p returned\n",gens$meanps[i])
-    #  cat("\n trueps\n",truemix[[i]]$p)
-    #  cat("\n posterior meanmus[",i,"]\n",meanmus[i,1],meanmus[i,2])
-    #  cat("\n posterior meanmus returned[ ",i,"]\n",gens$meanmus[i,])
-    #  cat("\n truemean[",i,"]\n",truemix[[i]]$mu)
-    #  cat("\n posterior mean sigma[",i,"]\n",meansigmas[,,i])
-    #  cat("\n posterior mean sigma returned[",i,"]\n",gens$meansigmas[,,i])
-    #  cat("\n true sigma[",i,"]\n",truemix[[i]]$sigma,"\n")
-    #true value and credible sets
-    poststats=GetStats_sppmix(gens$genps[,i],alpha=0.05)
-    cat("\n----------------Component ",i,"------------\n")
-    cat(paste("Probability: true =",truemix[[i]]$p))
-    cat(paste("\nProbability: posterior mean =",poststats$Mean,"\n"))
-    cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
-              ",",poststats$CredibleSet[2],"]" ))
-    poststats=GetStats_sppmix(gens$genmus[i,1,],alpha=0.05)
-    cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[1]))
-    cat(paste("\nMean vector, x-coord: post mean =",poststats$Mean,"\n"))
-    cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
-              ",",poststats$CredibleSet[2],"]" ))
-    poststats=GetStats_sppmix(gens$genmus[i,2,],alpha=0.05)
-    cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[2]))
-    cat(paste("\nMean vector, x-coord: post mean =",poststats$Mean,"\n"))
-    cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
-              ",",poststats$CredibleSet[2],"]" ))
-
-  }
-  cat("\n----------------Component stats done------------\n")
-  cat("\nNOTE: if you have the truth, then what is called
-      component 1 might be called component 2 in the fit.
-      This is not label switching.\n")
+#  PlotNormalMixture(truemix,gendata,m,lamda,
+#                    xlims,ylims,L=100)
+ gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,burnin,LL,trunc=FALSE)
 
   Plots_off()
 
+#  if(0){
+
 #  cat("passed")
 
+  zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix);
+  mix=MakeMixtureList(gens)
+  zmax_genmeanmix=gens$meanlamda*GetMixtureMaxz_sppmix(mix);
+
+  maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
   PlotNormalMixture(mix1=truemix,data=gendata,
-                    m=m,lamda=lamda,xlims=xlims,
-                    ylims=ylims,L=100,
-                    title1=paste(
-                      "True Mixture Intensity,",
-                      m,"components,",n,"points"))
+      m=m,lamda=lamda,xlims=xlims,ylims=ylims,L=100,
+      title1="True mixture",zlims=c(0,maxz_height))
+                      #paste(
+                      #"True Mixture Intensity,",
+                      #m,"components,",n,"points"))
 
-  cat("passed")
-  mix=vector("list", m)
-  for(i in 1:m)
-  {
-    mix[[i]]=list(p = gens$meanps[i],
-                  mu = gens$meanmus[i,],
-                  sigma = gens$meansigmas[,,i])
-  }
-  z<-PlotNormalMixture(mix1=mix,data=gendata,
-                       m=m,lamda=gens$meanlamda,xlims=xlims,ylims=ylims,
-                       L=100,title1=paste("Mixture Intensity of posterior means,",m,"components,",n,"points"))
+  PlotNormalMixture(mix1=mix,data=gendata,
+     m=m,lamda=gens$meanlamda,xlims=xlims,ylims=ylims,
+     L=100,title1="Posterior means",
+     zlims=c(0,maxz_height))
+                         #paste("Mixture Intensity of posterior means,",m,"components,",n,"points"))
 
+#  Show3dPlots(gens)
+if(0){
+  plot_ind(gens)
+  ShowChains(gens)
+  ShowStats(gens,truemix)
+  Show3dPlots(gens)
+  FixLabels(gens,truemix)
+}
+#  sppmix::BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,burnin,31,FALSE,1,20,c(15,.01,3,2,1,1))
+if(1)
+{
+  maxnumcomp<<-10
+  gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,burnin,LL,FALSE,1,10,c(5,.01,3,2,1,1))
+  PostGenBDMCMC_sppmix(gensBD)
+}
+  #  setwd("D:/sppmix/images")
+
+}
+
+
+#' @export
+PostGenBDMCMC_sppmix<- function(gensBD)
+{#processes output from a Birth-Death fit
+  cat("Frequency table for the number of components")
+  tab=table(gensBD$numcomp)
+  print(tab)
+
+#  probk=tab
+#  meank=sum(probk.*[1:1:maxnumcomp]);
+#  [val1,mapk]=max(probk);
+  windows()
+  hist(gensBD$numcomp,breaks=0:gensBD$maxnumcomp,xlab="Component",labels=TRUE,main="Distribution of the number of components",xlim=c(0.5,gensBD$maxnumcomp),ylim=c(0,1.2*max(table(gensBD$numcomp))))
+  windows()
+  plot(gensBD$numcomp,xlab="Iteration",ylab="Number of components",type="l",main="Generated chain for the number of components")
+  gridvals=GetGrid_sppmix(LL,c(xlims[1],ylims[1]),c(xlims[2],ylims[2]));
+  ticsx<<-as.vector(gridvals[[1]]);
+  ticsy<<-as.vector(gridvals[[2]]);
+  distr_numcomp<<-GetCompDistr_sppmix(gensBD$numcomp[burnin:L],maxnumcomp)
+  BayesianModelAvgIntensity<<-ApproxBayesianModelAvgIntensity_sppmix(
+    gensBD$allgens_List[burnin:L],
+    gensBD$genlamdas[burnin:L],
+    gensBD$numcomp[burnin:L],
+    distr_numcomp,
+    0,maxnumcomp,
+#    1,5,
+    ticsx,ticsy)
+  Plot3d_sppmix(xcoord = ticsx,ycoord = ticsy,
+                z = BayesianModelAvgIntensity,
+                title1=paste("Bayesian model average of",L-burnin,"posterior realizations")
+                ,xlims,ylims,zlims=c(0,maxz_height))
+
+}
+
+#' @export
+Show3dPlots<- function(gens)#,LL=50,xlims=c(0,10),ylims=c(0,10))
+{
+#  sppmix::Show3dPlots(gens,LL,xlims,ylims)
   #library(graphics)
   #windows()
   #persp(x = gens$ticsx, y = gens$ticsy,
@@ -438,33 +481,39 @@ LL<<-31
   #             z = gens$AvgofPostIntensity,
   #             title1=paste("Average of",L-burnin,"posterior realizations of the intensity function"))
 
+#  gridvals=GetGrid_sppmix(LL,c(xlims[1],ylims[1]),c(xlims[2],ylims[2]));
+#  ticsx=gridvals[[1]];
+#  ticsy=gridvals[[2]];
   ApproxAvgPostIntensityz<<-ApproxAvgPostIntensity(
     gens$allgens,gens$genlamdas,LL,burnin,
     as.vector(gens$ticsx),as.vector(gens$ticsy))
+#  ApproxAvgPostIntensityz<<-ApproxAvgPostIntensity(
+#    gens$allgens,gens$genlamdas,LL,burnin,
+#    as.vector(ticsx),as.vector(ticsy));
 
-  Plot3d_sppmix(x = as.vector(gens$ticsx),
-                y = as.vector(gens$ticsy),
+  Plot3d_sppmix(xcoord = as.vector(gens$ticsx),
+                ycoord = as.vector(gens$ticsy),
                 z = ApproxAvgPostIntensityz,
-                title1=paste("Average of",L-burnin,"posterior realizations of the intensity function"))
+                title1=paste("Average of",L-burnin,"posterior realizations of the intensity function")
+                ,xlims,ylims,zlims)
 
-  #Plot3d_sppmix(x = as.vector(gens$ticsx),
-  #              y = as.vector(gens$ticsy),
-  #              z = z1,
-  #              title1="Posterior fit using ApproxAvgPostIntensity")
+ # ShowChains(gens)
 
-  #cat("passedPlotNormalMixture")
-  if(1)
-  {
+}
+
+#' @export
+ShowChains<- function(gens)
+{
     windows()
     par(mfrow=c(m,1))
     plot(gens$genps[,1],xlab="Iteration",ylab="p",
          type="l",main=
-           "Generated mixture Probabilities\nComponent 1")
+           "Generated mixture probabilities\nComponent 1")
     for (i in 2:m)
     {
       plot(gens$genps[,i],xlab="Iteration",ylab="p",
            type="l",main=
-             paste("Generated mixture Probabilities\nComponent",i))
+             paste("Generated mixture probabilities\nComponent",i))
     }
 
     windows()
@@ -487,5 +536,87 @@ LL<<-31
              paste("Generated mixture means\nComponent"
                    ,i,", y-coord"))
     }
+
+}
+
+#' @export
+FixLabels<- function(allgens,truemix,burnin=1000)
+{
+#  z=sppmix::FixLabels(gens,truemix)
+#  ShowChains(allgens)
+  permgens<<-PostGenGetBestPerm_sppmix(allgens$allgens);
+  allpermgens=allgens;
+  allpermgens[[1]]=permgens$permuted_gens;
+  allpermgens[[2]]=permgens$permuted_ps;
+  allpermgens[[3]]=permgens$permuted_mus;
+  allpermgens[[4]]=permgens$permuted_sigmas;
+  permuted_means=GetAllMeans_sppmix(permgens$permuted_gens,burnin)
+  allpermgens[[6]]=permuted_means$meanps;
+  allpermgens[[7]]=permuted_means$meanmus;
+  allpermgens[[8]]=permuted_means$meansigmas;
+  mix=MakeMixtureList(allpermgens);
+  z<-PlotNormalMixture(mix1=mix,data=gendata,
+                       m=m,lamda=gens$meanlamda,xlims=xlims,ylims=ylims,
+                       L=100,title1="Posterior mean (permutated labels)")
+
+  ShowStats(allpermgens,truemix)
+  ShowChains(allpermgens)
+  Show3dPlots(allpermgens)
+}
+
+#' @export
+MakeMixtureList<- function(gens)
+{
+  #takes the DAMCMC output and makes a mixture list
+  #based on its means, sppmix::MakeMixtureList(gens)
+  m=length(gens$meanps);
+  mix=vector("list", m);
+  for(i in 1:m)
+  {
+    mix[[i]]=list(p = gens$meanps[i],
+                mu = gens$meanmus[i,],
+                sigma = gens$meansigmas[,,i]);
   }
+  return (mix)
+}
+
+#' @export
+ShowStats<- function(gens,truemix)
+{
+  #sppmix::ShowStats(gens,truemix)
+# windows()
+#  meansmix(gendata,truemix,n,m,xlims,ylims,L,burnin,LL=51,trunc=TRUE)
+#  meansmix(gendata,truemix,n,m,xlims,ylims,L,burnin,LL,trunc)
+for (i in 1:m)
+{
+  #  cat("\n posterior meanp\n",meanp[i])
+  #  cat("\n posterior mean p returned\n",gens$meanps[i])
+  #  cat("\n trueps\n",truemix[[i]]$p)
+  #  cat("\n posterior meanmus[",i,"]\n",meanmus[i,1],meanmus[i,2])
+  #  cat("\n posterior meanmus returned[ ",i,"]\n",gens$meanmus[i,])
+  #  cat("\n truemean[",i,"]\n",truemix[[i]]$mu)
+  #  cat("\n posterior mean sigma[",i,"]\n",meansigmas[,,i])
+  #  cat("\n posterior mean sigma returned[",i,"]\n",gens$meansigmas[,,i])
+  #  cat("\n true sigma[",i,"]\n",truemix[[i]]$sigma,"\n")
+  #true value and credible sets
+  poststats=GetStats_sppmix(gens$genps[,i],alpha=0.05)
+  cat("\n----------------Component ",i,"------------\n")
+  cat(paste("Probability: true =",truemix[[i]]$p))
+  cat(paste("\nProbability: posterior mean =",poststats$Mean,"\n"))
+  cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
+            ",",poststats$CredibleSet[2],"]" ))
+  poststas=GetStats_sppmix(gens$genmus[i,1,],alpha=0.05)
+  cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[1]))
+  cat(paste("\nMean vector, x-coord: post mean =",poststats$Mean,"\n"))
+  cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
+            ",",poststats$CredibleSet[2],"]" ))
+  poststats=GetStats_sppmix(gens$genmus[i,2,],alpha=0.05)
+  cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[2]))
+  cat(paste("\nMean vector, x-coord: post mean =",poststats$Mean,"\n"))
+  cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
+            ",",poststats$CredibleSet[2],"]" ))
+
+}
+cat("\n----------------Component stats done------------\n")
+#cat("\nNOTE: if you have the truth, then what is called component 1 might be called component 2 in the fit. This is not label switching. Check the plots of the generated chains for erratic behavior (sudden jumps) and if present, run the FixLabels routine to find the best permutation.\n")
 }
