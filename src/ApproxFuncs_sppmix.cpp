@@ -117,3 +117,50 @@ double ApproxMHRatiosig_sppmix(int const& LL,vec const& ticsx,
   }
   return approxFsig/approxFpropsig;
 }
+
+
+//[[Rcpp::export]]
+mat ApproxBayesianModelAvgIntensity_sppmix(
+    List const& genBDmix,vec const& lamdas,
+    vec const& numcomp,vec const& distr_numcomp,
+    int const& mincomp,int const& maxcomp,
+    vec const& ticsx,vec const& ticsy)
+{
+  //apply burnin before calling this function
+  //compute the average of the posterior surfaces
+  //needs to be multiplied by the lamdas
+  //and weighted by the comp number relative frequency
+  int countiter=0,i,L  = genBDmix.size(),LL=ticsx.size();
+  mat AvgPostIntensity = zeros(LL,LL);
+  vec xy(2);
+  double weight,intensityatxy;
+  for(int kval=mincomp;kval<maxcomp;kval++)
+  {
+    uvec indi=find(numcomp==kval);
+    if(sum(indi)==0)//no realizations for this k
+      continue;
+    int nn1=indi.size();
+    vec newlamdas=lamdas(indi);
+    List newgenmix(nn1);
+    for(i=0;i<nn1;i++)
+      newgenmix[i]=genBDmix[indi(i)];
+    weight=distr_numcomp(kval);
+    for(int x1=0;x1<LL;x1++)
+      for(int y1=0;y1<LL;y1++)
+      {
+        printf("\rComputing Bayesian model average surface: %3.1f%% complete",100.0*countiter/(LL*LL*(maxcomp-mincomp+1)));
+        xy(0)=ticsx(x1);
+        xy(1)=ticsy(y1);
+        //for each realization, compute the intensity
+        //surface at the point xy
+        for(i=0;i<nn1;i++)
+        {
+          intensityatxy=weight*newlamdas(i)*densNormMixatx_sppmix(xy,newgenmix[i]);
+          AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)+intensityatxy/nn1;
+        }
+        countiter++;
+      }
+  }
+  printf("\rDone                                                      \n");
+  return AvgPostIntensity;
+}

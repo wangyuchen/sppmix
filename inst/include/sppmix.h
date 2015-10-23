@@ -5,13 +5,14 @@
 #include <Rcpp.h>
 #include <stdio.h>
 #include <time.h>
+#include <Rmath.h>
 
 using namespace arma;
 using namespace Rcpp;
 
 //Data augmentation, with truncation capabilities
-//file: DAMCMC_sppmix.cpp
-//FUNCION IS EXPOSED
+//file: DAMCMC2d_sppmix.cpp
+//FUNCTION IS EXPOSED
 //calls the functions: rMultinomial_sppmix,
 //invmat2d_sppmix,rWishart_sppmix,ApproxMHRatiomu_sppmix,
 //ApproxMHRatiosig_sppmix,ApproxCompMass_sppmix,
@@ -23,16 +24,28 @@ List DAMCMC2d_sppmix(mat const& data,
                      int const& burnin,int const& LL,
                      bool const& truncate);
 
+//Birth-Death MCMC
+//file: BDMCMC2d_sppmix.cpp
+//FUNCTION IS EXPOSED
+List BDMCMC2d_sppmix(int const& maxnumcomp,
+                     mat const& data,
+                     vec const& xlims,
+                     vec const& ylims,
+                     int const& L,
+                     int const& burnin,int const& LL,
+                     bool const& truncate,
+                     double const& lamda,
+                     double const& lamdab,
+                     vec const& hyper);
+
 //Simulation functions
 //file: SimulFuncs_sppmix.cpp
 double rUnif_sppmix();
 double rUnifab_sppmix(double const& a,
                       double const& b);
-mat rnorm2_sppmix(int n, vec mu,mat sigma);
+mat rnorm2_sppmix(int const& n, vec const& mu,mat const& sigma);
 mat rWishart_sppmix(int const& df, mat const& A);
-int rDiscrete_sppmix(int const& start,
-                     int const& end,
-                     vec const& probs);
+int rDiscrete_sppmix(int const& start,vec const& probs);
 int rBinom_sppmix(int const& n,
                   double const& p);
 double rGamma_sppmix(double const& a,
@@ -59,6 +72,11 @@ double ApproxMHRatiosig_sppmix(int const& LL,vec const& ticsx,
     vec const& ticsy,mat const& areas,
     vec const& mu1,mat const& propsigma,
     mat const& sig,mat const& siginv);
+mat ApproxBayesianModelAvgIntensity_sppmix(
+    List const& genBDmix,vec const& lamdas,
+    vec const& numcomp,vec const& distr_numcomp,
+    int const& mincomp,int const& maxcomp,
+    vec const& ticsx,vec const& ticsy);
 
 //Operations on posterior realizations
 //file: OpsPostGens_sppmix.cpp
@@ -71,6 +89,8 @@ mat GetRealiz_sigmas_sppmix(List const& allgens,
                             int const& realiz);
 List PostGenGetBestPerm_sppmix(List const& allgens);
 List GetAllMeans_sppmix(List const& allgens,int const& burnin);
+vec GetCompDistr_sppmix(vec const& numcomp,int const& maxnumcomp);
+List GetBDCompRealiz_sppmix(List const& genBDmix,vec const& genlamdas,vec const& numcomp,int const& comp);
 
 //Helper functions
 //file: HelperFuncs_sppmix.cpp
@@ -87,5 +107,9 @@ bool EqVec_sppmix(vec const& v1,vec const& v2,double const& tol=0.000001);
 double dDirichlet_sppmix(vec const& ps,vec const& ds);
 double logGammaFunc_sppmix(double const& x);
 double GammaFunc_sppmix(double const& x);
+double SumVec_sppmix(vec const& v,int const& start,int const& end);
+vec SubstituteVec_sppmix(vec v,vec const& subv,int const& start);
+vec SubVec_sppmix(vec const& v,int const& start,int const& end);
+double GetMixtureMaxz_sppmix(List const& genmix);
 
 #endif

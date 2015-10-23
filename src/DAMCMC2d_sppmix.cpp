@@ -179,7 +179,7 @@ List DAMCMC2d_sppmix(mat const& data,
       }
       else
         ratio=1;
-      if(rUnif_sppmix()<ratio)
+      if(Rcpp::runif(1)[0]<ratio)
       {
         genmus(j,0,i+1)=genmutemp(0);
         genmus(j,1,i+1)=genmutemp(1);
@@ -211,7 +211,7 @@ List DAMCMC2d_sppmix(mat const& data,
       }
       else
         ratio=1;
-      if(rUnif_sppmix()<ratio)
+      if(Rcpp::runif(1)[0]<ratio)
       {
         geninvsigmas(i+1,j)=cov1;//invmat2d_sppmix(propsigma);
         gensigmas(i+1,j)=propsigma;
@@ -287,7 +287,7 @@ List DAMCMC2d_sppmix(mat const& data,
         break;
       }
     }
-    if(rUnif_sppmix()<ratio)
+    if(Rcpp::runif(1)[0]<ratio)
     {
       MHjump=MHjump+1;
       if(i+1>burnin)

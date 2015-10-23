@@ -202,5 +202,57 @@ double dDirichlet_sppmix(vec const& ps,vec const& ds)
   return val;
 }
 
+// [[Rcpp::export]]
+double SumVec_sppmix(vec const& v,int const& start
+                       ,int const& end)
+{
+  double val=0;
+  for(int i=start;i<=end;i++)
+    val+=v(i);
+  return val;
+}
 
+//' @export
+// [[Rcpp::export]]
+vec SubstituteVec_sppmix(vec v,vec const& subv,
+                   int const& start)
+{
+  vec newvec=v;
+  int len=subv.size();
+  for(int i=0;i<len;i++)
+    newvec(i+start)=subv(i);
+  return newvec;
+}
 
+//' @export
+// [[Rcpp::export]]
+vec SubVec_sppmix(vec const& v,int const& start,
+                  int const& end)
+{
+//  vec newvec(end-start+1);
+//  for(int i=0;i<end-start+1;i++)
+//    newvec(i)=v(start+i);
+//return newvec;
+  return v.subvec(start,end);
+}
+
+//' @export
+// [[Rcpp::export]]
+double GetMixtureMaxz_sppmix(List const& genmix)
+{
+//assumes no truncation
+  int j,m  = genmix.size();
+  List kth_comp;
+  double zmax=-100000000000;
+  for(j=0;j<m;j++)
+  {
+    kth_comp = genmix[j];
+    double psj=as<double>(kth_comp["p"]);
+//    vec muk = as<vec>(kth_comp["mu"]);
+    mat sigmak = as<mat>(kth_comp["sigma"]);
+    double const1=psj/sqrt(det(2*datum::pi*sigmak));
+    if (const1>zmax)
+      zmax=const1;
+  }
+  return zmax;
+}

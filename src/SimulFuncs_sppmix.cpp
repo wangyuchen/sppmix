@@ -14,11 +14,12 @@ double rUnifab_sppmix(double const& a,
                       double const& b)
 {
   // double u=randu<vec>(1)[0];
-  return a+(b-a)*rUnif_sppmix();
+  return a+(b-a)*Rcpp::runif(1)[0];
 }
 
 // [[Rcpp::export]]
-mat rnorm2_sppmix(int n,vec mu,mat sigma) {
+mat rnorm2_sppmix(int const& n,vec const& mu,
+                  mat const& sigma) {
  mat Z = randn(n, 2);
   double sig1=sqrt(sigma(0,0)),
     sig2=sqrt(sigma(1,1));
@@ -42,10 +43,9 @@ mat rWishart_sppmix(int const& df, mat const& A){
 }
 
 // [[Rcpp::export]]
-int rDiscrete_sppmix(int const& start,
-                     int const& end,
-                     vec const& probs){
-  double u=rUnif_sppmix(), cdf=0;
+int rDiscrete_sppmix(int const& start,vec const& probs)
+{
+  double u=Rcpp::runif(1)[0], cdf=0;
   int gen1=start,m=probs.size();
   for(int i=0;i<m;i++)
   {
@@ -68,23 +68,23 @@ int rBinom_sppmix(int const& n,
     probs(i)=((n-i+1.0)/i)*(p/(1-p))*probs(i-1);
   probs(n)=pow(p,n);
   //  Rcout << probs<< std::endl ;
-  return rDiscrete_sppmix(0,n,probs);
+  return rDiscrete_sppmix(0,probs);
 }
 
 // [[Rcpp::export]]
 double rGamma_sppmix(double const& a,
                      double const& b){
-  double u=rUnif_sppmix();
-  double y=- a * b * log(rUnif_sppmix());
+  double u=Rcpp::runif(1)[0];
+  double y=- a * b * log(Rcpp::runif(1)[0]);
   double u0=pow(y,a - 1)*
     exp(-y*(a - 1)/(a * b))
     *exp(a - 1)/pow(a*b,a-1);
   while(u >= u0) {
-    y=- a * b * log(rUnif_sppmix());
+    y=- a * b * log(Rcpp::runif(1)[0]);
     u0=pow(y,a - 1)*
       exp(-y*(a - 1)/(a * b))
       *exp(a - 1)/pow(a*b,a-1);
-    u=rUnif_sppmix();
+    u=Rcpp::runif(1)[0];
   }
   return y;
 }
@@ -92,7 +92,7 @@ double rGamma_sppmix(double const& a,
 // [[Rcpp::export]]
 double rExp_sppmix(double const& a)
 {
-  return -log(rUnif_sppmix())/a;
+  return -log(Rcpp::runif(1)[0])/a;
 }
 
 // [[Rcpp::export]]
@@ -145,7 +145,7 @@ List rNormMix_sppmix(int const& lamda,
   vec comps(n);
   for(i=0;i<n;i++)
   {
-    u=rUnif_sppmix();
+    u=Rcpp::runif(1)[0];
     sump=0;
     for(j=0;j<m;j++)
     {

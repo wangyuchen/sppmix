@@ -166,8 +166,8 @@ List PostGenGetBestPerm_sppmix(List const& allgens)
         for(j=0;j<m;j++)
         {
           //        Rcout << as_scalar((sum_sigma.row(j)-perm_sigmas.row(j))*trans((sum_sigma.row(j)-perm_sigmas.row(j)))) << std::endl ;
-          loss1=loss1//+as_scalar((sum_sigma.row(j)-perm_sigmas.row(j))*trans((sum_sigma.row(j)-perm_sigmas.row(j))))
-         // +as_scalar((sum_mu.row(j)-perm_mus.row(j))*trans((sum_mu.row(j)-perm_mus.row(j))))
+          loss1=loss1+as_scalar((sum_sigma.row(j)-perm_sigmas.row(j))*trans((sum_sigma.row(j)-perm_sigmas.row(j))))
+          +as_scalar((sum_mu.row(j)-perm_mus.row(j))*trans((sum_mu.row(j)-perm_mus.row(j))))
           +(sum_p(j)-perm_ps(j))*(sum_p(j)-perm_ps(j));
           //       sigmas(indthetas(i),stateperm(i,:),2,1))*(alphahat3(:,2,1)-sigmas(indthetas(i),stateperm(i,:),2,1))'+(alphahat3(:,1,1)-sigmas(indthetas(i),stateperm(i,:),1,1))*(alphahat3(:,1,1)-sigmas(indthetas(i),stateperm(i,:),1,1))'+(alphahat3(:,2,2)-sigmas(indthetas(i),stateperm(i,:),2,2))*(alphahat3(:,2,2)-sigmas(indthetas(i),stateperm(i,:),2,2))'+(alphahat3(:,1,2)-sigmas(indthetas(i),stateperm(i,:),1,2))*(alphahat3(:,1,2)-sigmas(indthetas(i),stateperm(i,:),1,2))'+(alphahat2(:,2)-mus(indthetas(i),stateperm(i,:),2))*(alphahat2(:,2)-mus(indthetas(i),stateperm(i,:),2))'+(alphahat2(:,1)-mus(indthetas(i),stateperm(i,:),1))*(alphahat2(:,1)-mus(indthetas(i),stateperm(i,:),1))'+(alphahat1-probs(indthetas(i),stateperm(i,:)))*(alphahat1-probs(indthetas(i),stateperm(i,:)))';
         }
@@ -295,4 +295,47 @@ List GetAllMeans_sppmix(List const& allgens,
     Named("meanps") = sumps/countgens,
     Named("meanmus") = summus/countgens,
     Named("meansigmas") = meansigmas);
+}
+
+// [[Rcpp::export]]
+vec GetCompDistr_sppmix(vec const& numcomp,
+    int const& maxnumcomp)
+{
+  //returns the distribution of the # of components
+  //apply burnin before calling this function
+  int L=numcomp.size();
+  vec distr_numcomp(maxnumcomp);
+//  vec newcomps=SubVec_sppmix(numcomp,burnin,L);
+  //   numcomp.subvec(burnin,L);
+  for(int j=0;j<maxnumcomp;j++)
+  {
+    uvec q1 = find(numcomp==j);
+    //    Rcout << q1 << std::endl ;
+    distr_numcomp(j)=1.0*q1.size()/L;
+  }
+  return distr_numcomp;
+}
+
+// [[Rcpp::export]]
+List GetBDCompRealiz_sppmix(List const& genBDmix,
+    vec const& genlamdas,vec const& numcomp,
+    int const& comp)
+{
+  //returns the gens for a specific # of components
+  //apply burnin before calling this function
+  int L=numcomp.size();
+  uvec indi=find(numcomp==comp);
+  if(sum(indi)==0)//no realizations for this k
+    return List::create();
+  int nn1=indi.size();
+  vec newlamdas=genlamdas(indi);
+  vec newnumcomp=numcomp(indi);
+  List newgenmix(nn1);
+  for(int i=0;i<nn1;i++)
+    newgenmix[i]=genBDmix[indi(i)];
+
+  return List::create(
+    Named("newgenBD") = newgenmix,
+    Named("newlamdas") = newlamdas,
+    Named("newnumcomp") = newnumcomp);
 }
