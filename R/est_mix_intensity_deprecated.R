@@ -120,7 +120,7 @@ est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
 
   ## start main mcmc ##
   if (marginal == T) {
-    if (m == 1){
+    if (m == 1) {
       Lmax <- 3*L
     } else {
       Lmax <- 4*L
@@ -140,27 +140,27 @@ est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
 
 
     #sample B matrix
-    beta <- sample_beta(m, sigmas[[i-1]])
+    beta <- sample_beta(m, sigmas[[i - 1]])
     betas <- append(betas, list(beta))
 
     approx <- rep(1, m)
 
     #sample mus and sigmas
-    mus <- append(mus, list(mus[[i-1]]))
-    sigmas <- append(sigmas, list(sigmas[[i-1]]))
+    mus <- append(mus, list(mus[[i - 1]]))
+    sigmas <- append(sigmas, list(sigmas[[i - 1]]))
 
 
     # sample mus
-    propmus <- t(sapply(1:m, sample_mu, sigma = sigmas[[i-1]],
+    propmus <- t(sapply(1:m, sample_mu, sigma = sigmas[[i - 1]],
                         zmultinom = zmultinom))
 
 
     # truncate
     if (truncate == TRUE) {
-      mix_old_mu <- as.normmix(ps[i-1, ], mus[[i-1]], sigmas[[i-1]])
+      mix_old_mu <- as.normmix(ps[i - 1, ], mus[[i - 1]], sigmas[[i - 1]])
       approx_old_mu <- approx_normmix(mix_old_mu, win)
 
-      mix_prop_mu <- as.normmix(ps[i-1, ], propmus, sigmas[[i-1]])
+      mix_prop_mu <- as.normmix(ps[i - 1, ], propmus, sigmas[[i - 1]])
       approx_prop_mu <- approx_normmix(mix_prop_mu, win)
 
       ratio <- approx_old_mu / approx_prop_mu
@@ -168,22 +168,15 @@ est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
       ratio <- 1
     }
 
-    #     accept <- rep(TRUE, m)
-    #     accept[is.nan(ratio)] <- FALSE
-    # accept[!is.nan(ratio)] <- (runif(m) < ratio)[!is.nan(ratio)]
+
+
     accept <- runif(m) < ratio
-    if (any(accept == TRUE)){
+    if (any(accept == TRUE)) {
       mus[[i]][accept, ] <- propmus[accept, ]
     }
 
-    #     ratio[is.nan(ratio)] <- 0
-    #     if (runif(1) < ratio){
-    #       mus[[i]] <- propmus
-    #     }
-
     t2 <- Sys.time()
     time1 <- time1 + t2 - t1
-
 
     # sample sigmas
     propsigmas <- sapply(1:m, sample_sigma,
@@ -213,13 +206,10 @@ est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
     accept <- runif(m) < ratio
     sigmas[[i]][, , accept] <- propsigmas[, accept]
 
-#     ratio[is.nan(ratio)] <- 0
-#     if (runif(1) < ratio){
-#       sigmas[[i]] <- array(propsigmas, dim = c(2, 2, m))
-#     }
 
     t3 <- Sys.time()
     time2 <- time2 + t3 - t2
+
 
     # sample ps
     ds <- gam + count_ind(zmultinom, total = m)
@@ -237,6 +227,8 @@ est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
       }
     }
 
+    t4 <- Sys.time()
+    time3 <- time3 + t4 - t3
 
     # qij is n by m
     if (m == 1){
@@ -245,13 +237,7 @@ est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
       qij <- t(apply(den, 1, function(x) x / sum(x)))
     }
 
-    t4 <- Sys.time()
-    time3 <- time3 + t4 - t3
-
-    # cond <- abs(rowSums(qij) - 1) < .0001
-#     qij[is.na(qij)] <- 0
     propz <- apply(qij, 1, sample, x = 1:m, size = 1, replace = T)
-
 
     if (all(count_ind(propz, total = m) >= 2)) {
       if (i > burnin) {

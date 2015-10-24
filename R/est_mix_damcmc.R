@@ -8,5 +8,5 @@ est_mix_damcmc <- function(pp, m, truncate = TRUE,
                m = m, truncate = truncate,
                L = L, burnin = burnin, LL = LL)
   class(fit) <- "damcmc_res"
-  return(fit)
+  return(invisible(fit))
 }
