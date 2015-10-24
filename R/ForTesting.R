@@ -171,7 +171,7 @@ GenNormalMixture<- function(lamda=50,m=1,
     xlab1="x",ylab1="y")
 {
   #  truemix=GenNormalMixture(lamda,m,xlims=c(0,10),ylims=c(0,10),r=5,false)
-  windows()
+  X11()
   ps<<-rDirichlet_sppmix(rep(1,m))
   mix=vector("list", m)
   Rangex=xlims[2]-xlims[1];

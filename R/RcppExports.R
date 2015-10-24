@@ -5,6 +5,7 @@ ApproxAvgPostIntensity <- function(genmix, lamdas, LL, burnin, ticsx, ticsy) {
     .Call('sppmix_ApproxAvgPostIntensity', PACKAGE = 'sppmix', genmix, lamdas, LL, burnin, ticsx, ticsy)
 }
 
+#' @export
 ApproxCompMass_sppmix <- function(LL, ticsx, ticsy, areas, mu, sig, siginv) {
     .Call('sppmix_ApproxCompMass_sppmix', PACKAGE = 'sppmix', LL, ticsx, ticsy, areas, mu, sig, siginv)
 }
@@ -26,7 +27,6 @@ BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, burnin, LL, trunc
     .Call('sppmix_BDMCMC2d_sppmix', PACKAGE = 'sppmix', maxnumcomp, data, xlims, ylims, L, burnin, LL, truncate, lamda, lamdab, hyper)
 }
 
-#' @export
 DAMCMC2d_sppmix <- function(data, xlims, ylims, m, L, burnin, LL, truncate) {
     .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', data, xlims, ylims, m, L, burnin, LL, truncate)
 }
