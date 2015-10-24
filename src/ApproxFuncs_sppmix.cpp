@@ -45,7 +45,7 @@ mat ApproxAvgPostIntensity(List const& genmix,
     printf("\rDone                                                      \n");
   return AvgPostIntensity;
 }
-//' @export
+
 // [[Rcpp::export]]
 double ApproxCompMass_sppmix(int const& LL,vec const& ticsx,
                              vec const& ticsy,mat const& areas,
