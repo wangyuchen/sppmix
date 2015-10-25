@@ -16,7 +16,7 @@ summary.damcmc_res <- function(gens, dgt = 2) {
               "% Credible Set:\n[",poststats$CredibleSet[1],
               ",",poststats$CredibleSet[2],"]" ))
 
-    poststas = GetStats_sppmix(gens$genmus[i,1,],alpha=0.05)
+    poststats = GetStats_sppmix(gens$genmus[i,1,],alpha=0.05)
     poststats <- sapply(poststats, format, digits = dgt)
 
     #cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[1]))

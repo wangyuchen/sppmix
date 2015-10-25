@@ -67,9 +67,6 @@ approx_normmix <- function(mix, win) {
   approx <- numeric(mix$m)
 
   for (k in 1:mix$m) {
-#     func <- function(x, y) mvtnorm::dmvnorm(cbind(x, y),
-#                                             mix$mus[[k]], mix$sigmas[[k]])
-#     approx[k] <- est_riemann_int(func, win$xrange, win$yrange, ...)
     approx[k] <- mvtnorm::pmvnorm(lower = c(win$xrange[1], win$yrange[1]),
                                   upper = c(win$xrange[2], win$yrange[2]),
                                   mean = mix$mus[[k]],
