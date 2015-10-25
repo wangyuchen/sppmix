@@ -17,6 +17,8 @@ plot_ind <- function(dares) {
                        ind = apply(data, 1, which.max) - .5)
   ggplot2::qplot(point, ind, data = ind_df, geom = "segment",
                  xend = point, yend = ind + 1, size = I(1.5)) +
-    ylim(.5, ncol(data) + .5) + ggplot2::theme_bw() +
+    ggplot2::coord_cartesian(ylim = c(.5, ncol(data) + .5)) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, size = 2)) +
     ggplot2::ggtitle("Plot of membership indicator")
 }
