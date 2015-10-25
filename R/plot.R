@@ -99,12 +99,6 @@ plot.sppmix <- function(spp, ...) {
   p + geom_point()
 }
 
-#' @export
-plot.dares <- function(dares) {
-  plot.ts(dares$ps)
-}
-
-
 #' Plot contour for intensity surface
 #'
 #' Create a contour plot for the intensity surface with or without realizations
@@ -132,7 +126,7 @@ plot.dares <- function(dares) {
 #' pp1 <- rsppmix(200, mix1, spatstat::square(1))
 #' # plot the theoretical intensity surface with a realization
 #' plot_contour(mix1,pp1,spatstat::square(1))
-plot_contour <- function(mix, pattern, win, L = 100,
+plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
                          points = TRUE, filled = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
@@ -174,4 +168,25 @@ plot_contour <- function(mix, pattern, win, L = 100,
       m + ggplot2::stat_contour(aes(colour = ..level..))
     }
   }
+}
+
+#' Plot result from DAMCMC fit
+#'
+#' @examples
+#'
+#' fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
+#'                               L = 5000, burnin = 100, LL = 100)
+#' plot(fit)
+#' @export
+plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
+
+  old_par <- getOption("device.ask.default")
+  devAskNewPage(ask = TRUE)
+  on.exit(devAskNewPage(ask = old_par))
+  post_mix <- get_post(fit, burnin = burnin)
+
+  plot(post_mix, Window(fit$data))
+  plot_contour(post_mix, fit$data)
+  print(plot_ind(fit))
+  return(invisible())
 }
