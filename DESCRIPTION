@@ -14,8 +14,6 @@ LazyData: true
 Imports: mvtnorm,
     rgl,
     ggplot2,
-    psych,
-    combinat,
     Rcpp
 LinkingTo: Rcpp,
     RcppArmadillo

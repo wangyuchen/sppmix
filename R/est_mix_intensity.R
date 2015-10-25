@@ -12,11 +12,12 @@ est_mix_damcmc <- function(pp, m, truncate = FALSE,
 }
 
 
-
+#' @export
 get_post <- function(obj, ...) {
   UseMethod("get_post", obj)
 }
 
+#' @export
 get_post.damcmc_res <- function(fit, burnin) {
   L <- length(fit$allgens)
   m <- ncol(fit$genps)

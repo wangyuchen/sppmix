@@ -156,17 +156,13 @@ plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
                      frame.plot = FALSE, asp = 1,axes = TRUE, ...)
     }
   } else {
-    if (points == TRUE) {
-      m <- ggplot2::ggplot(temp,aes(x,y,z = z)) + labs(x = "X", y = "Y",
-                                              title = paste("Contour of the intensity surface with",
-                                                            pattern$n, "Points"))
-      m + ggplot2::stat_contour(aes(colour = ..level..)) +
-        geom_point(data=as.data.frame(pattern),aes(x, y, z=0))
-    } else {
-      m <- ggplot(temp,aes(x,y,z = z)) + labs(x = "X", y = "Y",
-                                              title = "Contour of the intensity surface")
-      m + ggplot2::stat_contour(aes(colour = ..level..))
-    }
+    m <- ggplot2::ggplot(temp,aes(x, y, z = z)) +
+      ggplot2::labs(x = "X", y = "Y",
+           title = paste("Contour of the intensity surface with",
+                         pattern$n, "Points")) +
+      ggplot2::stat_contour(aes(colour = ..level..))
+    if (points) m <- m + geom_point(data=as.data.frame(pattern),aes(x, y, z=0))
+    return(m)
   }
 }
 
@@ -183,9 +179,13 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
   old_par <- getOption("device.ask.default")
   devAskNewPage(ask = TRUE)
   on.exit(devAskNewPage(ask = old_par))
+
+
   post_mix <- get_post(fit, burnin = burnin)
 
+  # rgl plots don't wait for ENTER, so it has to appear first
   plot(post_mix, Window(fit$data))
+
   plot_contour(post_mix, fit$data)
   print(plot_ind(fit))
   return(invisible())
