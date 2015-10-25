@@ -38,7 +38,6 @@ get_post.damcmc_res <- function(fit, burnin) {
 }
 
 
-
 #' @export
 est_mix_bdmcmc <- function(pp, max_comp, truncate = FALSE,
                            lambda, lambdab, hyper,
