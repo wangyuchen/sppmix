@@ -1,7 +1,9 @@
 #include "sppmix.h"
+//Written by Sakis Micheas, 2015
 //helper functions only, used by cpp and R functions
 //visible in the package only
 
+//' @export
 // [[Rcpp::export]]
 double Factorial_sppmix(int x)
 {
@@ -10,6 +12,7 @@ double Factorial_sppmix(int x)
   return num;
 }
 
+//' @export
 // [[Rcpp::export]]
 mat invmat2d_sppmix(mat const& A){
   mat B=zeros(2,2);
@@ -22,6 +25,7 @@ mat invmat2d_sppmix(mat const& A){
   return B;
 }
 
+//' @export
 // [[Rcpp::export]]
 double densNormMixatx_sppmix(vec const& atx,List const& mix)
 {
@@ -53,6 +57,7 @@ double densNormMixatx_sppmix(vec const& atx,List const& mix)
   return val;
 }
 
+//' @export
 // [[Rcpp::export]]
 mat dNormMix_sppmix(List const& mix, vec const& x,
                     vec const& y)
@@ -73,6 +78,7 @@ mat dNormMix_sppmix(List const& mix, vec const& x,
     return z;
 }
 
+//' @export
 // [[Rcpp::export]]
 vec Permute_vec_sppmix(vec const& oldvec,
                        vec const& perm)
@@ -85,6 +91,7 @@ vec Permute_vec_sppmix(vec const& oldvec,
 }
 
 
+//' @export
 // [[Rcpp::export]]
 mat Permute_mat_sppmix(mat const& oldmat,
                        vec const& perm)
@@ -102,6 +109,7 @@ mat Permute_mat_sppmix(mat const& oldmat,
   return newmat;
 }
 
+//' @export
 // [[Rcpp::export]]
 mat GetAllPermutations_sppmix(int const& m)
 {
@@ -119,6 +127,7 @@ mat GetAllPermutations_sppmix(int const& m)
   return allperms;
 }
 
+//' @export
 // [[Rcpp::export]]
 vec GetAPermutation_sppmix(int const& m,int const& which)
 {
@@ -143,15 +152,15 @@ vec GetAPermutation_sppmix(int const& m,int const& which)
 //' @export
 // [[Rcpp::export]]
 List GetGrid_sppmix(int const& len,
-            vec const& mins,vec const& maxs)
+            vec const& xlims,vec const& ylims)
 {
   //setup grid for truncation
 int i,j;
 vec ticsx=zeros(len),ticsy=zeros(len);
 for (i=0;i<len;i++)
 {
-  ticsx(i)=mins(0)+i*(maxs(0)-mins(0))/(len-1);
-  ticsy(i)=mins(1)+i*(maxs(1)-mins(1))/(len-1);
+  ticsx(i)=xlims(0)+i*(xlims(1)-xlims(0))/(len-1);
+  ticsy(i)=ylims(0)+i*(ylims(1)-ylims(0))/(len-1);
 }
 mat areas=zeros(len,len);
 for(j=0;j<len-1;j++)
@@ -164,6 +173,7 @@ return List::create(
   Named("areas") = areas);
 }
 
+//' @export
 // [[Rcpp::export]]
 bool EqVec_sppmix(vec const& v1,vec const& v2,
                   double const& tol)
@@ -177,6 +187,7 @@ bool EqVec_sppmix(vec const& v1,vec const& v2,
   return true;
 }
 
+//' @export
 // [[Rcpp::export]]
 double logGammaFunc_sppmix(double const& x)
 {
@@ -185,12 +196,14 @@ double logGammaFunc_sppmix(double const& x)
   +1/(12*x)+1/(360*x*x*x)+1/(1260*x*x*x*x*x);
 }
 
+//' @export
 // [[Rcpp::export]]
 double GammaFunc_sppmix(double const& x)
 {
   return exp(logGammaFunc_sppmix(x));
 }
 
+//' @export
 // [[Rcpp::export]]
 double dDirichlet_sppmix(vec const& ps,vec const& ds)
 {
@@ -202,6 +215,7 @@ double dDirichlet_sppmix(vec const& ps,vec const& ds)
   return val;
 }
 
+//' @export
 // [[Rcpp::export]]
 double SumVec_sppmix(vec const& v,int const& start
                        ,int const& end)
@@ -238,11 +252,34 @@ vec SubVec_sppmix(vec const& v,int const& start,
 
 //' @export
 // [[Rcpp::export]]
-double GetMixtureMaxz_sppmix(List const& genmix)
+double GetMixtureMaxz_sppmix(List const& genmix,
+                             int const& len,
+                             vec const& xlims,
+                             vec const& ylims)
 {
-//assumes no truncation
-  int j,m  = genmix.size();
-  List kth_comp;
+//assumes no truncation, do grid search
+  int i,j;
+  //  List tics=GetGrid_sppmix(len,xlims,ylims);
+  //  vec ticsx=tics[1], ticsy=tics[2];
+  vec ticsx=zeros(len),ticsy=zeros(len);
+  for (i=0;i<len;i++)
+  {
+    ticsx(i)=xlims(0)+i*(xlims(1)-xlims(0))/(len-1);
+    ticsy(i)=ylims(0)+i*(ylims(1)-ylims(0))/(len-1);
+  }
+  vec atxy=zeros(2);
+  double zval,zmax=-1;
+  for(i=0;i<len;i++)
+    for(j=0;j<len;j++)
+    {
+      atxy(0)=ticsx(i);
+      atxy(1)=ticsy(j);
+      zval=densNormMixatx_sppmix(atxy,genmix);
+      if(zval>zmax)
+        zmax=zval;
+    }
+  return zmax;
+/*    List kth_comp;
   double zmax=-100000000000;
   for(j=0;j<m;j++)
   {
@@ -254,5 +291,51 @@ double GetMixtureMaxz_sppmix(List const& genmix)
     if (const1>zmax)
       zmax=const1;
   }
-  return zmax;
+  return zmax;*/
+//  return dens.max();
+}
+
+//' @export
+// [[Rcpp::export]]
+List MakeMixtureList_sppmix(List const& gens_list,
+                             int const& burnin)
+{
+//takes the DAMCMC output and makes a mixture list
+//based on its means, sppmix::MakeMixtureList_sppmix(gens)
+//find the means first
+  int i,j,L=gens_list.size();
+  List gen_realiz=gens_list[0];
+  int countgens=L-burnin,m=gen_realiz.size();
+/*  if(burnin>=L)
+  {
+    Rcout << "\nm="<<m << std::endl ;
+    Rcout << "\nError, burnin>=L" << std::endl ;
+    return List::create();
+  }*/
+  vec sumps=zeros(m);
+  mat summus=zeros(m,2);
+  mat sumsigmas=zeros(m,4);
+  for(i=burnin;i<L;i++)
+  {
+    sumps=sumps+GetRealiz_ps_sppmix(gens_list,i);
+    summus=summus+GetRealiz_mus_sppmix(gens_list,i);
+    sumsigmas=sumsigmas+GetRealiz_sigmas_sppmix(gens_list,i);
+  }
+  //  Rcout << countgens<< L-burnin<<std::endl ;
+  List mix(m);
+  for(j=0;j<m;j++)
+  {
+    double psj=sumps(j)/countgens;
+    vec muj=summus.row(j).t()/countgens;
+    mat sigj(2,2);
+    sigj(0,0)=sumsigmas(j,0)/countgens;
+    sigj(0,1)=sumsigmas(j,1)/countgens;
+    sigj(1,0)=sumsigmas(j,2)/countgens;
+    sigj(1,1)=sumsigmas(j,3)/countgens;
+    mix[j]=List::create(
+      Named("p") = psj,
+      Named("mu") = muj,
+      Named("sigma") = sigj);
+  }
+  return (mix);
 }

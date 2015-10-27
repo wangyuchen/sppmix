@@ -1,42 +1,30 @@
 #include "sppmix.h"
+//Written by Sakis Micheas, 2015
 //data, x-y limits, m=num of comps to fit
 //L=num iter, burnin
-//function [marginal,meanlamda,meanmus,meansigmas,
-//meanp,mus,sigmas,ps,meanz,sumz,postmeanintensity,
-//approx,lamdas,invsigs]=DAMCMC2dNormalMixture(
-//data,xlimits,ylimits,m,L,burnin,trueintensity,
-//trueps,truemus,truesigmas,truncate,skiplots)
 //just get realizations no plotting here
-
+//' @export
 //[[Rcpp::export]]
 List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,
                      int const& m,int const& L,
-                     int const& burnin,int const& LL,
+                     int const& LL,
                      bool const& truncate)
 {
   int n=data.n_rows;
   Rcout << "Dataset has " << n <<" points" << std::endl ;
-  //  cube(n_rows, n_cols, n_slices)
-  cube //genz1=zeros(n,m,L),
-    genmus=zeros(m,2,L);
-  //    Rcout << " passed" << std::endl ;
-  //  genmus.slice(0), first realization
+  cube genmus=zeros(m,2,L);
   //all elements in the field are 2x2 matrices
   field<mat> gensigmas(L,m),geninvsigmas(L,m);
-  //  gensigmas(0,1), first realization for second comp
-  mat meanz=zeros(n,m),genz=zeros(n,m),
-    genps=zeros(L,m),
+  mat genz=zeros(L,n),genps=zeros(L,m),
     consts=zeros(L,m);
   vec meanps=zeros(m);
   mat meanmus=zeros(m,2);
   cube meansigmas=zeros(2,2,m);
-  //  Rcout << "meansigmas0="<<meansigmas.slice(0)<< std::endl ;
 
   int i,j,r,dat;
   ivec which=randi(m, distr_param(0,n-1));
-  //process data for hyperparam values
   vec mins=zeros(2),maxs=zeros(2);
   if(xlims.size()==1)//passed 0, use data
   {
@@ -70,7 +58,6 @@ List DAMCMC2d_sppmix(mat const& data,
   kappainv(1,1)=Ry*Ry;
   //hypers 3:a=3, 4:g=.3, 5:gam=1
   double a=3,g=1,gam=1;
-  imat prevz,zmultinomial(n,m);
   mat hmat(2,2),hmatinv(2,2);
   hmat(0,1)=0;
   hmat(1,0)=0;
@@ -93,8 +80,15 @@ List DAMCMC2d_sppmix(mat const& data,
     genps(0,i)=1.0/m;
     consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
+  imat prevz,zmultinomial(n,m);
   for (dat=0;dat<n;dat++)
+  {
     zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,rDirichlet_sppmix(ones(m))),1,m);
+    uvec q1=find(zmultinomial.row(dat)==1);
+    genz(0,dat)=q1[0];
+//    Rcout <<"q1="<<q1<<"\n"<< std::endl ;
+  }
+//  return List::create();
   //  Rcout << sum(zmultinomial.col(0))<< std::endl ;
   //  Rcout << sum(zmultinomial.col(1))<< std::endl ;
   //Rcout << zmultinomial<< std::endl ;
@@ -121,7 +115,7 @@ List DAMCMC2d_sppmix(mat const& data,
     for(i=0;i<LL-1;i++)
       areas(i,j)=(ticsx(i+1)-ticsx(i))*(ticsy(j+1)-ticsy(j));
 
-  int countiter=0;
+//  int countiter=0;
   //start MCMC
   Rcout << "Preliminaries done. Starting MCMC" << std::endl ;
   for(i=0;i<L-1;i++)
@@ -173,9 +167,9 @@ List DAMCMC2d_sppmix(mat const& data,
       {
         mu1(0)=genmus(j,0,i);
         mu1(1)=genmus(j,1,i);
-        ratio=pow(ApproxMHRatiomu_sppmix(LL,ticsx,ticsy,areas,
-                                         mu1,trans(genmutemp),gensigmas(i,j),
-                                         geninvsigmas(i,j)),sum1);
+        ratio=pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
+               mu1,trans(genmutemp),gensigmas(i,j),
+                 geninvsigmas(i,j)),sum1);
       }
       else
         ratio=1;
@@ -205,9 +199,9 @@ List DAMCMC2d_sppmix(mat const& data,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        ratio=pow(ApproxMHRatiosig_sppmix(LL,ticsx,ticsy,areas,mu1,
-                                          propsigma,gensigmas(i,j),
-                                          geninvsigmas(i,j)),sum1);
+        ratio=pow(ApproxMHRatiosig_sppmix(LL,xlims,ylims,
+              mu1,propsigma,gensigmas(i,j),
+              geninvsigmas(i,j)),sum1);
       }
       else
         ratio=1;
@@ -226,8 +220,8 @@ List DAMCMC2d_sppmix(mat const& data,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        approxcompj=ApproxCompMass_sppmix(LL,ticsx,ticsy,
-                                          areas,mu1,gensigmas(i+1,j),
+        approxcompj=ApproxCompMass_sppmix(LL,xlims,ylims,
+                                          mu1,gensigmas(i+1,j),
                                           geninvsigmas(i+1,j));
       }
       else
@@ -290,18 +284,6 @@ List DAMCMC2d_sppmix(mat const& data,
     if(Rcpp::runif(1)[0]<ratio)
     {
       MHjump=MHjump+1;
-      if(i+1>burnin)
-      {
-        countiter++;
-        genz=genz+zmultinomial;
-        meanps=meanps+trans(genps.row(i+1));
-        meanmus=meanmus+genmus.slice(i+1);
-        for(j=0;j<m;j++)
-        {
-          meansigmas.slice(j)=meansigmas.slice(j)
-          +gensigmas(i+1,j);
-        }
-      }
     }
     else
     {
@@ -313,76 +295,23 @@ List DAMCMC2d_sppmix(mat const& data,
         genmus(j,0,i+1)=genmus(j,0,i);
         genmus(j,1,i+1)=genmus(j,1,i);
       }
-      if(i+1>burnin)
-      {
-        countiter++;
-        genz=genz+prevz;
-        meanps=meanps+trans(genps.row(i+1));
-        meanmus=meanmus+genmus.slice(i+1);
-        for(j=0;j<m;j++)
-        {
-          meansigmas.slice(j)=meansigmas.slice(j)
-          +gensigmas(i+1,j);
-          //         mat a(2,2); a=meansigmas.slice(j);
-          //         a=a+gensigmas(i+1,j); meansigmas.slice(j)=a;
-        }
-      }
       zmultinomial=prevz;
+    }
+    for(dat=0;dat<n;dat++)
+    {
+      uvec q1=find(zmultinomial.row(dat)==1);
+      genz(i+1,dat)=q1[0];
     }
   }
   printf("\rDone                                                      \n");
   printf("\rMH acceptance %3.1f%%",100.0*MHjump/L);
-  //compute means
-  meanz=genz/countiter;
-  meanps=meanps/countiter;
-  meanmus=meanmus/countiter;
-  meansigmas=meansigmas/countiter;
 
-  //  Rcout <<gensigmas(1,0)<< std::endl ;
-  //compute the average of the posterior surfaces
-  //needs to be multiplied by the lamdas
-  /*  mat AvgPostIntensity = zeros(LL,LL),
-  PostIntensityAvg = zeros(LL,LL);
-  if(0)
-  {
-  List mix1(m);//list containing mixture ps,mus,sigs
-  vec xy(2);
-  double intensityatxy;
-  countiter=0;
-  for(int x1=0;x1<LL;x1++)
-  for(int y1=0;y1<LL;y1++)
-  {
-  printf("\rComputing intensity surfaces: %3.1f%% complete",100.0*countiter/(LL*LL));
-  xy(0)=ticsx(x1);
-  xy(1)=ticsy(y1);
-  //for each realization, compute the intensity
-  //surface at the point xy
-  for(i=burnin;i<L;i++)
-  {
-  for(j=0;j<m;j++)
-  {
-  mu1(0)=genmus(j,0,i);
-  mu1(1)=genmus(j,1,i);
-  mix1[j]=List::create(
-    Named("p") = genps(i,j),
-  Named("mu") = mu1,
-  Named("sigma") = gensigmas(i,j));
-  }
-  intensityatxy=densNormMixatx_sppmix(xy,mix1);
-  AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)+intensityatxy/(L-burnin);
-  }
-  //      AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)/(L-burnin);
-  countiter++;
-  }
-  }
-  // Rcout <<intensityatxy<< std::endl ;
-  */
   //create a list, with each element corresponding
   //to a single realization, which itself is a list
   //with each element containing the mixture ps, mus, sigs,
   //as a list of m elements
   List allgens(L);
-  // ,mix(m);//list containing mixture ps,mus,sigs
+  //list containing mixture ps,mus,sigs
   for(i=0;i<L;i++)
   {
     List mix(m);
@@ -398,40 +327,15 @@ List DAMCMC2d_sppmix(mat const& data,
     allgens[i]=mix;
   }
 
-  //this ends up giving the same plots
-  //AvgPostIntensity=ApproxAvgPostIntensity(allgens,LL,burnin,ticsx,ticsy);
-
-
-  /*  List mix3,mix2=mix1[0];
-  float ppj0=as<double>(mix2["p"]);
-  Rcout <<ppj0<< std::endl ;
-  mix2=allgens[L-1];
-  mix3=mix2[0];
-  ppj0=as<double>(mix3["p"]);
-  Rcout <<ppj0<< std::endl ;
-  */
   //sample lambdas
   double alamda=1,blamda=10000;
-  vec lamdas=//randg<vec>(L, distr_param(alamda,blamda) );
-    //    gamrnd(n+alamda,1/(1+1/blamda),[L,1]);
-    rgamma( L,n+ alamda,1/(1+1/blamda));
-  double meanlamda=mean(lamdas);
+  vec lamdas=rgamma(L,n+alamda,1/(1+1/blamda));
 
   return List::create(
-    Named("allgens") = allgens,
+    Named("allgens_List") = allgens,
     Named("genps") = genps,
     Named("genmus") = genmus,
     Named("gensigmas") = gensigmas,
-    Named("meanz") = meanz,
-    Named("meanps") = meanps,
-    Named("meanmus") = meanmus,
-    Named("meansigmas") = meansigmas,
-    Named("genlamdas") = lamdas,
-    Named("meanlamda") = meanlamda,
-    Named("ticsnum") = LL,
-    Named("ticsx") = ticsx,
-    Named("ticsy") = ticsy,
-    Named("ticsareas") = areas);//,
-  //    Named("AvgofPostIntensity") = AvgPostIntensity,
-  //    Named("PostIntensityofAvg") = PostIntensityAvg);
+    Named("genzs") = genz,
+    Named("genlamdas") = lamdas);
 }

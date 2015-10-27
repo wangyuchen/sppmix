@@ -1,12 +1,15 @@
 #include "sppmix.h"
+//Written by Sakis Micheas, 2015
 //Operations on posterior realizations
 //used by cpp and R functions
 //visible in the package only
 
+//' @export
 // [[Rcpp::export]]
 List GetStats_sppmix(vec const& gens,
                      double const& alpha)
 {
+  //apply burnin before calling this function
   double mu=mean(gens);
   int L=gens.size();
   vec CS(2);
@@ -22,6 +25,7 @@ List GetStats_sppmix(vec const& gens,
     Named("CredibleSetConfidence") = 100*(1-alpha));
 }
 
+//' @export
 // [[Rcpp::export]]
 vec GetRealiz_ps_sppmix(List const& allgens,
                         int const& realiz)
@@ -43,6 +47,7 @@ vec GetRealiz_ps_sppmix(List const& allgens,
   return ps;
 }
 
+//' @export
 // [[Rcpp::export]]
 mat GetRealiz_mus_sppmix(List const& allgens,
                          int const& realiz)
@@ -64,6 +69,7 @@ mat GetRealiz_mus_sppmix(List const& allgens,
   return mus;
 }
 
+//' @export
 // [[Rcpp::export]]
 mat GetRealiz_sigmas_sppmix(List const& allgens,
                             int const& realiz)
@@ -200,7 +206,7 @@ List PostGenGetBestPerm_sppmix(List const& allgens)
       break;
     }
     count++;
-    Rcout << "permutations iteration ="<<count<< std::endl ;
+    printf("\rApplying Permutations, iteration %d",count);
     if (count>10000)
     {
       Rcout << "Didnt find it in 10000 iterations"<< std::endl ;
@@ -250,6 +256,7 @@ List PostGenGetBestPerm_sppmix(List const& allgens)
   }
 //apply the permutation to the realizations
 //in the R code, just return the best one
+  printf("\rDone                                                      \n");
   return List::create(
 //    Named("best_perm") = found,
     Named("best_perm") = current_perm,
@@ -265,6 +272,7 @@ List PostGenGetBestPerm_sppmix(List const& allgens)
 List GetAllMeans_sppmix(List const& allgens,
                         int const& burnin)
 {
+//allgens is the list of lists of realizations
 //  z=GetAllMeans_sppmix(gens$allgens,burnin)
   int i,j,L=allgens.size();
   List gen_realiz=allgens[0];
@@ -297,6 +305,7 @@ List GetAllMeans_sppmix(List const& allgens,
     Named("meansigmas") = meansigmas);
 }
 
+//' @export
 // [[Rcpp::export]]
 vec GetCompDistr_sppmix(vec const& numcomp,
     int const& maxnumcomp)
@@ -316,6 +325,7 @@ vec GetCompDistr_sppmix(vec const& numcomp,
   return distr_numcomp;
 }
 
+//' @export
 // [[Rcpp::export]]
 List GetBDCompRealiz_sppmix(List const& genBDmix,
     vec const& genlamdas,vec const& numcomp,
@@ -323,19 +333,44 @@ List GetBDCompRealiz_sppmix(List const& genBDmix,
 {
   //returns the gens for a specific # of components
   //apply burnin before calling this function
-  int L=numcomp.size();
+//  int L=numcomp.size();
   uvec indi=find(numcomp==comp);
   if(sum(indi)==0)//no realizations for this k
     return List::create();
   int nn1=indi.size();
   vec newlamdas=genlamdas(indi);
-  vec newnumcomp=numcomp(indi);
+//  vec newnumcomp=numcomp(indi);
   List newgenmix(nn1);
   for(int i=0;i<nn1;i++)
     newgenmix[i]=genBDmix[indi(i)];
 
   return List::create(
     Named("newgenBD") = newgenmix,
-    Named("newlamdas") = newlamdas,
-    Named("newnumcomp") = newnumcomp);
+    Named("newlamdas") = newlamdas);
+    //,Named("newnumcomp") = newnumcomp);
+}
+
+//' @export
+// [[Rcpp::export]]
+mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat
+      const& genzs,int const& m)
+{
+  //returns the membership matrix from
+  //the realizations matrix Lxn (the output
+  //from DAMCMC)
+  //apply burnin before calling this function
+  int i,dat,iters=genzs.n_rows,n=genzs.n_cols;
+  mat zmultinomial=zeros(n,m);
+  vec ptavglabel=zeros(n);
+  for(i=0;i<iters;i++)
+  {
+    //build the label matrix for this realization
+    mat cur_z=zeros(n,m);
+    //put 1 at location genzs(i,dat)
+    for(dat=0;dat<n;dat++)
+      cur_z(dat,genzs(i,dat))=1;
+    zmultinomial+=cur_z;
+//    ptavglabel+=genzs.row(i).t();
+  }
+  return zmultinomial/iters;
 }

@@ -1,4 +1,5 @@
 #include "sppmix.h"
+//Written by Sakis Micheas, 2015
 //data in the form of points (x,y), or from an image
 //hypers= 1:starting num of components, 2:tuning variable for kappa
 //3:a=3, 4:g=.3, 5:gam=1, 6:l for kappa prior
@@ -14,7 +15,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
                      vec const& xlims,
                      vec const& ylims,
                      int const& L,
-                     int const& burnin,int const& LL,
+                     int const& LL,
                      bool const& truncate,
                      double const& lamda,
                      double const& lamdab,
@@ -26,7 +27,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
   numcomp(0)=hyper(0);
   if (hyper(0)>maxnumcomp || hyper(0)<1)
     numcomp(0)=maxnumcomp;
-  mat z=zeros(L,n);
+  mat genz=zeros(L,n);
   cube genmus=zeros(maxnumcomp,2,L);
   //    Rcout << " passed" << std::endl ;
   //  genmus.slice(0), first realization
@@ -134,7 +135,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
     if(sum22>0)
     {
 //      qij=qij/sum11;
-      z(0,dat)=rDiscrete_sppmix(0,qij/sum22);
+        genz(0,dat)=rDiscrete_sppmix(0,qij/sum22);
     }
     else
     {
@@ -159,7 +160,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
     for(i=0;i<LL-1;i++)
       areas(i,j)=(ticsx(i+1)-ticsx(i))*(ticsy(j+1)-ticsy(j));
 
-  int pt1,indInf;//,countiter=0;
+  int pt1,indInf=0;//,countiter=0;
   //start MCMC
   Rcout << "Preliminaries done. Starting Birth-Death MCMC" << std::endl ;
   for(i=0;i<L-1;i++)
@@ -318,7 +319,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
       if(sum11>0)
       {
  //       qij=qij/sum11;
-        z(i+1,dat)=rDiscrete_sppmix(0,qij/sum11);
+          genz(i+1,dat)=rDiscrete_sppmix(0,qij/sum11);
       }
       else
       {
@@ -334,7 +335,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
     for(j=0;j<numcomp(i+1);j++)
     {
 //      Rcout << find(z.row(i+1)==j) << std::endl ;
-      mat newdata=data.rows(find(z.row(i+1)==j));
+      mat newdata=data.rows(find(genz.row(i+1)==j));
       sum1=newdata.n_rows;
 //      Rcout << "passed newdata\n"<<newdata<<sum1 << std::endl ;
       //samples mus
@@ -361,7 +362,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
       {
         mu1(0)=genmus(j,0,i);
         mu1(1)=genmus(j,1,i);
-        ratio=pow(ApproxMHRatiomu_sppmix(LL,ticsx,ticsy,areas,
+        ratio=pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
                                          mu1,trans(genmutemp),gensigmas(i,j),
                                          geninvsigmas(i,j)),sum1);
       }
@@ -396,7 +397,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        ratio=pow(ApproxMHRatiosig_sppmix(LL,ticsx,ticsy,areas,mu1,
+        ratio=pow(ApproxMHRatiosig_sppmix(LL,xlims,ylims,mu1,
                                           propsigma,gensigmas(i,j),
                                           geninvsigmas(i,j)),sum1);
       }
@@ -472,13 +473,13 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
   }*/
 
   return List::create(
-    Named("numcomp") = numcomp,
     Named("allgens_List") = allgens,
     Named("genps") = genps,
     Named("genmus") = genmus,
     Named("gensigmas") = gensigmas,
-    Named("genz") = z,
+    Named("genzs") = genz,
     Named("genlamdas") = lamdas,
+    Named("numcomp") = numcomp,
     Named("maxnumcomp") = maxnumcomp);
 //  ,Named("distr_numcomp") = distr_numcomp);
 }

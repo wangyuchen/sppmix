@@ -1,6 +1,8 @@
 #include "sppmix.h"
+//Written by Sakis Micheas, 2015
 //contains simulation functions only
 
+/*
 // [[Rcpp::export]]
 double rUnif_sppmix()
 {
@@ -16,7 +18,9 @@ double rUnifab_sppmix(double const& a,
   // double u=randu<vec>(1)[0];
   return a+(b-a)*Rcpp::runif(1)[0];
 }
+*/
 
+//' @export
 // [[Rcpp::export]]
 mat rnorm2_sppmix(int const& n,vec const& mu,
                   mat const& sigma) {
@@ -36,12 +40,14 @@ mat rnorm2_sppmix(int const& n,vec const& mu,
 }
 
 
+//' @export
 // [[Rcpp::export]]
 mat rWishart_sppmix(int const& df, mat const& A){
   mat Gens=rnorm2_sppmix(df, zeros(2),A);
   return Gens.t()*Gens;
 }
 
+//' @export
 // [[Rcpp::export]]
 int rDiscrete_sppmix(int const& start,vec const& probs)
 {
@@ -70,7 +76,7 @@ int rBinom_sppmix(int const& n,
   //  Rcout << probs<< std::endl ;
   return rDiscrete_sppmix(0,probs);
 }
-
+/*
 // [[Rcpp::export]]
 double rGamma_sppmix(double const& a,
                      double const& b){
@@ -87,7 +93,7 @@ double rGamma_sppmix(double const& a,
     u=Rcpp::runif(1)[0];
   }
   return y;
-}
+                     }*/
 
 // [[Rcpp::export]]
 double rExp_sppmix(double const& a)
@@ -95,23 +101,27 @@ double rExp_sppmix(double const& a)
   return -log(Rcpp::runif(1)[0])/a;
 }
 
+//' @export
 // [[Rcpp::export]]
 vec rDirichlet_sppmix(vec const& d){
   int k = d.size();
   vec gens(k);
   for(int i=0;i<k;i++)
-    gens(i)=//rgamma(1.0,1.0/d(i))[0];
+    gens(i)=//Rcpp::rgamma(1,1.0,1.0/d(i))[0];
       rExp_sppmix(1.0/d(i));
   return gens/sum(gens);
 }
 
+//' @export
 // [[Rcpp::export]]
 ivec rMultinomial_sppmix(int const& n,vec const& ps){
   int j,i,k=ps.size();
   ivec gen = zeros<ivec>(k) ;
   //  if(sum(p)<1)
   //    Rcout << "\n"<<p<<","<<sum(p) << std::endl ;
-  gen(0)=rBinom_sppmix(n,ps(0));
+  gen(0)=//Rcpp::rbinom(1,n,ps(0))[0];//
+  //R::rbinom(n,ps(0));//
+  rBinom_sppmix(n,ps(0));
   int sum1=0;
   double sump;
   for(j=1;j<k-1;j++)
@@ -120,13 +130,16 @@ ivec rMultinomial_sppmix(int const& n,vec const& ps){
     if (sum1==n)break;
     sump=0;
     for(i=j;i<k;i++)sump=sump+ps(i);
-    gen(j)=rBinom_sppmix(n-sum1,ps(j)/sump);
+    gen(j)=//Rcpp::rbinom(1,n-sum1,ps(j)/sump)[0];
+    //R::rbinom(n-sum1,ps(j)/sump);
+    rBinom_sppmix(n-sum1,ps(j)/sump);
   }
   gen(k-1)=n-sum(gen);
   //      Rcout << " passed" << std::endl ;
   return gen;
 }
 
+//' @export
 // [[Rcpp::export]]
 List rNormMix_sppmix(int const& lamda,
                        List const& mix)
@@ -138,7 +151,7 @@ List rNormMix_sppmix(int const& lamda,
   List mth_comp;
   //pick a component
   double u,sump,psj;
-  int n=rpois(1,lamda)[0];
+  int n=Rcpp::rpois(1,lamda)[0];
   //  Rcout << "mix" << std::endl ;
   //  Rcout << as<vec>(mth_comp["mu"]) << std::endl ;
   mat ret=zeros(n,2);
@@ -173,6 +186,7 @@ List rNormMix_sppmix(int const& lamda,
     Named("comp") = comps);
 }
 
+//' @export
 // [[Rcpp::export]]
 vec rPerm_sppmix(int const& n)
 {
