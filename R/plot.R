@@ -116,7 +116,6 @@ plot.sppmix <- function(spp, ...) {
 #'  \code{pattern}. The default is TRUE.
 #' @param ... Further arguments passed to \code{\link[rgl]{filled.contour}}.
 #'
-#'  @export
 #'  @examples
 #' # generate a mixture with given ps, mus and sigmas
 #' mix1 <- normmix(ps=c(.5, .5),
@@ -126,6 +125,7 @@ plot.sppmix <- function(spp, ...) {
 #' pp1 <- rsppmix(200, mix1, spatstat::square(1))
 #' # plot the theoretical intensity surface with a realization
 #' plot_contour(mix1,pp1,spatstat::square(1))
+#' @export
 plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
                          points = TRUE, filled = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
