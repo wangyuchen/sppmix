@@ -3,8 +3,9 @@
 #' Plot the density surface of a mixture.
 #'
 #' @param mix An object of class \code{\link{normmix}}.
+#' @param lambda intensity for a homogeneous Poisson process.
 #' @param win An object of class \code{\link[spatstat]{owin}}.
-#' @param L Length of grid on x and y axes.
+#' @param L Number of grid on x and y axes.
 #' @param truncate Whether the density is truncated in the window (truncate)
 #'  or not.
 #' @param title1 The title (on top) for the density plot.
@@ -16,13 +17,16 @@
 #' @examples
 #' if (require(spatstat)) {
 #'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
-#'   plot(mix1, square(2))
+#'   plot(mix1, 100, square(2))
 #' }
-plot.normmix <- function(mix, lambda, win, L = 100, truncate = TRUE,
-                         title1="Poisson Process Intensity",
+plot.normmix <- function(mix, lambda, win, L = 100,
+                         title1="Poisson Process Intensity", truncate = TRUE,
                          pos=c(0,0,0), ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
+
+  xlims <- c(win$xrange)
+  ylims <- c(win$yrange)
 
   z <- lambda*dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
 
@@ -31,6 +35,7 @@ plot.normmix <- function(mix, lambda, win, L = 100, truncate = TRUE,
                                    "#7F0000"))
   col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
 
+  zlims=c(0,max(z))
 
   height = 300
   width = 500
@@ -44,17 +49,16 @@ plot.normmix <- function(mix, lambda, win, L = 100, truncate = TRUE,
   U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
                rgl::rotate3d(U,pi/4,0,0,1))
-  zmax=max(zcoord)
-  Rangez=zmax-min(zcoord);
-  rgl::persp3d(x = xcoord, y = ycoord, z = zcoord,
+
+  rgl::persp3d(x = xcoord, y = ycoord, z = z,
                color = col, xlab="x",ylab="y",zlab="",
                zlim=c(zlims[1]-0.01,zlims[2]),
                box = FALSE, axes = FALSE)
   rgl::axis3d('x')
   rgl::axis3d('y')
   rgl::axis3d('z-+', pos = c(xlims[1], ylims[2], 0))
-  rgl::title3d(main=NULL)
-  rgl::text3d(xlims[2], ylims[2], zlims[2], texts=title1)
+  rgl::title3d(main = NULL)
+  rgl::text3d(xlims[2], ylims[2], zlims[2], texts = title1)
 }
 
 Plots_off<- function()
@@ -180,9 +184,9 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
   post_mix <- get_post(fit, burnin = burnin)
 
   # rgl plots don't wait for ENTER, so it has to appear first
-  plot(post_mix, Window(fit$data))
+  plot(post_mix$post_normix, post_mix$mean_lambda, Window(fit$data))
 
-  plot_contour(post_mix, fit$data)
+  plot_contour(post_mix$post_normix, post_mix$mean_lambda, fit$data)
   print(plot_ind(fit))
   return(invisible())
 }

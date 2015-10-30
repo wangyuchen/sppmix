@@ -4,20 +4,23 @@
 \alias{plot.normmix}
 \title{Plot mixture density.}
 \usage{
-\method{plot}{normmix}(mix, lambda, win, L = 100, truncate = TRUE,
-  title1 = "Poisson Process Intensity", pos = c(0, 0, 0), ...)
+\method{plot}{normmix}(mix, lambda, win, L = 100,
+  title1 = "Poisson Process Intensity", truncate = TRUE, pos = c(0, 0, 0),
+  ...)
 }
 \arguments{
 \item{mix}{An object of class \code{\link{normmix}}.}
 
+\item{lambda}{intensity for a homogeneous Poisson process.}
+
 \item{win}{An object of class \code{\link[spatstat]{owin}}.}
 
-\item{L}{Length of grid on x and y axes.}
+\item{L}{Number of grid on x and y axes.}
+
+\item{title1}{The title (on top) for the density plot.}
 
 \item{truncate}{Whether the density is truncated in the window (truncate)
 or not.}
-
-\item{title1}{The title (on top) for the density plot.}
 
 \item{...}{Further arguments passed to \code{\link[rgl]{persp3d}}.}
 
@@ -30,7 +33,7 @@ Plot the density surface of a mixture.
 \examples{
 if (require(spatstat)) {
   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
-  plot(mix1, square(2))
+  plot(mix1, 100, square(2))
 }
 }
 
