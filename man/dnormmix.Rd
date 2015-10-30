@@ -15,7 +15,7 @@ dnormmix(mix, win, x, y, L = 128, truncate = TRUE)
 automatically expand it into a grid. If missing, a regular grid over the
 window will be given.}
 
-\item{L}{Length of grid on x and y axes.}
+\item{L}{Number of grid on x and y axes.}
 
 \item{truncate}{Whether the density is truncated in the window (truncate)
 or not.}
