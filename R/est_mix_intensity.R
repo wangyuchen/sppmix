@@ -29,13 +29,16 @@ get_post.damcmc_res <- function(fit, burnin) {
   mean_mat <- function(mats) Reduce("+", mats) / length(mats)
   sigmas <- apply(fit$gensigmas[-(1:burnin), ], 2, mean_mat)
 
+  mean_lambda <- mean(fit$genlamdas)
+
   post_mus <- post_sigmas <- vector("list", m)
   for (i in 1:m) {
     post_mus[[i]] <- mus[i, ]
     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
   }
 
-  return(normmix(post_ps, post_mus, post_sigmas))
+  return(list(post_normix = normmix(post_ps, post_mus, post_sigmas),
+              mean_lambda = mean_lambda))
 }
 
 
