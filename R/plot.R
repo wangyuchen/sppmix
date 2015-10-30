@@ -18,13 +18,13 @@
 #'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
 #'   plot(mix1, square(2))
 #' }
-plot.normmix <- function(mix, win, L = 100, truncate = TRUE,
+plot.normmix <- function(mix, lambda, win, L = 100, truncate = TRUE,
                          title1="Poisson Process Intensity",
                          pos=c(0,0,0), ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
-  z <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
+  z <- lambda*dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
 
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
@@ -44,24 +44,19 @@ plot.normmix <- function(mix, win, L = 100, truncate = TRUE,
   U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
                rgl::rotate3d(U,pi/4,0,0,1))
-  rgl::persp3d(x = xcoord, y = ycoord, z = z,
-               color = col, xlab="x",ylab="y",
-               zlab="", box = FALSE,
-               axes = FALSE)
+  zmax=max(zcoord)
+  Rangez=zmax-min(zcoord);
+  rgl::persp3d(x = xcoord, y = ycoord, z = zcoord,
+               color = col, xlab="x",ylab="y",zlab="",
+               zlim=c(zlims[1]-0.01,zlims[2]),
+               box = FALSE, axes = FALSE)
   rgl::axis3d('x')
   rgl::axis3d('y')
-  rgl::axis3d('z-+'#-=low x-coord, +=high y-coord
-              ,pos = c(min(xcoord), max(ycoord), 0))
-  Rangex=max(xcoord)-min(xcoord);
-  Rangey=max(ycoord)-min(ycoord);
-  Rangez=max(z)-min(z);
-  zmax=max(z)
-
+  rgl::axis3d('z-+', pos = c(xlims[1], ylims[2], 0))
   rgl::title3d(main=NULL)
-  rgl::text3d(Rangex/2+pos[1],
-              Rangey/2+pos[2],
-              zmax+0.1*Rangez,texts=title1)
+  rgl::text3d(xlims[2], ylims[2], zlims[2], texts=title1)
 }
+
 Plots_off<- function()
 {
   graphics.off()
@@ -105,6 +100,7 @@ plot.sppmix <- function(spp, ...) {
 #' on it.
 #'
 #' @param mix Object of class normmix.
+#' @param lambda intensity for a homogeneous Poisson process.
 #' @param pattern Object of class \code{\link{ppp}}
 #' @param win Object of class \code{\link{owin}}
 #' @param L number of grids on each coordinate.  The default is L=100.
@@ -126,13 +122,13 @@ plot.sppmix <- function(spp, ...) {
 #' # plot the theoretical intensity surface with a realization
 #' plot_contour(mix1,pp1,spatstat::square(1))
 #' @export
-plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
+plot_contour <- function(mix, lambda, pattern, win = Window(pattern), L = 100,
                          points = TRUE, filled = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
   surf <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)
-  z <- surf$v
+  z <- lambda*surf$v
   grid <- expand.grid(xcoord,ycoord)
   temp <- data.frame(grid$Var1,grid$Var2,as.vector(t(z)))
   names(temp) <- c("x","y","z")
@@ -158,8 +154,8 @@ plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
   } else {
     m <- ggplot2::ggplot(temp,aes(x, y, z = z)) +
       ggplot2::labs(x = "X", y = "Y",
-           title = paste("Contour of the intensity surface with",
-                         pattern$n, "Points")) +
+                    title = paste("Contour of the intensity surface with",
+                                  pattern$n, "Points")) +
       ggplot2::stat_contour(aes(colour = ..level..))
     if (points) m <- m + geom_point(data=as.data.frame(pattern),aes(x, y, z=0))
     return(m)
