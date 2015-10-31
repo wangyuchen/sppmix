@@ -19,4 +19,7 @@ data=cbind(pp1$x,pp1$y)
 post=DAMCMC2d_sppmix(data,c(0,1),c(0,1),3, 5000, 1000, 50, trunc = FALSE)
 plot_ind(post)
 }
+\author{
+Yuchen Wang, Jiaxun Chen
+}
 

@@ -1,7 +1,7 @@
 #' Plot membership indicator
 #'
 #' @param dares list of results from DAMCMC
-#'
+#' @author Yuchen Wang, Jiaxun Chen
 #'
 #' @export
 #' @examples
@@ -12,12 +12,13 @@
 #' plot_ind(post)
 
 plot_ind <- function(dares) {
-  data <- dares$meanz
-  ind_df <- data.frame(point = 1:nrow(data),
-                       ind = apply(data, 1, which.max) - .5)
+  zs <- as.numeric(apply(dares$genzs, 2,
+                     function(x) {names(sort(table(x), decreasing = T)[1])}))
+  ind_df <- data.frame(point = 1:length(zs),
+                       ind = zs + .5)
   ggplot2::qplot(point, ind, data = ind_df, geom = "segment",
                  xend = point, yend = ind + 1, size = I(1.5)) +
-    ggplot2::coord_cartesian(ylim = c(.5, ncol(data) + .5)) +
+    ggplot2::coord_cartesian(ylim = c(.5, length(unique(zs)) + .5)) +
     ggplot2::theme_classic() +
     ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, size = 2)) +
     ggplot2::ggtitle("Plot of membership indicator")

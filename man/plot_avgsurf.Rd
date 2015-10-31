@@ -29,4 +29,7 @@ post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 # Plot the average of realized surfaces
 plot_avgsurf(gens = post, win = square(1), LL = 30, burnin = 1000)
 }
+\author{
+Athanasios Christou Micheas, Jiaxun Chen
+}
 

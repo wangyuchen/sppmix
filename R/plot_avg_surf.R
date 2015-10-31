@@ -7,7 +7,7 @@
 #' @param win An object of class \code{\link[spatstat]{owin}}.
 #' @param LL Number of grid on x and y axes.
 #' @param burnin Length of burnin.
-#'
+#' @author Athanasios Christou Micheas, Jiaxun Chen
 #' @export
 #' @examples
 #' # generate data
