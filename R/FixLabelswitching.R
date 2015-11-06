@@ -1,11 +1,11 @@
 #' @export
-FixLS_da<- function(gens, win, truemix=NULL, maxz=1, m=2, burnin=1000,
+FixLS_da<- function(fit, win, truemix=NULL, maxz=1, m=2, burnin=1000,
                  xlab1="x",ylab1="y", plot_result = FALSE)
 {
   xlims1 <- c(win$xrange)
   ylims1 <- c(win$yrange)
-  L <- dim(gens$genps)[1]
-   permgens <- PostGenGetBestPerm_sppmix(gens$allgens_List)
+  L <- dim(fit$genps)[1]
+   permgens <- PostGenGetBestPerm_sppmix(fit$allgens_List)
    if (plot_result == TRUE) {
 #    post_ps <- colMeans(permgens$permuted_ps[-(1:burnin), ])
 #    mus <- apply(permgens$permuted_mus[, , -(1:burnin)], 1:2, mean)
@@ -22,7 +22,7 @@ FixLS_da<- function(gens, win, truemix=NULL, maxz=1, m=2, burnin=1000,
 #    }
 #    post_normix = normmix(post_ps, post_mus, post_sigmas)
 
-#    n = gens$data$n
+#    n = fit$data$n
 #     par(mfrow=c(1,1))
 #
 #    titleLines <- list(
@@ -32,7 +32,7 @@ FixLS_da<- function(gens, win, truemix=NULL, maxz=1, m=2, burnin=1000,
 #    # Now output each line The text in the list is converted
 #    # to expressions do.call
 #
-#    plot.default(gens$data,pch=20,
+#    plot.default(fit$data,pch=20,
 #         xlab=xlab1,
 #         ylab=ylab1,
 #         xlim=xlims1,
@@ -56,15 +56,15 @@ FixLS_da<- function(gens, win, truemix=NULL, maxz=1, m=2, burnin=1000,
 #                    allgens = permgens$permuted_gens)
 #   if(Get_User_Input_sppmix(
 #     "Show average of intensity surfaces \n(slow operation, permuted realizations)?"))
-#     plot_avgsurf(gens, win, burnin = burnin)
+#     plot_avgsurf(fit, win, burnin = burnin)
    }
    perum_fit <- list(allgens_list = permgens$permuted_gens,
                      genps = permgens$permuted_ps,
                      genmus = permgens$permuted_mus,
                      gensigmas = permgens$permuted_sigmas,
                      genzs = permgens$best_perm,
-                     genlamdas = gens$genlamdas,
-                     data = gens$data
+                     genlamdas = fit$genlamdas,
+                     data = fit$data
                       )
    class(perum_fit) <- "damcmc_res"
    return(invisible(perum_fit))
