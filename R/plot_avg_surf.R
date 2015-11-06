@@ -2,11 +2,12 @@
 #'
 #' Plot the average of the posterior realizations for the intensity surface
 #'
-#' @param gens An object contains all posterior realizations from
+#' @param fit An object contains all posterior realizations from
 #' \code{\link{est_mix_damcmc}} or \code{\link{est_mix_bdmcmc}}.
 #' @param win An object of class \code{\link[spatstat]{owin}}.
 #' @param LL Number of grid on x and y axes.
-#' @param burnin Length of burnin.
+#' @param burnin Length of burnin, default value is 1/10 of total number of
+#' iteration.
 #' @author Athanasios Christou Micheas, Jiaxun Chen
 #' @export
 #' @examples
@@ -17,34 +18,34 @@
 #' # Run Data augmentation MCMC and get posterior realizations
 #' post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 #' # Plot the average of realized surfaces
-#' plot_avgsurf(gens = post, win = square(1), LL = 30, burnin = 1000)
-
-plot_avgsurf <- function(gens, win, LL = 30, burnin = 1000) {
+#' plot_avgsurf(fit = post, win = square(1), LL = 30, burnin = 1000)
+plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
 
   # get limits
   xlims <- c(win$xrange)
   ylims <- c(win$yrange)
+  L  <-  dim(fit$genps)[1]
 
-  mix_of_postmeans <- MakeMixtureList(gens$allgens_List,burnin)
-  mean_lambda <- mean(gens$genlamdas[burnin:L])
+  mix_of_postmeans <- MakeMixtureList(fit$allfit_List,burnin)
+  mean_lambda <- mean(fit$genlamdas[burnin:L])
   zmax_genmeanmix <- mean_lambda * GetMixtureMaxz_sppmix(mix_of_postmeans,
                           LL,xlims,ylims)
   #find the highest z
   maxz_height <- max(zmax_genmeanmix)
   zlims <- c(0, 1.1*maxz_height)
-  L  <-  dim(gens$genps)[1]
   gridvals  <-  GetGrid_sppmix(LL,xlims,ylims)
   xcoord <- as.vector(gridvals[[1]])
   ycoord <- as.vector(gridvals[[2]])
     zcoord <- ApproxAvgPostIntensity(
-    gens$allgens_List, gens$genlamdas, LL, burnin,
+    fit$allfit_List, fit$genlamdas, LL, burnin,
     xlims, ylims)
   title1 = paste("Average of",L-burnin,
                  "posterior realizations of the intensity function")
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
-  col <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord), length = 100))]
+  col <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord),
+                                                  length = 100))]
 
   if(is.null(zlims))
     zlims=c(0,max(zcoord))

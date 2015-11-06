@@ -4,17 +4,18 @@
 \alias{plot_avgsurf}
 \title{Plot the average intensity surface}
 \usage{
-plot_avgsurf(gens, win, LL = 30, burnin = 1000)
+plot_avgsurf(fit, win, LL = 30, burnin = 1000)
 }
 \arguments{
-\item{gens}{An object contains all posterior realizations from
+\item{fit}{An object contains all posterior realizations from
 \code{\link{est_mix_damcmc}} or \code{\link{est_mix_bdmcmc}}.}
 
 \item{win}{An object of class \code{\link[spatstat]{owin}}.}
 
 \item{LL}{Number of grid on x and y axes.}
 
-\item{burnin}{Length of burnin.}
+\item{burnin}{Length of burnin, default value is 1/10 of total number of
+iteration.}
 }
 \description{
 Plot the average of the posterior realizations for the intensity surface
@@ -27,7 +28,7 @@ pp2 <- rsppmix(100,mix2,square(1))
 # Run Data augmentation MCMC and get posterior realizations
 post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 # Plot the average of realized surfaces
-plot_avgsurf(gens = post, win = square(1), LL = 30, burnin = 1000)
+plot_avgsurf(fit = post, win = square(1), LL = 30, burnin = 1000)
 }
 \author{
 Athanasios Christou Micheas, Jiaxun Chen
