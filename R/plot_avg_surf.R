@@ -26,7 +26,7 @@ plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
   ylims <- c(win$yrange)
   L  <-  dim(fit$genps)[1]
 
-  mix_of_postmeans <- MakeMixtureList(fit$allfit_List,burnin)
+  mix_of_postmeans <- MakeMixtureList(fit$allgens_List,burnin)
   mean_lambda <- mean(fit$genlamdas[burnin:L])
   zmax_genmeanmix <- mean_lambda * GetMixtureMaxz_sppmix(mix_of_postmeans,
                           LL,xlims,ylims)
@@ -37,7 +37,7 @@ plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
   xcoord <- as.vector(gridvals[[1]])
   ycoord <- as.vector(gridvals[[2]])
     zcoord <- ApproxAvgPostIntensity(
-    fit$allfit_List, fit$genlamdas, LL, burnin,
+    fit$allgens_List, fit$genlamdas, LL, burnin,
     xlims, ylims)
   title1 = paste("Average of",L-burnin,
                  "posterior realizations of the intensity function")
