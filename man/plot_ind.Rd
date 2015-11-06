@@ -4,20 +4,22 @@
 \alias{plot_ind}
 \title{Plot membership indicator}
 \usage{
-plot_ind(dares)
+plot_ind(fit, burnin = length(fit$allgens_List)/10)
 }
 \arguments{
-\item{dares}{list of results from DAMCMC}
+\item{fit}{An object contains all posterior realizations from
+\code{\link{est_mix_damcmc}} or \code{\link{est_mix_bdmcmc}}.}
+
+\item{burnin}{Length of burnin, default value is 1/10 of total number of
+iteration.}
 }
 \description{
 Plot membership indicator
 }
 \examples{
-mix1 <- rnormmix(3, .01, 4, square(1))
-pp1=rsppmix(200, mix1, spatstat::square(1))
-data=cbind(pp1$x,pp1$y)
-post=DAMCMC2d_sppmix(data,c(0,1),c(0,1),3, 5000, 1000, 50, trunc = FALSE)
-plot_ind(post)
+fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
+                              L = 50000, LL = 100)
+plot_ind(fit)
 }
 \author{
 Yuchen Wang, Jiaxun Chen

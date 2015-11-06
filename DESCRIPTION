@@ -7,16 +7,17 @@ Authors@R: as.person(c(
     "Athanasios Christou Micheas <amicheas@stat.missouri.edu> [aut]"
   ))
 Description: What the package does (one paragraph)
-Depends:
+Depends: 
     R (>= 3.2.1),
     spatstat
 License: GPL-2
 LazyData: true
-Imports:
+Imports: 
     mvtnorm,
     rgl,
     ggplot2,
-    Rcpp
+    Rcpp,
+    tidyr
 LinkingTo: Rcpp,
     RcppArmadillo
 RoxygenNote: 5.0.0
