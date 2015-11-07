@@ -8,7 +8,7 @@
 #' @param LL Number of grid on x and y axes.
 #' @param burnin Length of burnin, default value is 1/10 of total number of
 #' iteration.
-#' @author Athanasios Christou Micheas, Jiaxun Chen
+#' @author Athanasios Christou Micheas, Jiaxun Chen, Yuchen Wang
 #' @export
 #' @examples
 #' # generate data
@@ -19,7 +19,8 @@
 #' post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 #' # Plot the average of realized surfaces
 #' plot_avgsurf(fit = post, win = square(1), LL = 30, burnin = 1000)
-plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
+plot_avgsurf <- function(fit, win, LL = 30,
+                         burnin = length(fit$allgens_List) / 10) {
 
   # get limits
   xlims <- c(win$xrange)

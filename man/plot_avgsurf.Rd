@@ -4,7 +4,7 @@
 \alias{plot_avgsurf}
 \title{Plot the average intensity surface}
 \usage{
-plot_avgsurf(fit, win, LL = 30, burnin = 1000)
+plot_avgsurf(fit, win, LL = 30, burnin = length(fit$allgens_List)/10)
 }
 \arguments{
 \item{fit}{An object contains all posterior realizations from
@@ -31,6 +31,6 @@ post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 plot_avgsurf(fit = post, win = square(1), LL = 30, burnin = 1000)
 }
 \author{
-Athanasios Christou Micheas, Jiaxun Chen
+Athanasios Christou Micheas, Jiaxun Chen, Yuchen Wang
 }
 

@@ -37,7 +37,7 @@ get_post.damcmc_res <- function(fit, burnin) {
     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
   }
 
-  return(list(post_normix = normmix(post_ps, post_mus, post_sigmas),
+  return(list(post_normmix = normmix(post_ps, post_mus, post_sigmas),
               mean_lambda = mean_lambda))
 }
 
