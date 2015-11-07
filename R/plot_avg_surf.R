@@ -8,7 +8,7 @@
 #' @param LL Number of grid on x and y axes.
 #' @param burnin Length of burnin, default value is 1/10 of total number of
 #' iteration.
-#' @author Athanasios Christou Micheas, Jiaxun Chen
+#' @author Athanasios Christou Micheas, Jiaxun Chen, Yuchen Wang
 #' @export
 #' @examples
 #' # generate data
@@ -19,14 +19,15 @@
 #' post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 #' # Plot the average of realized surfaces
 #' plot_avgsurf(fit = post, win = square(1), LL = 30, burnin = 1000)
-plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
+plot_avgsurf <- function(fit, win, LL = 30,
+                         burnin = length(fit$allgens_List) / 10) {
 
   # get limits
   xlims <- c(win$xrange)
   ylims <- c(win$yrange)
   L  <-  dim(fit$genps)[1]
 
-  mix_of_postmeans <- MakeMixtureList(fit$allfit_List,burnin)
+  mix_of_postmeans <- MakeMixtureList(fit$allgens_List,burnin)
   mean_lambda <- mean(fit$genlamdas[burnin:L])
   zmax_genmeanmix <- mean_lambda * GetMixtureMaxz_sppmix(mix_of_postmeans,
                                                          LL,xlims,ylims)
@@ -36,8 +37,8 @@ plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
   gridvals  <-  GetGrid_sppmix(LL,xlims,ylims)
   xcoord <- as.vector(gridvals[[1]])
   ycoord <- as.vector(gridvals[[2]])
-  zcoord <- ApproxAvgPostIntensity(
-    fit$allfit_List, fit$genlamdas, LL, burnin,
+    zcoord <- ApproxAvgPostIntensity(
+    fit$allgens_List, fit$genlamdas, LL, burnin,
     xlims, ylims)
   title1 = paste("Average of",L-burnin,
                  "posterior realizations of the intensity function")
