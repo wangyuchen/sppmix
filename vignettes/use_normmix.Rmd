@@ -1,0 +1,82 @@
+---
+title: "Work with 2D Normal Mixtures"
+author: "Yuchen Wang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Work with 2D Normal Mixtures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+A 2D normal mixture is a basic building block of this package. We created our 
+own mixture class ```normmix```. In this vignette, you'll learn how to create, 
+plot and manipulate a ```normmix``` object.
+
+
+## Create Normal Mixtures
+If you have already had a mixture you want to explore using ```sppmix```, you could start by creating a ```normmix``` object with it. You will need three essential elements for each component to create a 2D normal mixture:
+
+1. Probability $p$ of falling into the component.
+2. A vector $\mu$ of length two, which contains the center of the component.
+3. A variance-covariance matrix $\Sigma$ for the component.
+
+Because these elements differ in their dimension, there's different ways of organizing them in R. We expect the probability $p$'s to be organized into a vector, while the $\mu$'s and $\Sigma$'s in a list.
+
+```{r, message=FALSE}
+library(sppmix)
+ps <- c(.3, .7)
+mus <- list(c(0, 0), c(1, 1))
+sigmas <- list(.01 * diag(2), .01 * diag(2))
+mix1 <- normmix(ps, mus, sigmas)
+mix1
+```
+
+
+It will be of class ```normmix```, and there's some default S3 methods associated with it. You've already seen the ```print``` method, where it only tells you how many component you have. To know more details, you can use the ```summary``` method.
+
+```{r}
+summary(mix1)
+```
+
+
+It prints out the $\mu$'s but still not the $\Sigma$'s. You can also use ```is.normmix``` to test if an object is a valid normal mixture (currently it only check the ```class``` of the object).
+
+
+## Generate Mixture with Random Components
+If you don't have a specific normal mixture you want to work with (which is often the case), you may want to simulate a normal mixture from some parameters. ```rnormmix``` will allow you to simulate normal mixtures with fixed or random number of components.
+
+When generating a random normal mixture, you'll need to specify a window that the centers of the components lie in. This is facilitated by the ```owin``` class in the ```spatstat``` package. Currently only squared window is supported, please check documentation of ```spatstat``` on how to work with ```owin``` class.
+
+You'll also need some parameter for the Wishart distribution because we need to simulate the $\Sigma$'s from a Wishart distribution.
+
+```{r}
+mix2 <- rnormmix(3, sig0 = .01, sigdf = 5, win = square(5))
+mix2
+
+# generate random number of components
+mix3 <- rnormmix(8, sig0 = .01, sigdf = 10, square(5), rand_m = TRUE)
+mix3
+```
+
+
+## Generating Point Pattern from Normal Mixtures
+After you created a normal mixture, you may want to simulate a point pattern from it. You could do it with ```rsppmix```. 
+
+```{r}
+pp1 <- rsppmix(200, mix1, square(1))
+pp1
+```
+
+
+```pp1``` is a point pattern of class ``` c("sppmix", "ppp")```. It inherites the ```ppp``` class from ```spatstat```, but we also enhenced it with different methods only worked for ```sppmix```. For example, you could plot it in a different way than in ```spatstat```.
+
+```{r, fig.width=4, fig.height=6}
+plot(pp1)
+```
+
+
+
+
+
+

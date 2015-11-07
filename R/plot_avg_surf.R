@@ -29,14 +29,14 @@ plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
   mix_of_postmeans <- MakeMixtureList(fit$allfit_List,burnin)
   mean_lambda <- mean(fit$genlamdas[burnin:L])
   zmax_genmeanmix <- mean_lambda * GetMixtureMaxz_sppmix(mix_of_postmeans,
-                          LL,xlims,ylims)
+                                                         LL,xlims,ylims)
   #find the highest z
   maxz_height <- max(zmax_genmeanmix)
   zlims <- c(0, 1.1*maxz_height)
   gridvals  <-  GetGrid_sppmix(LL,xlims,ylims)
   xcoord <- as.vector(gridvals[[1]])
   ycoord <- as.vector(gridvals[[2]])
-    zcoord <- ApproxAvgPostIntensity(
+  zcoord <- ApproxAvgPostIntensity(
     fit$allfit_List, fit$genlamdas, LL, burnin,
     xlims, ylims)
   title1 = paste("Average of",L-burnin,
@@ -51,13 +51,13 @@ plot_avgsurf <- function(fit, win, LL = 30, burnin = 1000) {
     zlims=c(0,max(zcoord))
   height=300;
   width=500;
-#   if(.Platform$OS.type=='windows')
-#   {
-#     scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
-#     scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
-#     height=as.numeric(scr_height[length(scr_height)-1])
-#     width=as.numeric(scr_width[length(scr_width)-1])
-#   }
+  #   if(.Platform$OS.type=='windows')
+  #   {
+  #     scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
+  #     scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
+  #     height=as.numeric(scr_height[length(scr_height)-1])
+  #     width=as.numeric(scr_width[length(scr_width)-1])
+  #   }
 
   rgl::open3d(windowRect=c(width/5,
                            height/7,

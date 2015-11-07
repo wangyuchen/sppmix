@@ -1,0 +1,31 @@
+#' sppmix: A package for mixture models of spatial point patterns
+#'
+#' This package implemented data structures and methods for modelling spatial
+#' point process data using mixtures of normal component.
+#'
+#' Based on \code{spatstat} package's \code{ppp} class for point pattern and
+#' \code{owin} class for window, we implemented a \code{normmix} class for
+#' dealing with 2D normal mixture.
+#'
+#' Data augmentation MCMC (DAMCMC) and birth-death MCMC (BDMCMC) are the two
+#' main methods we have for estimating normal mixture to point pattern data.
+#'
+#' The MCMC algorithms are implemented in C++ using \code{Rcpp} and
+#' \code{RcppArmadillo}, and it's significantly faster than some other R
+#' implementations.
+#'
+#' We used \code{rgl} to create a 3D normal mixture intensity plot for
+#' \code{normmix}.
+#'
+#' To learn more about \code{sppmix}, start with the vignettes:
+#' browseVignettes(package = "sppmix")
+#'
+#' @docType package
+#' @name sppmix
+#' @useDynLib sppmix
+#' @importFrom Rcpp sourceCpp
+NULL
+
+.onUnload <- function (libpath) {
+  library.dynam.unload("sppmix", libpath)
+}

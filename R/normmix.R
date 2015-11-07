@@ -51,7 +51,7 @@ is.normmix <- function(mix) {
 #' @rdname normmix
 #' @export
 print.normmix <- function(mix) {
-  print(paste("Normal Mixture with", mix$m, "component"))
+  print(paste("Normal Mixture with", mix$m, "component(s)."))
 }
 
 #' Generate mixture with normal components.
