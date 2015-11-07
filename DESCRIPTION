@@ -1,18 +1,18 @@
 Package: sppmix
-Title: What the Package Does (one line, title case)
+Title: 2D normal mixture models for spatial point process.
 Version: 0.0.0.9000
 Authors@R: as.person(c(
     "Yuchen Wang <ycwang0712@gmail.com> [aut]",
     "Jiaxun Chen <chenjiaxun9@hotmail.com> [aut, cre]",
     "Athanasios Christou Micheas <amicheas@stat.missouri.edu> [aut]"
   ))
-Description: What the package does (one paragraph)
-Depends: 
+Description: This package implemented data structures and methods for modelling spatial point process data using mixtures of normal component.
+Depends:
     R (>= 3.2.1),
     spatstat
 License: GPL-2
 LazyData: true
-Imports: 
+Imports:
     mvtnorm,
     rgl,
     ggplot2,

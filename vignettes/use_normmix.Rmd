@@ -64,15 +64,16 @@ mix3
 After you created a normal mixture, you may want to simulate a point pattern from it. You could do it with ```rsppmix```. 
 
 ```{r}
-pp1 <- rsppmix(200, mix1, square(1))
+pp1 <- rsppmix(50, mix1, square(1))
 pp1
 ```
 
 
 ```pp1``` is a point pattern of class ``` c("sppmix", "ppp")```. It inherites the ```ppp``` class from ```spatstat```, but we also enhenced it with different methods only worked for ```sppmix```. For example, you could plot it in a different way than in ```spatstat```.
 
-```{r, fig.width=4, fig.height=6}
+```{r, fig.show='hold'}
 plot(pp1)
+plot.ppp(pp1)
 ```
 
 

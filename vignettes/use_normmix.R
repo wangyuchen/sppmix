@@ -18,9 +18,10 @@ mix3 <- rnormmix(8, sig0 = .01, sigdf = 10, square(5), rand_m = TRUE)
 mix3
 
 ## ------------------------------------------------------------------------
-pp1 <- rsppmix(200, mix1, square(1))
+pp1 <- rsppmix(50, mix1, square(1))
 pp1
 
-## ---- fig.width=4, fig.height=6------------------------------------------
+## ---- fig.show='hold'----------------------------------------------------
 plot(pp1)
+plot.ppp(pp1)
 
