@@ -57,15 +57,28 @@ mat ApproxAvgPostIntensity(List const& genmix,
 
 //' @export
 // [[Rcpp::export]]
-double ApproxCompMass_sppmix(int const& LL,
+double ApproxCompMass_sppmix(int const& L,
   vec const& xlims,vec const& ylims,vec const& mu,
   mat const& sig,mat const& siginv)
 {
 //approximates a single multivariate normal mass
+//The grid squares must have small area size
+//say, less than 0.01. If for the given LL and
+//domain this is not the case, adjust LL
+//first, check if a typical grid square has small area
+/*  int LL;
+  if((xlims(1)-xlims(0))*(ylims(1)-ylims(0))>0.01*LL*LL)
+//area is too large, increase LL
+  {
+    LL=floor(sqrt((xlims(1)-xlims(0))*(ylims(1)-ylims(0))/0.01));
+    Rcout <<"need to increase L to "<< LL<<", for a better approximation"<< std::endl ;
+  }
+  else
+    LL=L;
   double quad,approx=0,
     d1=1/sqrt(det(2*datum::pi*sig));
   int i,j;
-  vec midtics=zeros(2,1);
+  vec midtics(2);
   vec ticsx=zeros(LL),ticsy=zeros(LL);
   for (i=0;i<LL;i++)
   {
@@ -83,17 +96,51 @@ double ApproxCompMass_sppmix(int const& LL,
       quad=as_scalar((midtics-mu).t()*siginv*(midtics-mu));
       approx=approx+area*d1* exp(-.5*quad);
     }
+  }*/
+//this is a Monte-Carlo approximation
+/*  vec xs=Rcpp::runif(L,xlims(0),xlims(1));
+  vec ys=Rcpp::runif(L,xlims(0),xlims(1));
+  vec xy(2);
+  double quad,approx=0,
+    d1=1/sqrt(det(2*datum::pi*sig));
+  int i;
+  for (i=0;i<L;i++)
+  {
+    xy(0)=xs(i);
+    xy(1)=ys(i);
+    quad=as_scalar((xy-mu).t()*siginv*(xy-mu));
+    approx=approx+d1*exp(-.5*quad);
   }
-  return approx;
+  approx=((xlims(1)-xlims(0))*(ylims(1)-ylims(0)))*approx/L;
+*/
+//this is a better(?) Monte-Carlo approximation
+  mat xy=rnorm2_sppmix(L,mu,sig);
+  double approx=0;
+  for (int i=0;i<L;i++)
+  {
+    if(xy(i,0)>=xlims(0) && xy(i,0)<=xlims(1) &&
+       xy(i,1)>=ylims(0) && xy(i,1)<=ylims(1) )
+    approx++;
+  }
+  return approx/L;
 }
 
 //' @export
 // [[Rcpp::export]]
-double ApproxMHRatiomu_sppmix(int const& LL,
+double ApproxMHRatiomu_sppmix(int const& L,
   vec const& xlims,vec const& ylims,
   vec const& curmu,vec const& propmu,
   mat const& sig,mat const& siginv)
 {
+  int LL=L;
+  if((xlims(1)-xlims(0))*(ylims(1)-ylims(0))>0.01*LL*LL)
+    //area is too large, increase LL
+  {
+    LL=floor(sqrt((xlims(1)-xlims(0))*(ylims(1)-ylims(0))/0.01));
+//    Rcout <<"need to increase L to "<< LL<<", for a better approximation"<< std::endl ;
+  }
+  else
+    LL=L;
   double quad,approxFmu=0,approxFpropmu=0,
     d1=1/sqrt(det(2*datum::pi*sig));
   int i,j;
@@ -122,11 +169,20 @@ double ApproxMHRatiomu_sppmix(int const& LL,
 
 //' @export
 // [[Rcpp::export]]
-double ApproxMHRatiosig_sppmix(int const& LL,
+double ApproxMHRatiosig_sppmix(int const& L,
   vec const& xlims,vec const& ylims,vec const& mu1,
   mat const& propsigma,mat const& sig,
   mat const& siginv)
 {
+  int LL=L;
+  if((xlims(1)-xlims(0))*(ylims(1)-ylims(0))>0.01*LL*LL)
+    //area is too large, increase LL
+  {
+    LL=floor(sqrt((xlims(1)-xlims(0))*(ylims(1)-ylims(0))/0.01));
+//    Rcout <<"need to increase L to "<< LL<<", for a better approximation"<< std::endl ;
+  }
+  else
+    LL=L;
   double quad,approxFsig=0,approxFpropsig=0,
     d1=1/sqrt(det(2*datum::pi*sig)),
     d1prop=1/sqrt(det(2*datum::pi*propsigma));

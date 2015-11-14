@@ -361,7 +361,7 @@ mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat
   //apply burnin before calling this function
   int i,dat,iters=genzs.n_rows,n=genzs.n_cols;
   mat zmultinomial=zeros(n,m);
-  vec ptavglabel=zeros(n);
+//  vec ptavglabel=zeros(n);
   for(i=0;i<iters;i++)
   {
     //build the label matrix for this realization

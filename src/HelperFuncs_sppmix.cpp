@@ -59,6 +59,19 @@ double densNormMixatx_sppmix(vec const& atx,List const& mix)
 
 //' @export
 // [[Rcpp::export]]
+vec densNormMix_atxy_sppmix(mat const& atxy,
+                               List const& mix)
+{
+//atxy is an nx2 matrix
+  int i,n=atxy.n_rows;
+  vec val=zeros(n);
+  for(i=0;i<n;i++)
+    val(i)=densNormMixatx_sppmix(trans(atxy.row(i)),mix);
+  return val;
+}
+
+//' @export
+// [[Rcpp::export]]
 mat dNormMix_sppmix(List const& mix, vec const& x,
                     vec const& y)
 {

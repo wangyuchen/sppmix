@@ -70,6 +70,7 @@ List DAMCMC2d_sppmix(mat const& data,
   hmatinv(0,0)=a*Rx*Rx/(100*g);
   hmatinv(1,1)=a*Ry*Ry/(100*g);
   //starting values
+//  return List::create();
   for (i=0;i<m;i++)
   {
     //    genmus.slice(0);
@@ -81,6 +82,14 @@ List DAMCMC2d_sppmix(mat const& data,
     consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
   imat prevz,zmultinomial(n,m);
+//     Rcout <<"passed"<< std::endl ;
+  if(m==1)
+    for (dat=0;dat<n;dat++)
+    {
+      zmultinomial(dat,0)=1;
+      genz(0,dat)=0;
+    }
+  else
   for (dat=0;dat<n;dat++)
   {
     zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,rDirichlet_sppmix(ones(m))),1,m);
@@ -137,6 +146,7 @@ List DAMCMC2d_sppmix(mat const& data,
       //samples mus
       sum1=sum(zmultinomial.col(j));
       //     indi=find(zmultinomial.col(j)==1);
+//      Rcout << sum1<<'\n'<< std::endl ;
       if(sum1>0)
       {
         newdata=data.rows(find(zmultinomial.col(j)==1));
@@ -267,16 +277,17 @@ List DAMCMC2d_sppmix(mat const& data,
       //      Rcout << sum(zmultinomial.row(dat))<< std::endl ;
     }
     ratio=1;
+    if(m>1)
     for(j=0;j<m;j++)
     {
       //component with less that 2 points is not accepted
       if (sum(zmultinomial.col(j))<2)
       {
-        //        Rcout <<i<<zmultinomial<< std::endl ;
-        //       Rcout <<"\nComponent "<<j+1<<" has less than 2 pts"<< std::endl ;
-        //       Rcout << "1 "<<sum(zmultinomial.col(0))<< std::endl ;
-        //       Rcout << "2 "<<sum(zmultinomial.col(1))<< std::endl ;
-        //       return List::create();
+          //        Rcout <<i<<zmultinomial<< std::endl ;
+          //       Rcout <<"\nComponent "<<j+1<<" has less than 2 pts"<< std::endl ;
+          //       Rcout << "1 "<<sum(zmultinomial.col(0))<< std::endl ;
+          //       Rcout << "2 "<<sum(zmultinomial.col(1))<< std::endl ;
+          //       return List::create();
         ratio=0;
         break;
       }
@@ -299,8 +310,13 @@ List DAMCMC2d_sppmix(mat const& data,
     }
     for(dat=0;dat<n;dat++)
     {
-      uvec q1=find(zmultinomial.row(dat)==1);
-      genz(i+1,dat)=q1[0];
+      if(m>1)
+      {
+        uvec q1=find(zmultinomial.row(dat)==1);
+        genz(i+1,dat)=q1[0];
+      }
+      else
+        genz(i+1,dat)=0;
     }
   }
   printf("\rDone                                                      \n");
