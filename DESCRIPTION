@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: as.person(c(
     "Yuchen Wang <ycwang0712@gmail.com> [aut]",
     "Jiaxun Chen <chenjiaxun9@hotmail.com> [aut, cre]",
-    "Athanasios Christou Micheas <amicheas@stat.missouri.edu> [aut]"
+    "Athanasios (Sakis) Christou Micheas <amicheas@stat.missouri.edu> [aut]"
   ))
 Description: This package implemented data structures and methods for modelling spatial point process data using mixtures of normal component.
 Depends:

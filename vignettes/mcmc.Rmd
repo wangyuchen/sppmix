@@ -15,6 +15,9 @@ The function ```est_mix_damcmc()``` fits a mixture model to spatial point patter
 ```{r, echo=FALSE} 
 library(knitr)
 opts_chunk$set(fig.width = 5, fig.height = 4)
+library(rgl)
+knit_hooks$set(webgl = hook_webgl)
+
 ```
 
 
@@ -28,7 +31,7 @@ After defining the point pattern, you can run ```est_mix_damcmc()``` to fit a mi
 
 
 ```{r, results='hide'}
-fit <- est_mix_damcmc(redwood, 4, truncate = TRUE, L = 10000) 
+fit <- est_mix_damcmc(redwood, 4, L = 10000) 
 ```
 
 
@@ -66,6 +69,9 @@ Some diagnostic plots can be used on the chain, one of them is the membership in
 plot_ind(fit)
 ```
 
+```{r, webgl=TRUE}
+plot(post_mix$post_normmix, post_mix$mean_lambda, Window(fit$data))
+```
 
 ## Birth-Death MCMC
 
