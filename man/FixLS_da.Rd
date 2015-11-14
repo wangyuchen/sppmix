@@ -37,11 +37,7 @@ post_mean = get_post(post)
 # plot the estimated intensity surface
 plot(post_mean$post_normmix, post_mean$mean_lambda, square(1))
 # Fix label switching
-post_fixed = FixLS_da(post,square(1))
-# get posterior mean for each parameter after permutation
-post_mean2 = get_post(post_fixed)
-# plot the estimated intensity surface after permutating
-plot(post_mean2$post_normmix, post_mean2$mean_lambda, square(1))
+post_fixed = FixLS_da(post, plot_result = TRUE)
 }
 \author{
 Athanasios Christou Micheas, Jiaxun Chen, Yuchen Wang

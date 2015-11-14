@@ -22,7 +22,7 @@ plot_chains<- function(fit, burnin = length(fit$allgens_List) / 10) {
   plot(genps[,1], xlab = "Iteration", ylab = "p",
        type = "l",main =
          "Generated mixture probabilities\nComponent 1")
-  for (i in 2:min(3,m)) {
+  for (i in 2:m) {
     plot(genps[,i], xlab = "Iteration", ylab = "p",
          type = "l",main =
            paste("Generated mixture probabilities\nComponent",i))
@@ -35,7 +35,7 @@ plot_chains<- function(fit, burnin = length(fit$allgens_List) / 10) {
        type = "l",main =
          "Generated mixture means\nComponent 1, y-coord")
 
-  for (i in 2:min(3,m)) {
+  for (i in 2:m) {
     plot(genmus[i,1,], xlab = "Iteration", ylab = bquote(mu),
          type = "l", main =
            paste("Generated mixture means\nComponent"

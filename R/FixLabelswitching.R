@@ -21,11 +21,7 @@
 #' # plot the estimated intensity surface
 #' plot(post_mean$post_normmix, post_mean$mean_lambda, square(1))
 #' # Fix label switching
-#' post_fixed = FixLS_da(post,square(1))
-#' # get posterior mean for each parameter after permutation
-#' post_mean2 = get_post(post_fixed)
-#' # plot the estimated intensity surface after permutating
-#' plot(post_mean2$post_normmix, post_mean2$mean_lambda, square(1))
+#' post_fixed = FixLS_da(post, plot_result = TRUE)
 FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
                  xlab1 = "x",ylab1 = "y", plot_result = FALSE)
 {
@@ -87,11 +83,10 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
 #     "Show average of intensity surfaces \n(slow operation, permuted realizations)?"))
 #     plot_avgsurf(fit, win, burnin = burnin)
    }
-   perum_fit <- list(allgens_list = permgens$permuted_gens,
+   perum_fit <- list(allgens_List = permgens$permuted_gens,
                      genps = permgens$permuted_ps,
                      genmus = permgens$permuted_mus,
                      gensigmas = permgens$permuted_sigmas,
-                     genzs = permgens$best_perm,
                      genlamdas = fit$genlamdas,
                      data = fit$data
                       )
