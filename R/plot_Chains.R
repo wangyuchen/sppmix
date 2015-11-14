@@ -14,7 +14,7 @@
 #' # plot MCMC chains for parameter mus and ps
 #' plot_chains(post)
 
-plot_chains<- function(fit, burnin = length(fit$allgens_List) / 10) {
+plot_chains <- function(fit, burnin = length(fit$allgens_List) / 10) {
     L=length(fit$allgens_List)
     genps = fit$genps[(burnin + 1):L, ]
     genmus = fit$genmus[, , (burnin + 1):L]

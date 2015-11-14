@@ -12,7 +12,7 @@ Plot result from DAMCMC fit
 \examples{
 
 fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-                              L = 5000, burnin = 100, LL = 100)
+                              L = 5000, LL = 100)
 plot(fit)
 }
 
