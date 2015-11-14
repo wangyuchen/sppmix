@@ -1,0 +1,93 @@
+---
+title: "Fitting Mixture Models Using MCMC"
+author: "Yuchen Wang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Fitting Mixture Models Using MCMC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Data Augmentation MCMC
+### Fit point pattern with DAMCMC
+The function ```est_mix_damcmc()``` fits a mixture model to spatial point pattern data using data augmentation MCMC. To use this function, you need to convert your data into a point pattern class ```ppp``` as defined in the spatstat package. The point pattern object should have points as well as a window.
+```{r, echo=FALSE} 
+library(knitr)
+opts_chunk$set(fig.width = 5, fig.height = 4)
+```
+
+
+```{r}
+library(sppmix)
+data(redwood)
+Window(redwood)
+```
+
+After defining the point pattern, you can run ```est_mix_damcmc()``` to fit a mixture to it. With DAMCMC, the number of components must be defined beforehand. For example, here we fit a 4 component mixture to the redwood data. You can specify whether to use truncation, where all the components are gurenteered to be within the window your data is in, but it will be slower.
+
+
+```{r, results='hide'}
+fit <- est_mix_damcmc(redwood, 4, truncate = TRUE, L = 10000) 
+```
+
+
+### After MCMC
+Note that although ```est_mix_damcmc()``` is running a MCMC algorithm, you don't need to set burn-in number of iterations, because the object ```fit``` of class ```damcmc_res``` will always give you the full MCMC chain. This gives you the flexibility to change burn-in number without re-run the MCMC again. Also every post-MCMC operation will need to specify burn-in, by default it's 1/10 the chain length. 
+
+To get the estimated posterior mixture, you need to use ```get_post()``` function.
+
+```{r}
+post_mix <- get_post(fit, burnin = 2000)
+post_mix
+```
+
+Object ```post_mix``` is a list of 2 elements, the first is a normal mixture of class ```normmix``` and the second is the estimated mean intensity $\lambda$.
+
+
+Given that the posterior mixture is of class ```normmix```, any operations introduced in *Work with 2D Normal Mixtures* vignette can be applied to it.
+
+```{r}
+plot_contour(mix = post_mix$post_normmix, lambda = post_mix$mean_lambda,  
+             pattern = redwood, win = Window(redwood))
+```
+
+
+### Diagnostic of MCMC chain
+Here we introduce some other diagnostic methods and plots regarding the chain from DAMCMC.
+
+```{r}
+summary(fit)
+```
+
+Some diagnostic plots can be used on the chain, one of them is the membership indicator plot.
+
+```{r}
+plot_ind(fit)
+```
+
+
+## Birth-Death MCMC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

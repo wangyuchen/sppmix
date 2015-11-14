@@ -19,7 +19,7 @@ summary.damcmc_res <- function(fit, dgt = 2) {
   for (i in 1:m)
   {
     #true value and credible sets
-    poststats = GetStats_sppmix(fit$genps[,i],alpha=0.05)
+    poststats = GetStats_sppmix(fit$genps[,i], alpha=0.05)
     poststats <- sapply(poststats, format, digits = dgt)
 
     cat("\n----------------Component ",i,"------------\n")
