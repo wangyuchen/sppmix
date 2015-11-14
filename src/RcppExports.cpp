@@ -24,52 +24,52 @@ BEGIN_RCPP
 END_RCPP
 }
 // ApproxCompMass_sppmix
-double ApproxCompMass_sppmix(int const& LL, vec const& xlims, vec const& ylims, vec const& mu, mat const& sig, mat const& siginv);
-RcppExport SEXP sppmix_ApproxCompMass_sppmix(SEXP LLSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+double ApproxCompMass_sppmix(int const& L, vec const& xlims, vec const& ylims, vec const& mu, mat const& sig, mat const& siginv);
+RcppExport SEXP sppmix_ApproxCompMass_sppmix(SEXP LSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
+    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type mu(muSEXP);
     Rcpp::traits::input_parameter< mat const& >::type sig(sigSEXP);
     Rcpp::traits::input_parameter< mat const& >::type siginv(siginvSEXP);
-    __result = Rcpp::wrap(ApproxCompMass_sppmix(LL, xlims, ylims, mu, sig, siginv));
+    __result = Rcpp::wrap(ApproxCompMass_sppmix(L, xlims, ylims, mu, sig, siginv));
     return __result;
 END_RCPP
 }
 // ApproxMHRatiomu_sppmix
-double ApproxMHRatiomu_sppmix(int const& LL, vec const& xlims, vec const& ylims, vec const& curmu, vec const& propmu, mat const& sig, mat const& siginv);
-RcppExport SEXP sppmix_ApproxMHRatiomu_sppmix(SEXP LLSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP curmuSEXP, SEXP propmuSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+double ApproxMHRatiomu_sppmix(int const& L, vec const& xlims, vec const& ylims, vec const& curmu, vec const& propmu, mat const& sig, mat const& siginv);
+RcppExport SEXP sppmix_ApproxMHRatiomu_sppmix(SEXP LSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP curmuSEXP, SEXP propmuSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
+    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type curmu(curmuSEXP);
     Rcpp::traits::input_parameter< vec const& >::type propmu(propmuSEXP);
     Rcpp::traits::input_parameter< mat const& >::type sig(sigSEXP);
     Rcpp::traits::input_parameter< mat const& >::type siginv(siginvSEXP);
-    __result = Rcpp::wrap(ApproxMHRatiomu_sppmix(LL, xlims, ylims, curmu, propmu, sig, siginv));
+    __result = Rcpp::wrap(ApproxMHRatiomu_sppmix(L, xlims, ylims, curmu, propmu, sig, siginv));
     return __result;
 END_RCPP
 }
 // ApproxMHRatiosig_sppmix
-double ApproxMHRatiosig_sppmix(int const& LL, vec const& xlims, vec const& ylims, vec const& mu1, mat const& propsigma, mat const& sig, mat const& siginv);
-RcppExport SEXP sppmix_ApproxMHRatiosig_sppmix(SEXP LLSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mu1SEXP, SEXP propsigmaSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+double ApproxMHRatiosig_sppmix(int const& L, vec const& xlims, vec const& ylims, vec const& mu1, mat const& propsigma, mat const& sig, mat const& siginv);
+RcppExport SEXP sppmix_ApproxMHRatiosig_sppmix(SEXP LSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mu1SEXP, SEXP propsigmaSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
+    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type mu1(mu1SEXP);
     Rcpp::traits::input_parameter< mat const& >::type propsigma(propsigmaSEXP);
     Rcpp::traits::input_parameter< mat const& >::type sig(sigSEXP);
     Rcpp::traits::input_parameter< mat const& >::type siginv(siginvSEXP);
-    __result = Rcpp::wrap(ApproxMHRatiosig_sppmix(LL, xlims, ylims, mu1, propsigma, sig, siginv));
+    __result = Rcpp::wrap(ApproxMHRatiosig_sppmix(L, xlims, ylims, mu1, propsigma, sig, siginv));
     return __result;
 END_RCPP
 }
@@ -160,6 +160,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< vec const& >::type atx(atxSEXP);
     Rcpp::traits::input_parameter< List const& >::type mix(mixSEXP);
     __result = Rcpp::wrap(densNormMixatx_sppmix(atx, mix));
+    return __result;
+END_RCPP
+}
+// densNormMix_atxy_sppmix
+vec densNormMix_atxy_sppmix(mat const& atxy, List const& mix);
+RcppExport SEXP sppmix_densNormMix_atxy_sppmix(SEXP atxySEXP, SEXP mixSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< mat const& >::type atxy(atxySEXP);
+    Rcpp::traits::input_parameter< List const& >::type mix(mixSEXP);
+    __result = Rcpp::wrap(densNormMix_atxy_sppmix(atxy, mix));
     return __result;
 END_RCPP
 }
@@ -454,6 +466,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< mat       const& >::type genzs(genzsSEXP);
     Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
     __result = Rcpp::wrap(GetAvgLabelsDiscrete2Multinomial_sppmix(genzs, m));
+    return __result;
+END_RCPP
+}
+// pmvnorm_mvtnorm
+double pmvnorm_mvtnorm(NumericVector lls, NumericVector uls, NumericVector mu, NumericMatrix sigma);
+RcppExport SEXP sppmix_pmvnorm_mvtnorm(SEXP llsSEXP, SEXP ulsSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type lls(llsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type uls(ulsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type sigma(sigmaSEXP);
+    __result = Rcpp::wrap(pmvnorm_mvtnorm(lls, uls, mu, sigma));
     return __result;
 END_RCPP
 }

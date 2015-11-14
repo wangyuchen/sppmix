@@ -59,13 +59,13 @@ vec rPerm_sppmix(int const& n);
 mat ApproxAvgPostIntensity(List const& genmix,
     vec const& lamdas,int const& LL,int const& burnin,
     vec const& xlims,vec const& ylims);
-double ApproxCompMass_sppmix(int const& LL,vec const& xlims,
+double ApproxCompMass_sppmix(int const& L,vec const& xlims,
     vec const& ylims,vec const& mu,
     mat const& sig,mat const& siginv);
-double ApproxMHRatiomu_sppmix(int const& LL,vec const& xlims,
+double ApproxMHRatiomu_sppmix(int const& L,vec const& xlims,
     vec const& ylims,vec const& curmu,vec const& propmu,
     mat const& sig,mat const& siginv);
-double ApproxMHRatiosig_sppmix(int const& LL,vec const& xlims,
+double ApproxMHRatiosig_sppmix(int const& L,vec const& xlims,
     vec const& ylims,vec const& mu1,mat const& propsigma,
     mat const& sig,mat const& siginv);
 mat ApproxBayesianModelAvgIntensity_sppmix(
@@ -94,6 +94,7 @@ mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat const& genzs,int const& m);
 double Factorial_sppmix(int x);
 mat invmat2d_sppmix(mat const& A);
 double densNormMixatx_sppmix(vec const& atx,List const& mix);
+vec densNormMix_atxy_sppmix(mat const& atxy,List const& mix);
 mat dNormMix_sppmix(List const& mix, vec const& x,vec const& y);
 vec Permute_vec_sppmix(vec const& oldvec,vec const& perm);
 mat Permute_mat_sppmix(mat const& oldmat,vec const& perm);
@@ -109,5 +110,11 @@ vec SubstituteVec_sppmix(vec v,vec const& subv,int const& start);
 vec SubVec_sppmix(vec const& v,int const& start,int const& end);
 double GetMixtureMaxz_sppmix(List const& genmix,int const& len,vec const& xlims,vec const& ylims);
 List MakeMixtureList_sppmix(List const& gens_list,int const& burnin);
+
+
+//Fucntions that connect to other APIs
+//file: OtherAPIs_sppmix.cpp
+double pmvnorm_mvtnorm(NumericVector lls, NumericVector uls,
+                       NumericVector mu, NumericMatrix sigma);
 
 #endif

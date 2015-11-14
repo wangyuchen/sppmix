@@ -7,18 +7,18 @@ ApproxAvgPostIntensity <- function(genmix, lamdas, LL, burnin, xlims, ylims) {
 }
 
 #' @export
-ApproxCompMass_sppmix <- function(LL, xlims, ylims, mu, sig, siginv) {
-    .Call('sppmix_ApproxCompMass_sppmix', PACKAGE = 'sppmix', LL, xlims, ylims, mu, sig, siginv)
+ApproxCompMass_sppmix <- function(L, xlims, ylims, mu, sig, siginv) {
+    .Call('sppmix_ApproxCompMass_sppmix', PACKAGE = 'sppmix', L, xlims, ylims, mu, sig, siginv)
 }
 
 #' @export
-ApproxMHRatiomu_sppmix <- function(LL, xlims, ylims, curmu, propmu, sig, siginv) {
-    .Call('sppmix_ApproxMHRatiomu_sppmix', PACKAGE = 'sppmix', LL, xlims, ylims, curmu, propmu, sig, siginv)
+ApproxMHRatiomu_sppmix <- function(L, xlims, ylims, curmu, propmu, sig, siginv) {
+    .Call('sppmix_ApproxMHRatiomu_sppmix', PACKAGE = 'sppmix', L, xlims, ylims, curmu, propmu, sig, siginv)
 }
 
 #' @export
-ApproxMHRatiosig_sppmix <- function(LL, xlims, ylims, mu1, propsigma, sig, siginv) {
-    .Call('sppmix_ApproxMHRatiosig_sppmix', PACKAGE = 'sppmix', LL, xlims, ylims, mu1, propsigma, sig, siginv)
+ApproxMHRatiosig_sppmix <- function(L, xlims, ylims, mu1, propsigma, sig, siginv) {
+    .Call('sppmix_ApproxMHRatiosig_sppmix', PACKAGE = 'sppmix', L, xlims, ylims, mu1, propsigma, sig, siginv)
 }
 
 #' @export
@@ -49,6 +49,11 @@ invmat2d_sppmix <- function(A) {
 #' @export
 densNormMixatx_sppmix <- function(atx, mix) {
     .Call('sppmix_densNormMixatx_sppmix', PACKAGE = 'sppmix', atx, mix)
+}
+
+#' @export
+densNormMix_atxy_sppmix <- function(atxy, mix) {
+    .Call('sppmix_densNormMix_atxy_sppmix', PACKAGE = 'sppmix', atxy, mix)
 }
 
 #' @export
@@ -169,6 +174,11 @@ GetBDCompRealiz_sppmix <- function(genBDmix, genlamdas, numcomp, comp) {
 #' @export
 GetAvgLabelsDiscrete2Multinomial_sppmix <- function(genzs, m) {
     .Call('sppmix_GetAvgLabelsDiscrete2Multinomial_sppmix', PACKAGE = 'sppmix', genzs, m)
+}
+
+#' @export
+pmvnorm_mvtnorm <- function(lls, uls, mu, sigma) {
+    .Call('sppmix_pmvnorm_mvtnorm', PACKAGE = 'sppmix', lls, uls, mu, sigma)
 }
 
 #' @export
