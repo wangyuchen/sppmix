@@ -9,17 +9,18 @@ Authors@R: as.person(c(
 Description: This package implemented data structures and methods for modelling spatial point process data using mixtures of normal component.
 Depends:
     R (>= 3.2.1),
-    spatstat
+    spatstat,
+    mvtnorm
 License: GPL-2
 LazyData: true
 Imports:
-    mvtnorm,
     rgl,
     ggplot2,
     Rcpp,
     tidyr
 LinkingTo: Rcpp,
-    RcppArmadillo
+    RcppArmadillo,
+    mvtnorm
 RoxygenNote: 5.0.0
 Suggests: knitr,
     rmarkdown
