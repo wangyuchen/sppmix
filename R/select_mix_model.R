@@ -1,41 +1,41 @@
 #' @export
-selectMix <- function(pattern, win, Ms, L = 1000,
-                        burnin = 200, truncate = TRUE){
-  if (truncate==TRUE) {
-    pattern <- pattern[spatstat::inside.owin(pattern$x, pattern$y, win)]
-  }
-
-  pp <- as.data.frame(pattern)
-  n <- npoints(pattern)
-
-  if (L <= burnin) {
-    stop("wrong L or burnin")
-  }
-  window_area <- diff(win$x) * diff(win$y)
-  lambdahat <- n / window_area
+selectMix <- function(pp, Ms, L = 5000, LL = 100, burnin = 1000,
+                      truncate = FALSE) {
+  n <- pp$n
+  pattern <- cbind(pp$x,pp$y)
+  lognfac <- log(sqrt(2*pi*n)) + n*log(n) - n
   mmax <- length(Ms)
   AIC <- rep(0, mmax)
   BIC <- rep(0, mmax)
   marginal <- rep(0, mmax)
-  models <- list()
   for (m in 1:mmax) {
-   mix <- est_mix_intensity(pattern, win, m = Ms[m], marginal = TRUE)
-   models <- append(models, list(mix))
-   loglikelihood <- n*log(mix$lambda) - mix$lambda
-   den <- dnormmix(mix$post_mix,win = win)$v
-   loglikelihood <- loglikelihood + sum(log(den))
+   post_real <- est_mix_damcmc(pp, m = Ms[m], L = L, LL = LL,
+                               truncate = truncate)
+   real <- FixLS_da(post_real, pp$window)
+   marginal[m] <- normmix_marginal(real)
+   post_est <- get_post(real)
+   mlambda <- post_est$mean_lambda
+   mix <- vector("list", m)
+   for(i in 1:Ms[m]){
+     mix[[i]]=list(p = post_est$post_normmix$ps[i],
+                   mu = post_est$post_normmix$mus[[i]],
+                   sigma = post_est$post_normmix$sigmas[[i]]);
+   }
+    den <-densNormMix_atxy_sppmix(pattern, mix)
+   loglikelihood <- -lognfac + n*log(mlambda) - mlambda +
+     sum(log(den))
    r <- 1 + 6 * Ms[m]
    AIC[m] <- 2 * r - 2 * loglikelihood
    BIC[m] <- r * log(n) - 2 * loglikelihood
-   marginal[m] <- mix$marginal
+
   }
   index <- as.matrix(expand.grid(1:mmax,1:mmax))
-  bayes_factor <- apply(index,1,function(x) marginal[x[2]]/marginal[x[1]])
-  bayes_factor <- matrix(bayes_factor, mmax, mmax,
-                         dimnames = list(paste("denominator",Ms),
-                                         paste("numerator",Ms)))
+   bayes_factor <- apply(index,1,function(x) marginal[x[2]]/marginal[x[1]])
+   bayes_factor <- matrix(bayes_factor, mmax, mmax,
+                          dimnames = list(paste("denominator",Ms),
+                                          paste("numerator",Ms)))
   RVAL <- list(AIC = AIC,
                BIC = BIC,
-               bayes_factor = bayes_factor,
-               models = models)
+               BayesFactor = bayes_factor)
+  return(RVAL)
 }
