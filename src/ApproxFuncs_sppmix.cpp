@@ -1,4 +1,5 @@
 #include "sppmix.h"
+
 //Written by Sakis Micheas, 2015
 //approximation functions only
 //used by cpp and R functions
@@ -57,9 +58,8 @@ mat ApproxAvgPostIntensity(List const& genmix,
 
 //' @export
 // [[Rcpp::export]]
-double ApproxCompMass_sppmix(int const& L,
-  vec const& xlims,vec const& ylims,vec const& mu,
-  mat const& sig,mat const& siginv)
+double ApproxCompMass_sppmix(vec const& xlims,
+  vec const& ylims,vec const& mu,mat const& sigma)
 {
 //approximates a single multivariate normal mass
 //The grid squares must have small area size
@@ -114,7 +114,7 @@ double ApproxCompMass_sppmix(int const& L,
   approx=((xlims(1)-xlims(0))*(ylims(1)-ylims(0)))*approx/L;
 */
 //this is a better(?) Monte-Carlo approximation
-  mat xy=rnorm2_sppmix(L,mu,sig);
+/*  mat xy=rnorm2_sppmix(L,mu,sig);
   double approx=0;
   for (int i=0;i<L;i++)
   {
@@ -122,17 +122,20 @@ double ApproxCompMass_sppmix(int const& L,
        xy(i,1)>=ylims(0) && xy(i,1)<=ylims(1) )
     approx++;
   }
-  return approx/L;
+  return approx/L;*/
+
+  return ApproxBivNormProb_sppmix(xlims,
+      ylims,mu,sigma,2);
 }
 
 //' @export
 // [[Rcpp::export]]
-double ApproxMHRatiomu_sppmix(int const& L,
+double ApproxMHRatiomu_sppmix(
   vec const& xlims,vec const& ylims,
   vec const& curmu,vec const& propmu,
-  mat const& sig,mat const& siginv)
+  mat const& sigma,int const& num)
 {
-  int LL=L;
+/*  int LL=L;
   if((xlims(1)-xlims(0))*(ylims(1)-ylims(0))>0.01*LL*LL)
     //area is too large, increase LL
   {
@@ -163,18 +166,25 @@ double ApproxMHRatiomu_sppmix(int const& L,
       quad=as_scalar((midtics-propmu).t()*siginv*(midtics-propmu));
       approxFpropmu=approxFpropmu+area*d1* exp(-.5*quad);
     }
-  }
-  return approxFmu/approxFpropmu;
+  }*/
+  vec uplim(2);
+  uplim(0)=xlims(1);
+  uplim(1)=ylims(1);
+  return pow(ApproxNormCdf2d_sppmix(uplim,
+                                propmu,sigma)/
+          ApproxNormCdf2d_sppmix(uplim,
+                         curmu,sigma),num);
+//  return approxFmu/approxFpropmu;
 }
 
 //' @export
 // [[Rcpp::export]]
-double ApproxMHRatiosig_sppmix(int const& L,
-  vec const& xlims,vec const& ylims,vec const& mu1,
-  mat const& propsigma,mat const& sig,
-  mat const& siginv)
+double ApproxMHRatiosig_sppmix(
+    vec const& xlims,vec const& ylims,
+    vec const& mu,mat const& cursigma,
+    mat const& propsigma,int const& num)
 {
-  int LL=L;
+/*  int LL=L;
   if((xlims(1)-xlims(0))*(ylims(1)-ylims(0))>0.01*LL*LL)
     //area is too large, increase LL
   {
@@ -208,7 +218,14 @@ double ApproxMHRatiosig_sppmix(int const& L,
       approxFpropsig=approxFpropsig+area*d1prop* exp(-.5*quad);
     }
   }
-  return approxFsig/approxFpropsig;
+  return approxFsig/approxFpropsig;*/
+  vec uplim(2);
+  uplim(0)=xlims(1);
+  uplim(1)=ylims(1);
+  return pow(ApproxNormCdf2d_sppmix(uplim,
+                  mu,cursigma)/
+               ApproxNormCdf2d_sppmix(uplim,
+                    mu,propsigma),num);
 }
 
 
@@ -271,3 +288,16 @@ mat ApproxBayesianModelAvgIntensity_sppmix(
   printf("\rDone                                                                     \n");
   return AvgPostIntensity;
 }
+
+double ApproxNormCdf2d_sppmix(vec const& uplim,
+    vec const& mu,mat const& sigma)
+{
+  vec xlims(2),ylims(2);
+  xlims(0)=0;
+  xlims(1)=uplim(0);
+  ylims(0)=0;
+  ylims(1)=uplim(1);
+  return ApproxBivNormProb_sppmix(xlims,
+        ylims,mu,sigma,0);
+}
+

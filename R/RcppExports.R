@@ -7,18 +7,18 @@ ApproxAvgPostIntensity <- function(genmix, lamdas, LL, burnin, xlims, ylims) {
 }
 
 #' @export
-ApproxCompMass_sppmix <- function(L, xlims, ylims, mu, sig, siginv) {
-    .Call('sppmix_ApproxCompMass_sppmix', PACKAGE = 'sppmix', L, xlims, ylims, mu, sig, siginv)
+ApproxCompMass_sppmix <- function(xlims, ylims, mu, sigma) {
+    .Call('sppmix_ApproxCompMass_sppmix', PACKAGE = 'sppmix', xlims, ylims, mu, sigma)
 }
 
 #' @export
-ApproxMHRatiomu_sppmix <- function(L, xlims, ylims, curmu, propmu, sig, siginv) {
-    .Call('sppmix_ApproxMHRatiomu_sppmix', PACKAGE = 'sppmix', L, xlims, ylims, curmu, propmu, sig, siginv)
+ApproxMHRatiomu_sppmix <- function(xlims, ylims, curmu, propmu, sigma, num) {
+    .Call('sppmix_ApproxMHRatiomu_sppmix', PACKAGE = 'sppmix', xlims, ylims, curmu, propmu, sigma, num)
 }
 
 #' @export
-ApproxMHRatiosig_sppmix <- function(L, xlims, ylims, mu1, propsigma, sig, siginv) {
-    .Call('sppmix_ApproxMHRatiosig_sppmix', PACKAGE = 'sppmix', L, xlims, ylims, mu1, propsigma, sig, siginv)
+ApproxMHRatiosig_sppmix <- function(xlims, ylims, mu, cursigma, propsigma, num) {
+    .Call('sppmix_ApproxMHRatiosig_sppmix', PACKAGE = 'sppmix', xlims, ylims, mu, cursigma, propsigma, num)
 }
 
 #' @export
@@ -177,8 +177,13 @@ GetAvgLabelsDiscrete2Multinomial_sppmix <- function(genzs, m) {
 }
 
 #' @export
-pmvnorm_mvtnorm <- function(lls, uls, mu, sigma) {
-    .Call('sppmix_pmvnorm_mvtnorm', PACKAGE = 'sppmix', lls, uls, mu, sigma)
+Check4LabelSwitching_sppmix <- function(chain) {
+    .Call('sppmix_Check4LabelSwitching_sppmix', PACKAGE = 'sppmix', chain)
+}
+
+#' @export
+ApproxBivNormProb_sppmix <- function(xlims, ylims, mu, sigma, type) {
+    .Call('sppmix_ApproxBivNormProb_sppmix', PACKAGE = 'sppmix', xlims, ylims, mu, sigma, type)
 }
 
 #' @export

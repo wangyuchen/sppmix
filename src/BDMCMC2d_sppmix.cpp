@@ -362,9 +362,12 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
       {
         mu1(0)=genmus(j,0,i);
         mu1(1)=genmus(j,1,i);
-        ratio=pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
-                                         mu1,trans(genmutemp),gensigmas(i,j),
-                                         geninvsigmas(i,j)),sum1);
+        ratio=ApproxMHRatiomu_sppmix(xlims,
+          ylims,mu1,trans(genmutemp),
+           gensigmas(i,j),sum1);
+//          pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
+//           mu1,trans(genmutemp),gensigmas(i,j),
+  //               geninvsigmas(i,j)),sum1);
       }
       else
         ratio=1;
@@ -397,9 +400,12 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        ratio=pow(ApproxMHRatiosig_sppmix(LL,xlims,ylims,mu1,
-                                          propsigma,gensigmas(i,j),
-                                          geninvsigmas(i,j)),sum1);
+        ratio=ApproxMHRatiosig_sppmix(xlims,
+          ylims,mu1,gensigmas(i,j),
+          propsigma,sum1);
+ //         pow(ApproxMHRatiosig_sppmix(LL,xlims,ylims,mu1,
+ //         propsigma,gensigmas(i,j),
+  //            geninvsigmas(i,j)),sum1);
       }
       else
         ratio=1;
@@ -459,19 +465,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
 
   //sample lambdas
   double alamda=1,blamda=10000;
-  vec lamdas=//randg<vec>(L, distr_param(alamda,blamda) );
-    //    gamrnd(n+alamda,1/(1+1/blamda),[L,1]);
-    rgamma( L,n+ alamda,1/(1+1/blamda));
-//  double meanlamda=mean(lamdas);
-
-/*  vec distr_numcomp(maxnumcomp);
-  for(j=0;j<maxnumcomp;j++)
-  {
-    uvec q1 = find(numcomp==j);
-//    Rcout << q1 << std::endl ;
-    distr_numcomp(j)=1.0*q1.size()/L;
-  }*/
-
+  vec lamdas=rgamma(L,n+alamda,1/(1+1/blamda));
   return List::create(
     Named("allgens_List") = allgens,
     Named("genps") = genps,
@@ -481,5 +475,4 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
     Named("genlamdas") = lamdas,
     Named("numcomp") = numcomp,
     Named("maxnumcomp") = maxnumcomp);
-//  ,Named("distr_numcomp") = distr_numcomp);
 }

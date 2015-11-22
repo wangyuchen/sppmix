@@ -24,52 +24,48 @@ BEGIN_RCPP
 END_RCPP
 }
 // ApproxCompMass_sppmix
-double ApproxCompMass_sppmix(int const& L, vec const& xlims, vec const& ylims, vec const& mu, mat const& sig, mat const& siginv);
-RcppExport SEXP sppmix_ApproxCompMass_sppmix(SEXP LSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+double ApproxCompMass_sppmix(vec const& xlims, vec const& ylims, vec const& mu, mat const& sigma);
+RcppExport SEXP sppmix_ApproxCompMass_sppmix(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< mat const& >::type sig(sigSEXP);
-    Rcpp::traits::input_parameter< mat const& >::type siginv(siginvSEXP);
-    __result = Rcpp::wrap(ApproxCompMass_sppmix(L, xlims, ylims, mu, sig, siginv));
+    Rcpp::traits::input_parameter< mat const& >::type sigma(sigmaSEXP);
+    __result = Rcpp::wrap(ApproxCompMass_sppmix(xlims, ylims, mu, sigma));
     return __result;
 END_RCPP
 }
 // ApproxMHRatiomu_sppmix
-double ApproxMHRatiomu_sppmix(int const& L, vec const& xlims, vec const& ylims, vec const& curmu, vec const& propmu, mat const& sig, mat const& siginv);
-RcppExport SEXP sppmix_ApproxMHRatiomu_sppmix(SEXP LSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP curmuSEXP, SEXP propmuSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+double ApproxMHRatiomu_sppmix(vec const& xlims, vec const& ylims, vec const& curmu, vec const& propmu, mat const& sigma, int const& num);
+RcppExport SEXP sppmix_ApproxMHRatiomu_sppmix(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP curmuSEXP, SEXP propmuSEXP, SEXP sigmaSEXP, SEXP numSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type curmu(curmuSEXP);
     Rcpp::traits::input_parameter< vec const& >::type propmu(propmuSEXP);
-    Rcpp::traits::input_parameter< mat const& >::type sig(sigSEXP);
-    Rcpp::traits::input_parameter< mat const& >::type siginv(siginvSEXP);
-    __result = Rcpp::wrap(ApproxMHRatiomu_sppmix(L, xlims, ylims, curmu, propmu, sig, siginv));
+    Rcpp::traits::input_parameter< mat const& >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< int const& >::type num(numSEXP);
+    __result = Rcpp::wrap(ApproxMHRatiomu_sppmix(xlims, ylims, curmu, propmu, sigma, num));
     return __result;
 END_RCPP
 }
 // ApproxMHRatiosig_sppmix
-double ApproxMHRatiosig_sppmix(int const& L, vec const& xlims, vec const& ylims, vec const& mu1, mat const& propsigma, mat const& sig, mat const& siginv);
-RcppExport SEXP sppmix_ApproxMHRatiosig_sppmix(SEXP LSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mu1SEXP, SEXP propsigmaSEXP, SEXP sigSEXP, SEXP siginvSEXP) {
+double ApproxMHRatiosig_sppmix(vec const& xlims, vec const& ylims, vec const& mu, mat const& cursigma, mat const& propsigma, int const& num);
+RcppExport SEXP sppmix_ApproxMHRatiosig_sppmix(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP cursigmaSEXP, SEXP propsigmaSEXP, SEXP numSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
-    Rcpp::traits::input_parameter< vec const& >::type mu1(mu1SEXP);
+    Rcpp::traits::input_parameter< vec const& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< mat const& >::type cursigma(cursigmaSEXP);
     Rcpp::traits::input_parameter< mat const& >::type propsigma(propsigmaSEXP);
-    Rcpp::traits::input_parameter< mat const& >::type sig(sigSEXP);
-    Rcpp::traits::input_parameter< mat const& >::type siginv(siginvSEXP);
-    __result = Rcpp::wrap(ApproxMHRatiosig_sppmix(L, xlims, ylims, mu1, propsigma, sig, siginv));
+    Rcpp::traits::input_parameter< int const& >::type num(numSEXP);
+    __result = Rcpp::wrap(ApproxMHRatiosig_sppmix(xlims, ylims, mu, cursigma, propsigma, num));
     return __result;
 END_RCPP
 }
@@ -469,17 +465,29 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// pmvnorm_mvtnorm
-double pmvnorm_mvtnorm(NumericVector lls, NumericVector uls, NumericVector mu, NumericMatrix sigma);
-RcppExport SEXP sppmix_pmvnorm_mvtnorm(SEXP llsSEXP, SEXP ulsSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+// Check4LabelSwitching_sppmix
+bool Check4LabelSwitching_sppmix(vec const& chain);
+RcppExport SEXP sppmix_Check4LabelSwitching_sppmix(SEXP chainSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericVector >::type lls(llsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type uls(ulsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type sigma(sigmaSEXP);
-    __result = Rcpp::wrap(pmvnorm_mvtnorm(lls, uls, mu, sigma));
+    Rcpp::traits::input_parameter< vec const& >::type chain(chainSEXP);
+    __result = Rcpp::wrap(Check4LabelSwitching_sppmix(chain));
+    return __result;
+END_RCPP
+}
+// ApproxBivNormProb_sppmix
+double ApproxBivNormProb_sppmix(vec const& xlims, vec const& ylims, vec const& mu, mat const& sigma, int type);
+RcppExport SEXP sppmix_ApproxBivNormProb_sppmix(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< mat const& >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< int >::type type(typeSEXP);
+    __result = Rcpp::wrap(ApproxBivNormProb_sppmix(xlims, ylims, mu, sigma, type));
     return __result;
 END_RCPP
 }

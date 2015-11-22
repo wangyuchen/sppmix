@@ -374,3 +374,36 @@ mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat
   }
   return zmultinomial/iters;
 }
+
+//' @export
+// [[Rcpp::export]]
+bool Check4LabelSwitching_sppmix(vec const& chain)
+{
+  //checks for sharps changes in the generated
+  //chains, works on a specific chain
+  //similar problem to change-point detection
+  //works using the past lag-realizations
+  //apply burnin before calling this function
+  int i,iters=chain.size();
+  int lag=floor(0.1*iters);//use 10% of iterations
+  bool LabelSwitchingPresent=false;
+  for(i=lag;i<iters-lag;i++)
+  {
+    vec lagv=chain.subvec(i-lag,i);
+    double meanlag=mean(lagv),
+      stdlag=sqrt(var(lagv));
+    vec flagv=chain.subvec(i,i+lag);
+    double fmeanlag=mean(flagv),
+      fstdlag=sqrt(var(flagv));
+    if((fmeanlag<meanlag-3*stdlag ||
+       fmeanlag>meanlag+3*stdlag) &&
+       (meanlag<fmeanlag-3*fstdlag ||
+       meanlag>fmeanlag+3*fstdlag))
+    {
+      LabelSwitchingPresent=true;
+      Rcout << i << '\n'<< chain(i) << '\n'<<lag << '\n'<<meanlag << '\n'<<stdlag<< '\n'<<std::endl ;
+      break;
+    }
+  }
+  return LabelSwitchingPresent;
+}

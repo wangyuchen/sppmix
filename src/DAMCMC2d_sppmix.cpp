@@ -177,9 +177,12 @@ List DAMCMC2d_sppmix(mat const& data,
       {
         mu1(0)=genmus(j,0,i);
         mu1(1)=genmus(j,1,i);
-        ratio=pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
-               mu1,trans(genmutemp),gensigmas(i,j),
-                 geninvsigmas(i,j)),sum1);
+        ratio=ApproxMHRatiomu_sppmix(xlims,
+          ylims,mu1,trans(genmutemp),
+          gensigmas(i,j),sum1);
+      //pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
+      //         mu1,trans(genmutemp),gensigmas(i,j),
+        //         geninvsigmas(i,j)),sum1);
       }
       else
         ratio=1;
@@ -209,9 +212,12 @@ List DAMCMC2d_sppmix(mat const& data,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        ratio=pow(ApproxMHRatiosig_sppmix(LL,xlims,ylims,
-              mu1,propsigma,gensigmas(i,j),
-              geninvsigmas(i,j)),sum1);
+        ratio=ApproxMHRatiosig_sppmix(xlims,
+            ylims,mu1,gensigmas(i,j),
+            propsigma,sum1);
+      //pow(ApproxMHRatiosig_sppmix(LL,xlims,ylims,
+        //      mu1,propsigma,gensigmas(i,j),
+          //    geninvsigmas(i,j)),sum1);
       }
       else
         ratio=1;
@@ -230,9 +236,9 @@ List DAMCMC2d_sppmix(mat const& data,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        approxcompj=ApproxCompMass_sppmix(LL,xlims,ylims,
-                                          mu1,gensigmas(i+1,j),
-                                          geninvsigmas(i+1,j));
+        approxcompj=ApproxCompMass_sppmix(//LL,
+          xlims,ylims,mu1,gensigmas(i+1,j));
+          //,geninvsigmas(i+1,j));
       }
       else
         approxcompj=1;

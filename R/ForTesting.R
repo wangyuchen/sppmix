@@ -127,7 +127,7 @@ Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
-  col <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord), length = 100))]
+  cols <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord), length = 100))]
 
   if(is.null(zlims))
     zlims=c(0,max(zcoord))
@@ -163,14 +163,33 @@ Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
   zmax=max(zcoord)
   Rangez=zmax-min(zcoord);
   rgl::persp3d(x = xcoord, y = ycoord, z = zcoord,
-        color = col, xlab="x",ylab="y",zlab="",
+        color = cols, xlab="x",ylab="y",zlab="",
         zlim=c(zlims[1]-0.01,zlims[2]),
         box = FALSE, axes = FALSE)
-  rgl::axis3d('x')
+
+#  rgl::rgl.lines(xlims, c(0, 0), c(0, 0), color = 'black')
+#  rgl::rgl.lines(c(0, 0), ylims, c(0, 0), color = 'black')
+
+  # Add a point at the end of each axes to specify the direction
+#  axes <- rbind(c(xlims[2], 0, 0), c(0, ylims[2], 0),
+#                c(0, 0, zlims[2]))
+#  rgl::rgl.points(axes, color = 'black', size = 3)
+  # Add axis labels
+#  rgl::rgl.texts(axes, text = c('x', 'y', 'intensity'), color = axis.col,
+ #           adj = c(0.5, -0.8), size = 2)
+
+#  rgl::segments3d(xcoord,rep(ylims[1],length(xcoord)),
+#           rep(zlims[1],length(xcoord)))
+#  rgl::segments3d(xcoord,rep(ylims[1],length(xcoord)),
+#                  rep(zlims[1],length(xcoord)))
+    rgl::axis3d('x')
   rgl::axis3d('y')
   rgl::axis3d('z-+'#-=low x-coord, +=high y-coord
-#              ,zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez)
+##              ,zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez)
               ,pos = c(xlims[1], ylims[2], 0))
+  rgl::rgl.lines(c(xlims[1], xlims[1]),
+                 c(ylims[2], ylims[2]), zlims, color = 'black')
+
 #  Rangex=max(xcoord)-min(xcoord);
 #  Rangey=max(ycoord)-min(ycoord);
 #  Rangez=max(z)-min(z);
@@ -180,6 +199,9 @@ Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
   rgl::text3d(xlims[2],ylims[2],
               zlims[2]#+0.2*Rangez
               ,texts=title1)
+#  rgl::decorate3d(zlim=c(zlims[1]-0.01,zlims[2]),
+#                  xlab = "x", ylab = "y", zlab = "Surface",
+#                  box = FALSE, axes = TRUE)
   #clip into x,y,z limits provided
 
 #  rgl::text3d(xmax+pos[1],ymax+pos[2],
@@ -195,6 +217,11 @@ Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
 #        col= col, xlab="x",ylab="y",zlab="",
 #        zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez),
 #        box = FALSE, axes = FALSE)
+#  library(fields)
+ # image.plot( legend.only=TRUE, zlim= zlims,
+#              nlevel=100, col=cols)
+
+
 }
 
 #' @export
@@ -261,6 +288,32 @@ Go<- function()
 {
 #just for testing, run Demo_sppmix instead
   #do all the plotting with a common maximum z value
+  xlims<<-c(0,10)
+  ylims<<-c(0,10)
+  L<<-5000
+  m<<-5
+  burnin<<-1000
+  lamda<<-100
+  r<<-30
+  truncated<<-FALSE
+  LL<<-50
+  maxnumcomp<<-10
+
+  truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
+
+  gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,LL,trunc=FALSE)
+
+  zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
+                                           100,xlims,ylims);
+  mix_of_postmeans<<-#MakeMixtureList_sppmix(
+    MakeMixtureList(gens$allgens_List,burnin)
+  mean_lambda<<-mean(gens$genlamdas[burnin:L]);
+  zmax_genmeanmix=mean_lambda *
+    GetMixtureMaxz_sppmix(mix_of_postmeans,
+                          100,xlims,ylims);
+  #find the highest z
+  maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
+
   PlotNormalMixture(mix1=truemix,data=gendata,
                     m=m,lamda=lamda,xlims=xlims,ylims=ylims,L=100,
                     title1="True mixture",zlims=c(0,1.1*maxz_height),
@@ -359,13 +412,15 @@ Demo_sppmix<- function()
        L=100,title1="Posterior means",zlims=c(0,1.1*maxz_height),
        title3d=paste("Intensity surface of posterior means,",m,"components,",n,"points"))
   }
-
   if(Get_User_Input_sppmix("Show Chains and Stats?"))
   {
     #  plot_ind(gens)
     ShowChains(gens$genps,gens$genmus)
     ShowStats(gens$genps,gens$genmus,truemix)
   }
+
+  if(Get_User_Input_sppmix("Check for label switching?"))
+    CheckLabels(gens$genmus[,,burnin:L])
 
   if(Get_User_Input_sppmix("Show average of intensity surfaces (slow operation)?"))
     Show3dAvgofsurfaces(gens,LL,burnin,xlims,ylims,zlims=c(0,1.1*maxz_height))
@@ -397,25 +452,32 @@ PostGenBDMCMC_sppmix<- function(gensBD)
 #  meank=sum(probk.*[1:1:maxnumcomp]);
 #  [val1,mapk]=max(probk);
 #  windows()
-  hist(gensBD$numcomp,breaks=0:gensBD$maxnumcomp,xlab="Component",labels=TRUE,main="Distribution of the number of components",xlim=c(0.5,gensBD$maxnumcomp),ylim=c(0,1.2*max(table(gensBD$numcomp))))
+  hist(gensBD$numcomp,breaks=0:gensBD$maxnumcomp,
+       xlab="Component",labels=FALSE,main="Distribution of the number of components",
+       xlim=c(0.5,gensBD$maxnumcomp),
+       ylim=c(0,1.2*max(table(gensBD$numcomp))))
+  axis(side=1,at=1:gensBD$maxnumcomp,
+       labels=1:gensBD$maxnumcomp,tick=TRUE)
 #  windows()
   plot(gensBD$numcomp,xlab="Iteration",ylab="Number of components",type="l",main="Generated chain for the number of components")
   distr_numcomp<<-GetCompDistr_sppmix(gensBD$numcomp[burnin:L],maxnumcomp)
-  BayesianModelAvgIntensity<<-ApproxBayesianModelAvgIntensity_sppmix(
-    gensBD$allgens_List[burnin:L],
-    gensBD$genlamdas[burnin:L],
-    gensBD$numcomp[burnin:L],
-    distr_numcomp,
-    1,maxnumcomp,
-#    1,5,
-    LL,xlims,ylims)
-  gridvals=GetGrid_sppmix(LL,xlims,ylims);
-  ticsx<<-as.vector(gridvals[[1]]);
-  ticsy<<-as.vector(gridvals[[2]]);
-  Plot3d_sppmix(xcoord = ticsx,ycoord = ticsy,
+
+  if(Get_User_Input_sppmix("Compute Bayesian model average (slow operation)?"))
+  {
+    BayesianModelAvgIntensity<<-
+      ApproxBayesianModelAvgIntensity_sppmix(
+      gensBD$allgens_List[burnin:L],
+      gensBD$genlamdas[burnin:L],
+      gensBD$numcomp[burnin:L],
+      distr_numcomp,1,maxnumcomp,LL,xlims,ylims)
+    gridvals=GetGrid_sppmix(LL,xlims,ylims);
+    ticsx<<-as.vector(gridvals[[1]]);
+    ticsy<<-as.vector(gridvals[[2]]);
+    Plot3d_sppmix(xcoord = ticsx,ycoord = ticsy,
                 zcoord = BayesianModelAvgIntensity,
                 title1=paste("Bayesian model average of",L-burnin,"posterior realizations")
                 ,xlims,ylims,zlims=c(0,1.1*maxz_height))
+  }
 
 }
 
@@ -516,6 +578,28 @@ FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims
     Show3dAvgofsurfaces(allpermgens,LL,burnin,xlims1,ylims1,zlims=c(0,maxz))
 
   return(permgens)
+}
+
+#' @export
+CheckLabels<- function(genmus)
+{
+  cat("\nChecking for label switching...\n")
+  for (i in 1:m)
+  {
+    if(Check4LabelSwitching_sppmix(genmus[i,1,]))
+    {
+      cat("Label switching present. \nPermute the labels to get a better fit,\nor obtain the average of the surfaces")
+      return(TRUE);
+    }
+    if(Check4LabelSwitching_sppmix(genmus[i,2,]))
+    {
+      cat("Label switching present. \nPermute the labels to get a better fit,\nor obtain the average of the surfaces")
+      return(TRUE);
+    }
+  }
+  cat("No Label switching detected")
+  return(FALSE);
+
 }
 
 #' @export

@@ -27,9 +27,13 @@ The default is TRUE.}
 \item{truncate}{Logical flag indicating whether truncation is used for
 \code{pattern}. The default is TRUE.}
 
-\item{...}{Further arguments passed to \code{\link[rgl]{filled.contour}}.
-
- @examples
+\item{...}{Further arguments passed to \code{\link[rgl]{filled.contour}}.}
+}
+\description{
+Create a contour plot for the intensity surface with or without realizations
+on it.
+}
+\examples{
 # generate a mixture with given ps, mus and sigmas
 mix1 <- normmix(ps=c(.5, .5),
                 mus=list(c(.2, .2), c(.7, .7)),
@@ -37,10 +41,6 @@ mix1 <- normmix(ps=c(.5, .5),
 # generate a realization from mixture mix1
 pp1 <- rsppmix(200, mix1, spatstat::square(1))
 # plot the theoretical intensity surface with a realization
-plot_contour(mix1,pp1,spatstat::square(1))}
-}
-\description{
-Create a contour plot for the intensity surface with or without realizations
-on it.
+plot_contour(mix1,pp1,spatstat::square(1))
 }
 

@@ -118,7 +118,7 @@ plot.sppmix <- function(spp, ...) {
 #'  \code{pattern}. The default is TRUE.
 #' @param ... Further arguments passed to \code{\link[rgl]{filled.contour}}.
 #'
-#'  @examples
+#' @examples
 #' # generate a mixture with given ps, mus and sigmas
 #' mix1 <- normmix(ps=c(.5, .5),
 #'                 mus=list(c(.2, .2), c(.7, .7)),

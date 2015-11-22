@@ -8,6 +8,7 @@
 #include <time.h>
 #include <Rmath.h>
 
+
 using namespace arma;
 using namespace Rcpp;
 
@@ -59,20 +60,22 @@ vec rPerm_sppmix(int const& n);
 mat ApproxAvgPostIntensity(List const& genmix,
     vec const& lamdas,int const& LL,int const& burnin,
     vec const& xlims,vec const& ylims);
-double ApproxCompMass_sppmix(int const& L,vec const& xlims,
+double ApproxCompMass_sppmix(vec const& xlims,vec const& ylims,vec const& mu,mat const& sigma);
+double ApproxMHRatiomu_sppmix(vec const& xlims,
+    vec const& ylims,vec const& curmu,
+    vec const& propmu,mat const& sigma,
+    int const& num);
+double ApproxMHRatiosig_sppmix(vec const& xlims,
     vec const& ylims,vec const& mu,
-    mat const& sig,mat const& siginv);
-double ApproxMHRatiomu_sppmix(int const& L,vec const& xlims,
-    vec const& ylims,vec const& curmu,vec const& propmu,
-    mat const& sig,mat const& siginv);
-double ApproxMHRatiosig_sppmix(int const& L,vec const& xlims,
-    vec const& ylims,vec const& mu1,mat const& propsigma,
-    mat const& sig,mat const& siginv);
+    mat const& cursigma,mat const& propsigma,
+    int const& num);
 mat ApproxBayesianModelAvgIntensity_sppmix(
     List const& genBDmix,vec const& lamdas,
     vec const& numcomp,vec const& distr_numcomp,
     int const& mincomp,int const& maxcomp,
     int const& LL,vec const& xlims,vec const& ylims);
+double ApproxNormCdf2d_sppmix(vec const& uplim,
+  vec const& mu,mat const& sigma);
 
 //Operations on posterior realizations
 //file: OpsPostGens_sppmix.cpp
@@ -88,6 +91,7 @@ List GetAllMeans_sppmix(List const& allgens,int const& burnin);
 vec GetCompDistr_sppmix(vec const& numcomp,int const& maxnumcomp);
 List GetBDCompRealiz_sppmix(List const& genBDmix,vec const& genlamdas,vec const& numcomp,int const& comp);
 mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat const& genzs,int const& m);
+bool Check4LabelSwitching_sppmix(vec const& chain);
 
 //Helper functions
 //file: HelperFuncs_sppmix.cpp
@@ -114,7 +118,8 @@ List MakeMixtureList_sppmix(List const& gens_list,int const& burnin);
 
 //Fucntions that connect to other APIs
 //file: OtherAPIs_sppmix.cpp
-double pmvnorm_mvtnorm(NumericVector lls, NumericVector uls,
-                       NumericVector mu, NumericMatrix sigma);
+double ApproxBivNormProb_sppmix(vec const& xlims,
+  vec const& ylims,vec const& mu,
+  mat const& sigma,int type);
 
 #endif
