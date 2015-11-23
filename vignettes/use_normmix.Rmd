@@ -8,7 +8,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
+```{r, echo=FALSE} 
+library(knitr)
+opts_chunk$set(fig.width = 5, fig.height = 4)
+```
 A 2D normal mixture is a basic building block of this package. We created our 
 own mixture class ```normmix```. In this vignette, you'll learn how to create, 
 plot and manipulate a ```normmix``` object.

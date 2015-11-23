@@ -17,7 +17,6 @@ library(knitr)
 opts_chunk$set(fig.width = 5, fig.height = 4)
 library(rgl)
 knit_hooks$set(webgl = hook_webgl)
-
 ```
 
 
@@ -74,6 +73,16 @@ plot(post_mix$post_normmix, post_mix$mean_lambda, Window(fit$data))
 ```
 
 ## Birth-Death MCMC
+
+To fit a Birth-Death MCMC, use function ```est_mix_bdmcmc```. In this case, the parameter ```m``` is not the component of the mixture, but the maximum component in a Birth-death MCMC algorithm.
+
+```{r, results='hide'}
+fit2 <- sppmix::est_mix_bdmcmc(pp = redwood, m = 5, truncate = FALSE, 
+                               lambda = 1, lambdab = 10, 
+                               hyper = c(5,.01,3,2,1,1),
+                               L = 50000, LL = 100)
+```
+
 
 
 
