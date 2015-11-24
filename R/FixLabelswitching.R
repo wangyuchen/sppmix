@@ -93,3 +93,24 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
    class(perum_fit) <- "damcmc_res"
    return(invisible(perum_fit))
 }
+
+#' @export
+test_labswitch<- function(genmus) {
+  m <- dim(genmus)[1]
+  cat("\nChecking for label switching...\n")
+  for (i in 1:m) {
+    if(Check4LabelSwitching_sppmix(genmus[i, 1, ])) {
+      cat("Label switching present. \nPermute the labels to get a better fit,
+          \nor obtain the average of the surfaces\n ")
+      return(TRUE)
+    }
+    if(Check4LabelSwitching_sppmix(genmus[i, 2, ])) {
+      cat("Label switching present. \nPermute the labels to get a better fit,
+          \nor obtain the average of the surfaces\n ")
+      return(TRUE)
+    }
+  }
+  cat("No Label switching detected")
+  return(FALSE)
+}
+
