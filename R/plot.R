@@ -37,14 +37,13 @@ plot.normmix <- function(mix, lambda, win, L = 100,
 
   zlims=c(0,max(z))
 
-  height = 300
-  width = 500
-
-  rgl::open3d(windowRect=c(width/5,
-                           height/7,
-                           4*width/5,
-                           6*height/7),
-              zoom=1.2)
+  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  rgl::open3d(windowRect = c(0, 45, 512, 557))
+#   rgl::open3d(windowRect=c(width/5,
+#                            height/7,
+#                            4*width/5,
+#                            6*height/7),
+#               zoom=1.2)
 
   U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
@@ -59,8 +58,11 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   rgl::axis3d('z-+', pos = c(xlims[1], ylims[2], 0))
   rgl::title3d(main = NULL)
   rgl::text3d(xlims[2], ylims[2], zlims[2], texts = title1)
-}
 
+  rgl::bgplot3d(suppressWarnings(fields::image.plot(legend.only = TRUE, zlim = zlims,
+                                       col = jet.colors(100))))
+}
+#' @export
 Plots_off<- function()
 {
   graphics.off()
