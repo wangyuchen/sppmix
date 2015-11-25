@@ -37,8 +37,33 @@ GenNormalMixture<- function(lamda=50,m=1,
 
 #  library(grDevices)
 #  require(graphics)
+if(0)
+{
+  count=n;
+  if(trunc)
+  {
+    count=0;
+    indices=rep(0,n);
+    for(i in 1:n)
+    {
+      if(gendata[i,1]>=xlims[1]
+         && gendata[i,1]<=xlims[2]
+         && gendata[i,2]>=ylims[1]
+         && gendata[i,2]<=ylims[2])
+      count=count+1;
+      indices[i]=1;
+    }
+    cat(paste(n-count,'points were outside W=[',
+      xlims[1],',',xlims[2],']x[',ylims[1],',',
+      ylims[2],']'))
+#    data=data[(indices==1),];
+  }
+}
+  checkin=CheckInWindow_sppmix(gendata,xlims,ylims,trunc);
+  count=checkin$count_inW;
 
   titleLines <- list(
+    bquote(paste("Displaying ",.(count)," points, ",.(n-count)," points outside window")),
     bquote(paste(lambda,"=",.(lamda),", n=",.(n))),
     bquote(paste("True Mixture has ",.(m)," components"))
   )
@@ -49,7 +74,7 @@ GenNormalMixture<- function(lamda=50,m=1,
        ylab=ylab1,#ylab="latitude",
        xlim=xlims,
        ylim=ylims,main="")
-  mtext(do.call(expression, titleLines),side=3,line=0:1)
+  mtext(do.call(expression, titleLines),side=3,line=0:2)
 #  bquote("Mixture Intensity, m =" ~.(m)~","
 #        ~lambda ==.(lamda)~", n " == .(n)))
 
@@ -65,13 +90,12 @@ GenNormalMixture<- function(lamda=50,m=1,
 PlotNormalMixture<- function(mix1,data1,
                              m1=1,lamda1=100,
                              xlims1=c(-3,3),
-                             ylims1=c(-3,3),L=100,
+                             ylims1=c(-3,3),L1=100,
                              title1="Mixture intensity",
                              xlab1="x",ylab1="y",
                              zlims1=c(0,1),
                              title3d="")
 {
-  #  z=sppmix::PlotNormalMixture(truemix,gendata,m,lamda,xlims1=c(0,10),ylims1=c(0,10),L=100,title1="Mixture",zlims1=c(0,1))
  # windows()
   n=nrow(data1)
 #  opar <- par()      # make a copy of current settings
@@ -80,7 +104,7 @@ PlotNormalMixture<- function(mix1,data1,
   #  windows()
 
   titleLines <- list(
-    bquote(paste(lambda,"=",.(lamda),", n=",.(n),", m=",.(m1)," components")),
+    bquote(paste(lambda,"=",.(lamda1),", n=",.(n),", m=",.(m1)," components")),
 #    bquote(paste("Mixture Intensity with ",.(m)," components"))
     title1
   )
@@ -105,8 +129,8 @@ PlotNormalMixture<- function(mix1,data1,
 #       main=paste("Mixture with",m,"components",
  #                 "\n",n,"points"));
 
-  xcoord <- seq(xlims1[1], xlims1[2], length.out = L);
-  ycoord <- seq(ylims1[1], ylims1[2], length.out = L);
+  xcoord <- seq(xlims1[1], xlims1[2], length.out = L1);
+  ycoord <- seq(ylims1[1], ylims1[2], length.out = L1);
 
   zcoord <- lamda*dNormMix_sppmix(mix1, xcoord, ycoord);
 
@@ -117,6 +141,36 @@ PlotNormalMixture<- function(mix1,data1,
   #              paste("Mixture with",
    #            m,"components,",n,"points"))
   return(zcoord)
+}
+
+
+#' @export
+Plot2d_sppmix<- function(data1,lamda1=100,
+                 xlims1=c(-3,3),
+                 ylims1=c(-3,3),
+                 title1="Mixture intensity",
+                 xlab1="x",ylab1="y")
+{
+  # windows()
+  n=nrow(data1)
+  #  opar <- par()      # make a copy of current settings
+  par(mfrow=c(1,1))
+  #  par(pch="20")
+  #  windows()
+
+  titleLines <- list(
+    bquote(paste(lambda,"=",.(lamda1),", n=",.(n))),
+    #    bquote(paste("Mixture Intensity with ",.(m)," components"))
+    title1
+  )
+  #  Now output each line The text in the list is converted to expressions do.call
+
+  plot(data1,pch=20,
+       xlab=xlab1,#xlab="longitude",
+       ylab=ylab1,#ylab="latitude",
+       xlim=xlims1,
+       ylim=ylims1,main="")
+  mtext(do.call(expression, titleLines),side=3,line=0:1)
 }
 
 #' @export
@@ -314,14 +368,20 @@ Go<- function()
   #find the highest z
   maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
 
-  PlotNormalMixture(mix1=truemix,data=gendata,
-                    m=m,lamda=lamda,xlims=xlims,ylims=ylims,L=100,
-                    title1="True mixture",zlims=c(0,1.1*maxz_height),
+  PlotNormalMixture(mix1=truemix,data1=gendata,
+                    m1=m,lamda1=lamda,
+                    xlims1=xlims,ylims1=ylims,L1=100,
+                    title1="True mixture",
+                    zlims1=c(0,1.1*maxz_height),
                     title3d=paste("True mixture intensity surface,",m,"components,",n,"points"))
 
-  PlotNormalMixture(mix1=mix_of_postmeans,data=gendata,
-                    m=m,lamda=mean_lambda,xlims=xlims,ylims=ylims,
-                    L=100,title1="Posterior means",zlims=c(0,1.1*maxz_height),
+  PlotNormalMixture(mix1=mix_of_postmeans,
+                    data1=gendata,
+                    m1=m,lamda1=mean_lambda,
+                    xlims1=xlims,ylims1=ylims,
+                    L1=100,
+                    title1="Posterior means",
+                    zlims1=c(0,1.1*maxz_height),
                     title3d=paste("Intensity surface of posterior means,",m,"components,",n,"points"))
 
   gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
@@ -352,7 +412,6 @@ Demo_sppmix<- function()
     burnin<<-1000
     lamda<<-100
     r<<-30
-    truncated<<-FALSE
     LL<<-50
     maxnumcomp<<-10
   }
@@ -369,10 +428,10 @@ Demo_sppmix<- function()
     burnin<<-Get_User_Input_sppmix("burnin",modeYN=0)
     lamda<<-Get_User_Input_sppmix("lambda (affects number of events)",modeYN=0)
     r<<-Get_User_Input_sppmix("parameter r (affects the cov matrices of components)",modeYN=0)
-    if(Get_User_Input_sppmix("Apply truncation to the window specified (results in slow operations)"))
-      truncated<<-TRUE
-    else
-      truncated<<-FALSE
+#    if(Get_User_Input_sppmix("Apply truncation to the window specified (results in slow operations)"))
+#      truncated<<-TRUE
+#    else
+#      truncated<<-FALSE
     LL<<-Get_User_Input_sppmix("grid side length (the larger the slower the operations but much prettier...)",modeYN=0)
     maxnumcomp<<-Get_User_Input_sppmix("maximum number of components for BDMCMC",modeYN=0)
   }
@@ -382,11 +441,16 @@ Demo_sppmix<- function()
   if(Get_User_Input_sppmix("Remove all plots?"))
     Plots_off()
 
+  if(Get_User_Input_sppmix("Apply truncation?"))
+    truncated<<-TRUE
+  else
+    truncated<<-FALSE
+
   if(Get_User_Input_sppmix("Generate the true mixture?"))
     truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
 
   if(Get_User_Input_sppmix("Simulate from the posterior (DAMCMC)?"))
-    gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,LL,trunc=FALSE)
+    gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,LL,trunc=truncated)
 
   #  cat("passed")
   if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
@@ -402,14 +466,17 @@ Demo_sppmix<- function()
   #find the highest z
     maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
   #do all the plotting with a common maximum z value
-    PlotNormalMixture(mix1=truemix,data=gendata,
-        m=m,lamda=lamda,xlims=xlims,ylims=ylims,L=100,
-        title1="True mixture",zlims=c(0,1.1*maxz_height),
+    PlotNormalMixture(mix1=truemix,data1=gendata,
+        m1=m,lamda1=lamda,xlims1=xlims,
+        ylims1=ylims,L1=100,
+        title1="True mixture",zlims1=c(0,1.1*maxz_height),
         title3d=paste("True mixture intensity surface,",m,"components,",n,"points"))
 
-    PlotNormalMixture(mix1=mix_of_postmeans,data=gendata,
-       m=m,lamda=mean_lambda,xlims=xlims,ylims=ylims,
-       L=100,title1="Posterior means",zlims=c(0,1.1*maxz_height),
+    PlotNormalMixture(mix1=mix_of_postmeans,
+                      data1=gendata,
+       m1=m,lamda1=mean_lambda,xlims1=xlims,
+       ylims1=ylims,
+       L1=100,title1="Posterior means",zlims1=c(0,1.1*maxz_height),
        title3d=paste("Intensity surface of posterior means,",m,"components,",n,"points"))
   }
   if(Get_User_Input_sppmix("Show Chains and Stats?"))
@@ -435,7 +502,8 @@ Demo_sppmix<- function()
   if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
   {
     gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
-    PostGenBDMCMC_sppmix(gensBD)
+    if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
+      PostGenBDMCMC_sppmix(gensBD)
   }
 
 }
@@ -452,12 +520,14 @@ PostGenBDMCMC_sppmix<- function(gensBD)
 #  meank=sum(probk.*[1:1:maxnumcomp]);
 #  [val1,mapk]=max(probk);
 #  windows()
-  hist(gensBD$numcomp,breaks=0:gensBD$maxnumcomp,
-       xlab="Component",labels=FALSE,main="Distribution of the number of components",
-       xlim=c(0.5,gensBD$maxnumcomp),
+  hist(gensBD$numcomp,
+       breaks=0:gensBD$maxnumcomp,
+       xlab="Component",labels=TRUE,
+       main="Distribution of the number of components",
+       xlim=c(0,gensBD$maxnumcomp),
        ylim=c(0,1.2*max(table(gensBD$numcomp))))
-  axis(side=1,at=1:gensBD$maxnumcomp,
-       labels=1:gensBD$maxnumcomp,tick=TRUE)
+#  axis(side=1,at=1:gensBD$maxnumcomp,
+#       labels=1:gensBD$maxnumcomp,tick=TRUE)
 #  windows()
   plot(gensBD$numcomp,xlab="Iteration",ylab="Number of components",type="l",main="Generated chain for the number of components")
   distr_numcomp<<-GetCompDistr_sppmix(gensBD$numcomp[burnin:L],maxnumcomp)
@@ -563,10 +633,10 @@ FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims
   mix_of_permuted_means=MakeMixtureList(permgens$permuted_gens,burnin);
   mean_lambda<<-mean(allgens$genlamdas[burnin:L]);
   PlotNormalMixture(mix1=mix_of_permuted_means,
-    data=data1,m=m1,lamda=mean_lambda,
-    xlims=xlims1,ylims=ylims1,
-    L=100,title1="Posterior mean (permutated labels)",
-    zlims=c(0,maxz),title3d = "Posterior mean intensity surface (permutated labels)")
+    data1=data1,m1=m1,lamda1=mean_lambda,
+    xlims1=xlims1,ylims1=ylims1,
+    L1=100,title1="Posterior mean (permutated labels)",
+    zlims1=c(0,maxz),title3d = "Posterior mean intensity surface (permutated labels)")
 
   if(!is.null(truemix))
    ShowStats(permgens$permuted_ps,permgens$permuted_mus,truemix)
@@ -672,7 +742,7 @@ Get_User_Input_sppmix<- function(prompt_string="",modeYN=1)
     while(1)
     {
       ANSWER <- readline(paste(prompt_string,
-              "(Y)es or (N)o? "))
+              "(Y)es or (N)o? or (Q)uit "))
       if (substr(ANSWER, 1, 1) == "n"
           || substr(ANSWER, 1, 1) == "N")
       {
@@ -684,6 +754,11 @@ Get_User_Input_sppmix<- function(prompt_string="",modeYN=1)
       {
         ret=1
         break
+      }
+      if (substr(ANSWER, 1, 1) == "q"
+          || substr(ANSWER, 1, 1) == "Q")
+      {
+        stop("Execution ended by the user")
       }
     }
   }

@@ -401,7 +401,7 @@ bool Check4LabelSwitching_sppmix(vec const& chain)
        meanlag>fmeanlag+3*fstdlag))
     {
       LabelSwitchingPresent=true;
-      Rcout << i << '\n'<< chain(i) << '\n'<<lag << '\n'<<meanlag << '\n'<<stdlag<< '\n'<<std::endl ;
+//      Rcout << i << '\n'<< chain(i) << '\n'<<lag << '\n'<<meanlag << '\n'<<stdlag<< '\n'<<std::endl ;
       break;
     }
   }

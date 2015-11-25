@@ -352,3 +352,46 @@ List MakeMixtureList_sppmix(List const& gens_list,
   }
   return (mix);
 }
+
+
+//' @export
+// [[Rcpp::export]]
+List CheckInWindow_sppmix(mat const& points,
+    vec const& xlims,vec const& ylims,
+    bool const& truncate)
+{
+  int n=points.n_rows;
+  //check how many points are in the window
+  int countinW=0;
+  vec indicesinW=zeros(n);
+  for(int iin=0;iin<n;iin++)
+  {
+    if (points(iin,0)>=xlims(0)
+          && points(iin,0)<=xlims(1)
+          && points(iin,1)>=ylims(0)
+          && points(iin,1)<=ylims(1))
+    {
+      countinW=countinW+1;
+      indicesinW(iin)=1;
+    }
+  }
+  //check if we're going to truncate
+  if(!truncate)
+    countinW=n;
+  mat data=zeros(countinW,2);
+  if(truncate)
+  {
+    Rcout <<n-countinW<<" points are outside W=["
+          <<xlims(0)<<","<<xlims(1)<<"]x["
+          <<ylims(0)<<","<<ylims(1)<<"]"
+          << std::endl ;
+    data=points.rows(find(indicesinW==1));
+  }
+  else
+  {
+    data=points;
+  }
+  return List::create(
+    Named("count_inW") = countinW,
+    Named("data_inW") = data);
+}

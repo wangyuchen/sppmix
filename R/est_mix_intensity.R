@@ -19,7 +19,7 @@
 est_mix_damcmc <- function(pp, m, truncate = FALSE,
                            L = 5000, LL = 100) {
 
-  fit <- DAMCMC2d_sppmix(data = cbind(pp$x, pp$y),
+  fit <- DAMCMC2d_sppmix(points = cbind(pp$x, pp$y),
                          xlims = Window(pp)$xrange, ylims = Window(pp)$yrange,
                          m = m, truncate = truncate,
                          L = L, LL = LL)

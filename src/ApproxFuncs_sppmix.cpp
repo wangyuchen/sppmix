@@ -171,9 +171,9 @@ double ApproxMHRatiomu_sppmix(
   uplim(0)=xlims(1);
   uplim(1)=ylims(1);
   return pow(ApproxNormCdf2d_sppmix(uplim,
-                                propmu,sigma)/
+                                curmu,sigma)/
           ApproxNormCdf2d_sppmix(uplim,
-                         curmu,sigma),num);
+                         propmu,sigma),num);
 //  return approxFmu/approxFpropmu;
 }
 
@@ -298,6 +298,6 @@ double ApproxNormCdf2d_sppmix(vec const& uplim,
   ylims(0)=0;
   ylims(1)=uplim(1);
   return ApproxBivNormProb_sppmix(xlims,
-        ylims,mu,sigma,0);
+        ylims,mu,sigma,2);
 }
 

@@ -109,19 +109,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // DAMCMC2d_sppmix
-List DAMCMC2d_sppmix(mat const& data, vec const& xlims, vec const& ylims, int const& m, int const& L, int const& LL, bool const& truncate);
-RcppExport SEXP sppmix_DAMCMC2d_sppmix(SEXP dataSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP LLSEXP, SEXP truncateSEXP) {
+List DAMCMC2d_sppmix(mat const& points, vec const& xlims, vec const& ylims, int const& m, int const& L, int const& LL, bool const& truncate);
+RcppExport SEXP sppmix_DAMCMC2d_sppmix(SEXP pointsSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP LLSEXP, SEXP truncateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< mat const& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< mat const& >::type points(pointsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
     Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
     Rcpp::traits::input_parameter< bool const& >::type truncate(truncateSEXP);
-    __result = Rcpp::wrap(DAMCMC2d_sppmix(data, xlims, ylims, m, L, LL, truncate));
+    __result = Rcpp::wrap(DAMCMC2d_sppmix(points, xlims, ylims, m, L, LL, truncate));
     return __result;
 END_RCPP
 }
@@ -353,6 +353,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List const& >::type gens_list(gens_listSEXP);
     Rcpp::traits::input_parameter< int const& >::type burnin(burninSEXP);
     __result = Rcpp::wrap(MakeMixtureList_sppmix(gens_list, burnin));
+    return __result;
+END_RCPP
+}
+// CheckInWindow_sppmix
+List CheckInWindow_sppmix(mat const& points, vec const& xlims, vec const& ylims, bool const& truncate);
+RcppExport SEXP sppmix_CheckInWindow_sppmix(SEXP pointsSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP truncateSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< mat const& >::type points(pointsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
+    Rcpp::traits::input_parameter< bool const& >::type truncate(truncateSEXP);
+    __result = Rcpp::wrap(CheckInWindow_sppmix(points, xlims, ylims, truncate));
     return __result;
 END_RCPP
 }

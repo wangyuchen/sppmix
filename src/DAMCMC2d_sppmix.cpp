@@ -5,13 +5,15 @@
 //just get realizations no plotting here
 //' @export
 //[[Rcpp::export]]
-List DAMCMC2d_sppmix(mat const& data,
+List DAMCMC2d_sppmix(mat const& points,
                      vec const& xlims,
                      vec const& ylims,
                      int const& m,int const& L,
                      int const& LL,
                      bool const& truncate)
 {
+  List checkin=CheckInWindow_sppmix(points,xlims,ylims,truncate);
+  mat data=as<mat>(checkin["data_inW"]);
   int n=data.n_rows;
   Rcout << "Dataset has " << n <<" points" << std::endl ;
   cube genmus=zeros(m,2,L);
@@ -180,6 +182,8 @@ List DAMCMC2d_sppmix(mat const& data,
         ratio=ApproxMHRatiomu_sppmix(xlims,
           ylims,mu1,trans(genmutemp),
           gensigmas(i,j),sum1);
+//        Rcout << ratio << '\n'<< std::endl ;
+
       //pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
       //         mu1,trans(genmutemp),gensigmas(i,j),
         //         geninvsigmas(i,j)),sum1);
@@ -280,7 +284,7 @@ List DAMCMC2d_sppmix(mat const& data,
       //      if (sum(qij)==1)
       zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qs),1,m);
       //      zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qij/sum(qij)),1,m);
-      //      Rcout << sum(zmultinomial.row(dat))<< std::endl ;
+//            Rcout << sum(zmultinomial.row(dat))<< std::endl ;
     }
     ratio=1;
     if(m>1)

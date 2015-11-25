@@ -114,9 +114,9 @@ vec SubstituteVec_sppmix(vec v,vec const& subv,int const& start);
 vec SubVec_sppmix(vec const& v,int const& start,int const& end);
 double GetMixtureMaxz_sppmix(List const& genmix,int const& len,vec const& xlims,vec const& ylims);
 List MakeMixtureList_sppmix(List const& gens_list,int const& burnin);
+List CheckInWindow_sppmix(mat const& points,vec const& xlims,vec const& ylims,bool const& truncate);
 
-
-//Fucntions that connect to other APIs
+//Functions that connect to other APIs
 //file: OtherAPIs_sppmix.cpp
 double ApproxBivNormProb_sppmix(vec const& xlims,
   vec const& ylims,vec const& mu,

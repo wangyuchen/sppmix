@@ -32,8 +32,8 @@ BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, LL, truncate, lam
 }
 
 #' @export
-DAMCMC2d_sppmix <- function(data, xlims, ylims, m, L, LL, truncate) {
-    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', data, xlims, ylims, m, L, LL, truncate)
+DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, LL, truncate) {
+    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, LL, truncate)
 }
 
 #' @export
@@ -129,6 +129,11 @@ GetMixtureMaxz_sppmix <- function(genmix, len, xlims, ylims) {
 #' @export
 MakeMixtureList_sppmix <- function(gens_list, burnin) {
     .Call('sppmix_MakeMixtureList_sppmix', PACKAGE = 'sppmix', gens_list, burnin)
+}
+
+#' @export
+CheckInWindow_sppmix <- function(points, xlims, ylims, truncate) {
+    .Call('sppmix_CheckInWindow_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, truncate)
 }
 
 #' @export
