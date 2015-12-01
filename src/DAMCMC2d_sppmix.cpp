@@ -47,7 +47,7 @@ List DAMCMC2d_sppmix(mat const& points,
   vec ksi=zeros(2,1);
   ksi(0)=sum(data.col(0))/n;
   ksi(1)=sum(data.col(1))/n;
-  //  Rcout << ksi<< std::endl ;
+//    Rcout << ksi<<"\n"<< std::endl ;
   mat kappa(2,2),kappainv(2,2);
   kappa(0,1)=0;
   kappa(1,0)=0;
@@ -164,8 +164,8 @@ List DAMCMC2d_sppmix(mat const& points,
         // Rcout <<"\n"<< i << " "<< j << " "<<sum1 << std::endl ;
         //         return List::create();
         newmu=zeros(2,1);
-        //        Rcout << "\n"<<"Component with less than 2 points, exiting" << std::endl ;
-        //        return List::create();
+        Rcout << "\n"<<"Component with less than 2 points, exiting" << std::endl ;
+        return List::create();
       }
       cov1=invmat2d_sppmix(sum1*geninvsigmas(i,j)+kappa);
       //    if(det(cov1)<=0){Rcout << "\n"<<"Cov1 not pd, "<<cov1 << std::endl ;}
@@ -179,9 +179,14 @@ List DAMCMC2d_sppmix(mat const& points,
       {
         mu1(0)=genmus(j,0,i);
         mu1(1)=genmus(j,1,i);
-        ratio=ApproxMHRatiomu_sppmix(xlims,
-          ylims,mu1,trans(genmutemp),
-          gensigmas(i,j),sum1);
+        //check if proposed mu is in domain
+//        if(mu1(0)<xlims(0) ||mu1(0)>xlims(1) ||
+//           mu1(1)<ylims(0) ||mu1(1)>ylims(1))
+//          ratio=0;
+//        else
+          ratio=ApproxMHRatiomu_sppmix(xlims,
+            ylims,mu1,trans(genmutemp),
+            gensigmas(i,j),sum1);
 //        Rcout << ratio << '\n'<< std::endl ;
 
       //pow(ApproxMHRatiomu_sppmix(LL,xlims,ylims,
@@ -240,9 +245,8 @@ List DAMCMC2d_sppmix(mat const& points,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        approxcompj=ApproxCompMass_sppmix(//LL,
+        approxcompj=ApproxCompMass_sppmix(
           xlims,ylims,mu1,gensigmas(i+1,j));
-          //,geninvsigmas(i+1,j));
       }
       else
         approxcompj=1;

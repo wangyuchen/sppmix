@@ -132,15 +132,25 @@ PlotNormalMixture<- function(mix1,data1,
   xcoord <- seq(xlims1[1], xlims1[2], length.out = L1);
   ycoord <- seq(ylims1[1], ylims1[2], length.out = L1);
 
-  zcoord <- lamda*dNormMix_sppmix(mix1, xcoord, ycoord);
-
-  Plot3d_sppmix(xcoord,ycoord,zcoord,
-                title1=title3d,
-                xlims1,ylims1,zlims1)
+  if(0==1)
+  {#use the package routine
+    normmix1=MakeNormMixFromMixtureList(mix1);
+    plot(normmix1, lamda,
+        win=spatstat::owin(xlims1, ylims1),
+        L = 100,
+      title1="Poisson Process Intensity", truncate = TRUE)
+  }
+  else
+  {#use the Plot3d_sppmix routine
+    zcoord <- lamda*dNormMix_sppmix(mix1, xcoord, ycoord);
+    Plot3d_sppmix(xcoord,ycoord,zcoord,
+                  title1=title3d,
+                  xlims1,ylims1,zlims1)
+  }
   #,pos1=c(xlims[1],ylims[2],0))
   #              paste("Mixture with",
    #            m,"components,",n,"points"))
-  return(zcoord)
+#  return(zcoord)
 }
 
 
@@ -209,8 +219,6 @@ Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
                            6*height/7),
               zoom=1.2)
 #rotation about the x-axis, 45 degrees
-#              ,userMatrix =
-#              rgl::rotationMatrix(pi/4,1, 0, 0))
   U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
             rgl::rotate3d(U,pi/4,0,0,1))
@@ -220,70 +228,28 @@ Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
         color = cols, xlab="x",ylab="y",zlab="",
         zlim=c(zlims[1]-0.01,zlims[2]),
         box = FALSE, axes = FALSE)
-
-#  rgl::rgl.lines(xlims, c(0, 0), c(0, 0), color = 'black')
-#  rgl::rgl.lines(c(0, 0), ylims, c(0, 0), color = 'black')
-
-  # Add a point at the end of each axes to specify the direction
-#  axes <- rbind(c(xlims[2], 0, 0), c(0, ylims[2], 0),
-#                c(0, 0, zlims[2]))
-#  rgl::rgl.points(axes, color = 'black', size = 3)
-  # Add axis labels
-#  rgl::rgl.texts(axes, text = c('x', 'y', 'intensity'), color = axis.col,
- #           adj = c(0.5, -0.8), size = 2)
-
-#  rgl::segments3d(xcoord,rep(ylims[1],length(xcoord)),
-#           rep(zlims[1],length(xcoord)))
-#  rgl::segments3d(xcoord,rep(ylims[1],length(xcoord)),
-#                  rep(zlims[1],length(xcoord)))
-    rgl::axis3d('x')
+  rgl::axis3d('x')
   rgl::axis3d('y')
-  rgl::axis3d('z-+'#-=low x-coord, +=high y-coord
-##              ,zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez)
-              ,pos = c(xlims[1], ylims[2], 0))
+  rgl::axis3d('z-+',pos = c(xlims[1], ylims[2], 0))
   rgl::rgl.lines(c(xlims[1], xlims[1]),
                  c(ylims[2], ylims[2]), zlims, color = 'black')
-
-#  Rangex=max(xcoord)-min(xcoord);
-#  Rangey=max(ycoord)-min(ycoord);
-#  Rangez=max(z)-min(z);
-#  zmax=max(z)
-#  rgl::observer3d(-xmax, -ymax, zmax,auto = TRUE)
   rgl::title3d(main=NULL)
   rgl::text3d(xlims[2],ylims[2],
               zlims[2]#+0.2*Rangez
               ,texts=title1)
-#  rgl::decorate3d(zlim=c(zlims[1]-0.01,zlims[2]),
-#                  xlab = "x", ylab = "y", zlab = "Surface",
-#                  box = FALSE, axes = TRUE)
-  #clip into x,y,z limits provided
-
-#  rgl::text3d(xmax+pos[1],ymax+pos[2],
-#              zmax+pos[3],texts=title1)
-#  rgl::axes3d(edges=c('x','y+','z'),pos=c(0,0,0),box=FALSE)
-#  rgl::axis3d(edge='x',pos=c(0,0,0))
-#  rgl::axis3d(edge='y',pos=c(0,0,0))
-#  rgl::axis3d(edge='z',pos=c(0,0,0))
-  #  rgl::decorate3d(main=title1)
-
-#  windows()
-#  persp(x = xcoord, y = ycoord, z = z,
-#        col= col, xlab="x",ylab="y",zlab="",
-#        zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez),
-#        box = FALSE, axes = FALSE)
-#  library(fields)
- # image.plot( legend.only=TRUE, zlim= zlims,
-#              nlevel=100, col=cols)
-
-
+  rgl::bgplot3d(suppressWarnings(
+    fields::image.plot(legend.only = TRUE,
+                       smallplot= c(.8,.82,0.05,.7),
+                       zlim = zlims,
+                       col = jet.colors(100))))
 }
 
 #' @export
 Plot3dGrayScale_sppmix<- function(xcoord,ycoord,zcoord,
                                   title1="Poisson Process Intensity",
-                                  xlims=c(0,1),ylims=c(0,1),zlims=c(0,1))
+                                  xlims=c(0,1),ylims=c(0,1),zlims=NULL)
 {
-  col <- gray.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord), length = 100))]
+  cols <- gray.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord), length = 100))]
   height=300;
   width=500;
   if(.Platform$OS.type=='windows')
@@ -304,17 +270,22 @@ Plot3dGrayScale_sppmix<- function(xcoord,ycoord,zcoord,
   zmax=max(zcoord)
   Rangez=zmax-min(zcoord);
   rgl::persp3d(x = xcoord, y = ycoord, z = zcoord,
-               color = col, xlab="x",ylab="y",zlab="",
-               zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez),
+               color = cols, xlab="x",ylab="y",zlab="",
+               zlim=c(zlims[1]-0.01,zlims[2]),
                box = FALSE, axes = FALSE)
   rgl::axis3d('x')
   rgl::axis3d('y')
-  rgl::axis3d('z-+'#-=low x-coord, +=high y-coord
-              #              ,zlim=c(zlims[1]-0.01*Rangez,zlims[2]+0.01*Rangez)
-              ,pos = c(xlims[1], ylims[2], 0))
+  rgl::axis3d('z-+',pos = c(xlims[1], ylims[2], 0))
+  rgl::rgl.lines(c(xlims[1], xlims[1]),
+                 c(ylims[2], ylims[2]), zlims, color = 'black')
   rgl::title3d(main=NULL)
   rgl::text3d(xlims[2],ylims[2],
-              zmax+0.2*Rangez,texts=title1)
+              zlims[2]#+0.2*Rangez
+              ,texts=title1)
+  rgl::bgplot3d(suppressWarnings(
+    fields::image.plot(legend.only = TRUE,
+      smallplot= c(.8,.82,0.05,.7),
+      zlim = zlims,col = gray.colors(100))))
 }
 
 
@@ -385,7 +356,7 @@ Go<- function()
                     title3d=paste("Intensity surface of posterior means,",m,"components,",n,"points"))
 
   gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
-  PostGenBDMCMC_sppmix(gensBD)
+  PostGenBDMCMC_sppmix(gensBD,maxz_height)
 
 }
 
@@ -503,34 +474,73 @@ Demo_sppmix<- function()
   {
     gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
     if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
-      PostGenBDMCMC_sppmix(gensBD)
+      PostGenBDMCMC_sppmix(gensBD,maxz_height)
   }
 
 }
 
 
 #' @export
-PostGenBDMCMC_sppmix<- function(gensBD)
+PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
 {#processes output from a Birth-Death fit
   cat("Frequency table for the number of components")
-  tab=table(gensBD$numcomp)
-  print(tab)
+  print(table(gensBD$numcomp))
+  tab=tabulate(gensBD$numcomp,nbins=gensBD$maxnumcomp)
 
 #  probk=tab
 #  meank=sum(probk.*[1:1:maxnumcomp]);
 #  [val1,mapk]=max(probk);
 #  windows()
-  hist(gensBD$numcomp,
-       breaks=0:gensBD$maxnumcomp,
-       xlab="Component",labels=TRUE,
-       main="Distribution of the number of components",
-       xlim=c(0,gensBD$maxnumcomp),
-       ylim=c(0,1.2*max(table(gensBD$numcomp))))
-#  axis(side=1,at=1:gensBD$maxnumcomp,
-#       labels=1:gensBD$maxnumcomp,tick=TRUE)
 #  windows()
+  mp<<-barplot(tab,names.arg=1:gensBD$maxnumcomp,
+          xlab="Number of Components",ylab="Iterations",
+          main="Distribution of the number of components"
+          ,ylim=c(0,1.2*max(tab)))
+  for(i in 1:gensBD$maxnumcomp)
+    text(x=mp,y=tab+0.1*max(tab),labels=tab)
+  #mtext(side=1,at=c(mp[i,1],-1),text=paste(tab[i]))
+  #  mtext(side = 1, at = colMeans(mp), line = 1,
+ #       text = paste("Mean"), col = "red")
+
+  #  windows()
   plot(gensBD$numcomp,xlab="Iteration",ylab="Number of components",type="l",main="Generated chain for the number of components")
   distr_numcomp<<-GetCompDistr_sppmix(gensBD$numcomp[burnin:L],maxnumcomp)
+
+  MAPcompList=GetMax_sppmix(tab)
+  MAPcomp=MAPcompList$pos+1;
+  mapgens<<-GetBDCompRealiz_sppmix(
+    gensBD$allgens_List[burnin:L],
+    gensBD$genlamdas[burnin:L],
+    gensBD$numcomp[burnin:L],MAPcomp)
+
+  mix_of_postmeans<<-MakeMixtureList_sppmix(
+    mapgens$newgenBD,0)
+  mean_lambda=mean(mapgens$newlamdas);
+#  maxz_height=mean_lambda*
+#    GetMixtureMaxz_sppmix(mix_of_postmeans,
+#                          100,xlims,ylims);
+  #  cat("passed")
+  PlotNormalMixture(mix1=mix_of_postmeans,
+    data1=gendata,m1=MAPcomp,lamda1=mean_lambda,
+    xlims1=xlims,ylims1=ylims,L1=100,
+    title1="Posterior means",
+    zlims1=c(0,1.1*maxz_height),
+    title3d=paste("Intensity surface of posterior means, MAP m=",m,",",n,"points"))
+
+  if(0)
+  {
+    permgens<<-PostGenGetBestPerm_sppmix(mapgens$newgenBD);
+    #  permuted_means=GetAllMeans_sppmix(permgens$permuted_gens,burnin)
+    mix_of_permuted_means<<-MakeMixtureList_sppmix(permgens$permuted_gens,0);
+    PlotNormalMixture(mix1=mix_of_permuted_means,
+      data1=gendata,m1=MAPcomp,lamda1=mean_lambda,
+      xlims1=xlims,ylims1=ylims,L1=100,
+      title1="Posterior mean (permutated labels)",
+      zlims1=c(0,1.1*maxz_height),
+      title3d = "Posterior mean intensity surface (permutated labels)")
+  }
+  if(1)
+  {
 
   if(Get_User_Input_sppmix("Compute Bayesian model average (slow operation)?"))
   {
@@ -548,7 +558,7 @@ PostGenBDMCMC_sppmix<- function(gensBD)
                 title1=paste("Bayesian model average of",L-burnin,"posterior realizations")
                 ,xlims,ylims,zlims=c(0,1.1*maxz_height))
   }
-
+}
 }
 
 #' @export
@@ -711,6 +721,25 @@ for (i in 1:m)
 }
 cat("\n----------------Component stats done------------\n")
 #cat("\nNOTE: if you have the truth, then what is called component 1 might be called component 2 in the fit. This is not label switching. Check the plots of the generated chains for erratic behavior (sudden jumps) and if present, run the FixLabels routine to find the best permutation.\n")
+}
+
+#' @export
+MakeNormMixFromMixtureList<- function(mix)
+{
+  #takes a mixture list and returns
+  #a normmix object
+  m=length(mix);
+  ps=vector("numeric", m);
+  mus=vector("list", m);
+  sigmas=vector("list", m);
+  for(i in 1:m)
+  {
+    ps[i]=as.numeric(mix[[i]]$p)
+    mus[[i]]=as.vector(mix[[i]]$mu)
+    sigmas[[i]]=as.matrix(mix[[i]]$sigma)
+  }
+  norm_mix=normmix(ps, mus, sigmas);
+  return (norm_mix)
 }
 
 #' @export
