@@ -395,24 +395,3 @@ List CheckInWindow_sppmix(mat const& points,
     Named("count_inW") = countinW,
     Named("data_inW") = data);
 }
-
-//' @export
-// [[Rcpp::export]]
-List GetMax_sppmix(vec const& v)
-{
-  int len=v.size();
-  double max_value=v.max();
-  int pos;
-  for(int i=0;i<len;i++)
-  {
-    if (v(i)==max_value)
-    {
-      pos=i;
-      break;
-    }
-  }
-  return List::create(
-    Named("max") = max_value,
-    Named("pos") = pos);
-}
-

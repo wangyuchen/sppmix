@@ -137,11 +137,6 @@ CheckInWindow_sppmix <- function(points, xlims, ylims, truncate) {
 }
 
 #' @export
-GetMax_sppmix <- function(v) {
-    .Call('sppmix_GetMax_sppmix', PACKAGE = 'sppmix', v)
-}
-
-#' @export
 GetStats_sppmix <- function(gens, alpha) {
     .Call('sppmix_GetStats_sppmix', PACKAGE = 'sppmix', gens, alpha)
 }

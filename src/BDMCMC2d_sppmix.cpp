@@ -79,7 +79,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
   vec ksi=zeros(2,1);
   ksi(0)=sum(data.col(0))/n;
   ksi(1)=sum(data.col(1))/n;
-//  Rcout << ksi<<"\n"<< std::endl ;
+  //  Rcout << ksi<< std::endl ;
   mat kappa(2,2),kappainv(2,2);
   kappa(0,1)=0;
   kappa(1,0)=0;
@@ -90,8 +90,6 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
   //  kappainv.eye(2,2);
   kappainv(0,0)=Rx*Rx/hyper(1);
   kappainv(1,1)=Ry*Ry/hyper(1);
-//  Rcout << kappa<<"\n"<< std::endl ;
-//  Rcout << kappainv<<"\n"<< std::endl ;
   //hypers 3:a=3, 4:g=.3, 5:gam=1
   double a=hyper(2),g=hyper(3),gam=hyper(4);
 //  imat prevz,zmultinomial(n,maxnumcomp);

@@ -17,8 +17,7 @@ Imports:
     rgl,
     ggplot2,
     Rcpp,
-    tidyr,
-    fields
+    tidyr
 LinkingTo: Rcpp,
     RcppArmadillo,
     mvtnorm

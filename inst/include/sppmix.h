@@ -115,7 +115,6 @@ vec SubVec_sppmix(vec const& v,int const& start,int const& end);
 double GetMixtureMaxz_sppmix(List const& genmix,int const& len,vec const& xlims,vec const& ylims);
 List MakeMixtureList_sppmix(List const& gens_list,int const& burnin);
 List CheckInWindow_sppmix(mat const& points,vec const& xlims,vec const& ylims,bool const& truncate);
-List GetMax_sppmix(vec const& v);
 
 //Functions that connect to other APIs
 //file: OtherAPIs_sppmix.cpp

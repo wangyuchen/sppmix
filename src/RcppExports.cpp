@@ -370,17 +370,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// GetMax_sppmix
-List GetMax_sppmix(vec const& v);
-RcppExport SEXP sppmix_GetMax_sppmix(SEXP vSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< vec const& >::type v(vSEXP);
-    __result = Rcpp::wrap(GetMax_sppmix(v));
-    return __result;
-END_RCPP
-}
 // GetStats_sppmix
 List GetStats_sppmix(vec const& gens, double const& alpha);
 RcppExport SEXP sppmix_GetStats_sppmix(SEXP gensSEXP, SEXP alphaSEXP) {

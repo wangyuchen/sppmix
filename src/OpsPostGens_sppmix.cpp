@@ -117,7 +117,6 @@ List PostGenGetBestPerm_sppmix(List const& allgens)
 //that yield the smallest MC risk wrt choice of
 //hyperparams ds for ps
 //loss function is:-log(Dirichlet(ps,ds))
-  printf("\nNote: Slow operation for moderate-large number of components\n");
   while (done==0)
   {
     //squared error loss, minimized at mean(thetas)
