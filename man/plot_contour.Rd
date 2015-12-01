@@ -5,7 +5,8 @@
 \title{Plot contour for intensity surface}
 \usage{
 plot_contour(mix, lambda, pattern, win = Window(pattern), L = 100,
-  points = TRUE, filled = TRUE, truncate = TRUE, ...)
+  title = "Contour for intensity surface", points = TRUE, filled = TRUE,
+  truncate = TRUE, ...)
 }
 \arguments{
 \item{mix}{Object of class normmix.}
@@ -17,6 +18,8 @@ plot_contour(mix, lambda, pattern, win = Window(pattern), L = 100,
 \item{win}{Object of class \code{\link{owin}}}
 
 \item{L}{number of grids on each coordinate.  The default is L=100.}
+
+\item{title}{title for the contour plot.}
 
 \item{points}{Logical flag indicating whether plot realizations, i.e.
 locations, with the contour plot. The default is TRUE.}

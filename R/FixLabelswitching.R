@@ -94,6 +94,13 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
    return(invisible(perum_fit))
 }
 
+#' Test if posterior realizations of mu have label switching
+#'
+#' Test if there is a label switching of the posterior realizations of mu by
+#' testing if the mean of each component changed dramatically during MCMC.
+#'
+#' @param genmus posterior realizations from DAMCMC algorithm.
+#' @author Athanasios (Sakis) Micheas
 #' @export
 test_labswitch<- function(genmus) {
   m <- dim(genmus)[1]
