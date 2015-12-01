@@ -37,8 +37,8 @@ plot.normmix <- function(mix, lambda, win, L = 100,
 
   zlims=c(0,max(z))
 
-  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
-  rgl::open3d(windowRect = c(0, 45, 512, 557))
+#  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
 #   rgl::open3d(windowRect=c(width/5,
 #                            height/7,
 #                            4*width/5,
@@ -59,8 +59,12 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   rgl::title3d(main = NULL)
   rgl::text3d(xlims[2], ylims[2], zlims[2], texts = title1)
 
-  rgl::bgplot3d(suppressWarnings(fields::image.plot(legend.only = TRUE, zlim = zlims,
-                                       col = jet.colors(100))))
+  rgl::bgplot3d(suppressWarnings(
+    fields::image.plot(legend.only = TRUE,
+                       smallplot= c(.8,.82,0.05,.7),
+                       zlim = zlims,
+                       col = jet.colors(100))))
+
 }
 #' @export
 Plots_off<- function()
@@ -112,6 +116,7 @@ plot.sppmix <- function(spp, ...) {
 #' @param pattern Object of class \code{\link{ppp}}
 #' @param win Object of class \code{\link{owin}}
 #' @param L number of grids on each coordinate.  The default is L=100.
+#' @param title title for the contour plot.
 #' @param points Logical flag indicating whether plot realizations, i.e.
 #' locations, with the contour plot. The default is TRUE.
 #' @param filled Logical flag indicating whether plot filled contour plot.
@@ -131,6 +136,7 @@ plot.sppmix <- function(spp, ...) {
 #' plot_contour(mix1,pp1,spatstat::square(1))
 #' @export
 plot_contour <- function(mix, lambda, pattern, win = Window(pattern), L = 100,
+                         title="Contour for intensity surface",
                          points = TRUE, filled = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
@@ -151,9 +157,11 @@ plot_contour <- function(mix, lambda, pattern, win = Window(pattern), L = 100,
   if (filled == TRUE){
     if (points == TRUE){
       filled.contour(x=xcoord,y=ycoord, z=t(z),color = jet.colors,
-                     plot.axes = { axis(1); axis(2);
-                       points(pattern$x, pattern$y,pch = 20) },
-                     frame.plot = FALSE,asp = 1 ,axes = TRUE, ... )
+                       plot.title = title(main = title),
+                       plot.axes = { axis(1);
+                         axis(2);
+                         points(pattern$x, pattern$y, pch = 20)},
+                       frame.plot = FALSE, asp = 1, axes = TRUE, ... )
     } else {
       filled.contour(x=xcoord,y=ycoord, z=t(z),
                      color = jet.colors,
