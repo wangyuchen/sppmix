@@ -136,7 +136,7 @@ plot.sppmix <- function(spp, ...) {
 #' plot_contour(mix1,pp1,spatstat::square(1))
 #' @export
 plot_contour <- function(mix, lambda, pattern, win = Window(pattern), L = 100,
-                         title="Contour for intensity surface",
+                         title="Mixture intensity with",
                          points = TRUE, filled = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
@@ -156,18 +156,24 @@ plot_contour <- function(mix, lambda, pattern, win = Window(pattern), L = 100,
   #plot(z, col = col)
   if (filled == TRUE){
     if (points == TRUE){
+      title1 <- list(
+        bquote(paste(lambda,"=",.(lambda),", n=",.(pattern$n))),
+        title
+      )
       filled.contour(x=xcoord,y=ycoord, z=t(z),color = jet.colors,
-                       plot.title = title(main = title),
                        plot.axes = { axis(1);
                          axis(2);
                          points(pattern$x, pattern$y, pch = 20)},
                        frame.plot = FALSE, asp = 1, axes = TRUE, ... )
+      mtext(do.call(expression, title1), side = 3, line = 0:1, at = 0.35)
     } else {
+
       filled.contour(x=xcoord,y=ycoord, z=t(z),
-                     color = jet.colors,
+                     color = jet.colors, plot.title = title(main = title),
                      frame.plot = FALSE, asp = 1,axes = TRUE, ...)
     }
   } else {
+
     m <- ggplot2::ggplot(temp,aes(x, y, z = z)) +
       ggplot2::labs(x = "X", y = "Y",
                     title = paste("Contour of the intensity surface with",

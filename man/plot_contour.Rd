@@ -5,7 +5,7 @@
 \title{Plot contour for intensity surface}
 \usage{
 plot_contour(mix, lambda, pattern, win = Window(pattern), L = 100,
-  title = "Contour for intensity surface", points = TRUE, filled = TRUE,
+  title = "Mixture intensity with", points = TRUE, filled = TRUE,
   truncate = TRUE, ...)
 }
 \arguments{
