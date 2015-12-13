@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{normmix}(mix, lambda, win, L = 100,
   title1 = "Poisson Process Intensity", truncate = TRUE, pos = c(0, 0, 0),
-  ...)
+  grayscale = FALSE, ...)
 }
 \arguments{
 \item{mix}{An object of class \code{\link{normmix}}.}

@@ -21,7 +21,7 @@
 #' }
 plot.normmix <- function(mix, lambda, win, L = 100,
                          title1="Poisson Process Intensity", truncate = TRUE,
-                         pos=c(0,0,0), ...) {
+                         pos=c(0,0,0), grayscale = FALSE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
@@ -33,7 +33,12 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
-  col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
+  if (grayscale == TRUE) {
+    col <- gray.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
+  } else {
+    col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
+  }
+
 
   zlims=c(0,max(z))
 
@@ -59,12 +64,20 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   rgl::title3d(main = NULL)
   rgl::text3d(xlims[2], ylims[2], zlims[2], texts = title1)
 
-  rgl::bgplot3d(suppressWarnings(
-    fields::image.plot(legend.only = TRUE,
-                       smallplot= c(.8,.82,0.05,.7),
-                       zlim = zlims,
-                       col = jet.colors(100))))
+  if (grayscale == TRUE) {
+    rgl::bgplot3d(suppressWarnings(
+      fields::image.plot(legend.only = TRUE,
+                         smallplot= c(.8,.82,0.05,.7),
+                         zlim = zlims,
+                         col = gray.colors(100))))
+  } else {
+    rgl::bgplot3d(suppressWarnings(
+      fields::image.plot(legend.only = TRUE,
+                         smallplot= c(.8,.82,0.05,.7),
+                         zlim = zlims,
+                         col = jet.colors(100))))
 
+  }
 }
 #' @export
 Plots_off<- function()
