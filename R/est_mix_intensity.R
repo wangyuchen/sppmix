@@ -91,27 +91,38 @@ est_mix_bdmcmc <- function(pp, m, truncate = FALSE,
 
 
 #' @export
-get_post.bdmcmc_res <- function(fit, burnin) {
-#   L <- length(fit$allgens)
-#   m <- ncol(fit$genps)
-#   if (missing(burnin)) burnin <- L / 10
-#
-#   post_ps <- colMeans(fit$genps[-(1:burnin), , drop = FALSE])
-#   mus <- apply(fit$genmus[, , -(1:burnin), drop = FALSE], 1:2, mean)
-#
-#   mean_mat <- function(mats) Reduce("+", mats) / length(mats)
-#   sigmas <- apply(fit$gensigmas[-(1:burnin), , drop = FALSE], 2, mean_mat)
-#
-#   mean_lambda <- mean(fit$genlamdas)
-#
-#   post_mus <- post_sigmas <- vector("list", m)
-#   for (i in 1:m) {
-#     post_mus[[i]] <- mus[i, ]
-#     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
-#   }
-#
-#   return(list(post_normmix = normmix(post_ps, post_mus, post_sigmas),
-#               mean_lambda = mean_lambda))
+get_post.bdmcmc_res <- function(fit, comp, burnin) {
+  L <- length(fit$allgens)
+  if (missing(burnin)) burnin <- L / 10
+
+  numcomp <- fit$numcomp
+  numcomp[1:burnin] <- 0
+  ind <- fit$numcomp == comp
+
+  comp_rlz <- GetBDCompRealiz_sppmix(fit$allgens_List[-(1:burnin)],
+                                     fit$genlamdas[-(1:burnin)],
+                                     fit$numcomp[-(1:burnin)], comp)
+
+
+  post_ps <- colMeans(fit$genps[ind, , drop = FALSE])
+  post_ps <- post_ps[seq_len(comp)]
+
+  mus <- apply(fit$genmus[, , ind, drop = FALSE], 1:2, mean)
+  mus <- mus[seq_len(comp), ]
+
+  mean_mat <- function(mats) Reduce("+", mats) / length(mats)
+  sigmas <- apply(fit$gensigmas[ind, , drop = FALSE], 2, mean_mat)
+  sigmas <- sigmas[seq_len(comp)]
+
+  mean_lambda <- mean(fit$genlamdas[ind])
+
+  post_mus <- vector("list", comp)
+  for (i in 1:comp) {
+    post_mus[[i]] <- mus[i, ]
+  }
+
+  return(list(post_normmix = normmix(post_ps, post_mus, sigmas),
+              mean_lambda = mean_lambda))
 }
 
 
