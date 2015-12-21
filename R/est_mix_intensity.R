@@ -9,7 +9,6 @@
 #' @param truncate logical, indicating whether truncation is used, where the
 #' component density are restricted within the domain of the point pattern.
 #' @param L length of MCMC chain, default to 5000.
-#' @param LL additional fitting parameter
 #'
 #' @rdname est_mix
 #' @examples
@@ -17,12 +16,12 @@
 #'
 #' @export
 est_mix_damcmc <- function(pp, m, truncate = FALSE,
-                           L = 5000, LL = 100) {
+                           L = 5000) {
 
   fit <- DAMCMC2d_sppmix(points = cbind(pp$x, pp$y),
                          xlims = Window(pp)$xrange, ylims = Window(pp)$yrange,
                          m = m, truncate = truncate,
-                         L = L, LL = LL)
+                         L = L)
   fit$data <- pp
   class(fit) <- "damcmc_res"
   return(invisible(fit))

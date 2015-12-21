@@ -5,7 +5,7 @@
 \alias{est_mix_damcmc}
 \title{Estimate mixture model using MCMC}
 \usage{
-est_mix_damcmc(pp, m, truncate = FALSE, L = 5000, LL = 100)
+est_mix_damcmc(pp, m, truncate = FALSE, L = 5000)
 
 est_mix_bdmcmc(pp, m, truncate = FALSE, lambda, lambdab, hyper, L = 5000,
   LL = 100)
@@ -20,8 +20,6 @@ maximum number of component in Birth Death MCMC.}
 component density are restricted within the domain of the point pattern.}
 
 \item{L}{length of MCMC chain, default to 5000.}
-
-\item{LL}{additional fitting parameter}
 
 \item{lambda}{parameter for BDMCMC}
 
