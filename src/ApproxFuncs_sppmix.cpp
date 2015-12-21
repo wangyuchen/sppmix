@@ -114,18 +114,19 @@ double ApproxCompMass_sppmix(vec const& xlims,
   approx=((xlims(1)-xlims(0))*(ylims(1)-ylims(0)))*approx/L;
 */
 //this is a better(?) Monte-Carlo approximation
-//   int L=1000;
-//   mat xy=rnorm2_sppmix(L,mu,sigma);
-//   double approx=0;
-//   for (int i=0;i<L;i++)
-//   {
-//     if(xy(i,0)>=xlims(0) && xy(i,0)<=xlims(1) &&
-//        xy(i,1)>=ylims(0) && xy(i,1)<=ylims(1) )
-//     approx++;
-//   }
-//   return approx/L;
-
- return ApproxBivNormProb_sppmix(xlims,ylims,mu,sigma,2);
+/*  int L=1000;
+  mat xy=rnorm2_sppmix(L,mu,sigma);
+  double approx=0;
+  for (int i=0;i<L;i++)
+  {
+    if(xy(i,0)>=xlims(0) && xy(i,0)<=xlims(1) &&
+       xy(i,1)>=ylims(0) && xy(i,1)<=ylims(1) )
+    approx++;
+  }
+  return approx/L;
+*/
+  return ApproxBivNormProb_sppmix(xlims,
+      ylims,mu,sigma,2);
 }
 
 //' @export

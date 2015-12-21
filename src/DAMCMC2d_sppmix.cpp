@@ -9,7 +9,6 @@ List DAMCMC2d_sppmix(mat const& points,
                      vec const& xlims,
                      vec const& ylims,
                      int const& m,int const& L,
-                     int const& LL,
                      bool const& truncate)
 {
   List checkin=CheckInWindow_sppmix(points,xlims,ylims,truncate);
@@ -44,11 +43,15 @@ List DAMCMC2d_sppmix(mat const& points,
   //  Rcout << "mins="<<mins<< std::endl ;
   double Rx=max(data.col(0))-min(data.col(0)),
     Ry=max(data.col(1))-min(data.col(1));
-  vec ksi=zeros(2,1);
+  vec ksi=zeros(2);
   ksi(0)=sum(data.col(0))/n;
   ksi(1)=sum(data.col(1))/n;
 //    Rcout << ksi<<"\n"<< std::endl ;
-  mat kappa(2,2),kappainv(2,2);
+  mat kappa(2,2),kappainv(2,2),Idenmat(2,2);
+  Idenmat(0,1)=0;
+  Idenmat(1,0)=0;
+  Idenmat(0,0)=1;
+  Idenmat(1,1)=1;
   kappa(0,1)=0;
   kappa(1,0)=0;
   kappa(0,0)=1/(Rx*Rx);
@@ -115,6 +118,7 @@ List DAMCMC2d_sppmix(mat const& points,
   double MHjump=0,ratio=1,sumd,approxcompj;//,quad;
   //setup grid for truncation
   int sum1;
+/*
   vec ticsx=zeros(LL),ticsy=zeros(LL);
   for (i=0;i<LL;i++)
   {
@@ -125,12 +129,28 @@ List DAMCMC2d_sppmix(mat const& points,
   for(j=0;j<LL-1;j++)
     for(i=0;i<LL-1;i++)
       areas(i,j)=(ticsx(i+1)-ticsx(i))*(ticsy(j+1)-ticsy(j));
-
+*/
+  int l=2;
 //  int countiter=0;
   //start MCMC
   Rcout << "Preliminaries done. Starting MCMC" << std::endl ;
   for(i=0;i<L-1;i++)
   {
+    //sample ksi and kappa
+/*    if(1)
+    {
+      mu1(0)=sum(genmus.slice(i).col(0))/m;
+      mu1(1)=sum(genmus.slice(i).col(1))/m;
+      cov1=invmat2d_sppmix(m*kappa);
+//      Rcout << "passed1"<< std::endl ;
+      ksi=trans(rnorm2_sppmix(1,mu1,cov1));
+//      Rcout << ksi<<'\n'<< std::endl ;
+      sumxmu=zeros(2,2);
+      for(r=0;r<m;r++)
+        sumxmu=sumxmu+(genmus.slice(i).row(r)-ksi.t()).t()*(genmus.slice(i).row(r)-ksi.t());
+      ps1=invmat2d_sppmix(l*Idenmat+sumxmu);
+      kappa=rWishart_sppmix(l+m,ps1);
+    }*/
     prevz=zmultinomial;
     printf("\rWorking: %3.1f%% complete",100.0*i/(L-2));
     //printf("\rWorking: %3.1f%% complete (iteration %d/%d)",100.0*i/(L-2),i,L);

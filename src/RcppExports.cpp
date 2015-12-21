@@ -109,8 +109,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // DAMCMC2d_sppmix
-List DAMCMC2d_sppmix(mat const& points, vec const& xlims, vec const& ylims, int const& m, int const& L, int const& LL, bool const& truncate);
-RcppExport SEXP sppmix_DAMCMC2d_sppmix(SEXP pointsSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP LLSEXP, SEXP truncateSEXP) {
+List DAMCMC2d_sppmix(mat const& points, vec const& xlims, vec const& ylims, int const& m, int const& L, bool const& truncate);
+RcppExport SEXP sppmix_DAMCMC2d_sppmix(SEXP pointsSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP truncateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -119,9 +119,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
     Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
-    Rcpp::traits::input_parameter< int const& >::type LL(LLSEXP);
     Rcpp::traits::input_parameter< bool const& >::type truncate(truncateSEXP);
-    __result = Rcpp::wrap(DAMCMC2d_sppmix(points, xlims, ylims, m, L, LL, truncate));
+    __result = Rcpp::wrap(DAMCMC2d_sppmix(points, xlims, ylims, m, L, truncate));
     return __result;
 END_RCPP
 }

@@ -32,8 +32,8 @@ BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, LL, truncate, lam
 }
 
 #' @export
-DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, LL, truncate) {
-    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, LL, truncate)
+DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, truncate) {
+    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, truncate)
 }
 
 #' @export

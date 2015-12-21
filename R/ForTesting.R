@@ -326,7 +326,7 @@ Go<- function()
 
   truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
 
-  gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,LL,trunc=FALSE)
+  gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,trunc=FALSE)
 
   zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
                                            100,xlims,ylims);
@@ -379,7 +379,7 @@ Demo_sppmix<- function()
     xlims<<-c(0,10)
     ylims<<-c(0,10)
     L<<-5000
-    m<<-3
+    m<<-5
     burnin<<-1000
     lamda<<-100
     r<<-30
@@ -421,7 +421,7 @@ Demo_sppmix<- function()
     truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
 
   if(Get_User_Input_sppmix("Simulate from the posterior (DAMCMC)?"))
-    gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,LL,trunc=truncated)
+    gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,trunc=truncated)
 
   #  cat("passed")
   if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
@@ -519,7 +519,8 @@ PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
 #  maxz_height=mean_lambda*
 #    GetMixtureMaxz_sppmix(mix_of_postmeans,
 #                          100,xlims,ylims);
-  #  cat("passed")
+#  cat(maxz_height)
+#  cat("passed")
   PlotNormalMixture(mix1=mix_of_postmeans,
     data1=gendata,m1=MAPcomp,lamda1=mean_lambda,
     xlims1=xlims,ylims1=ylims,L1=100,
