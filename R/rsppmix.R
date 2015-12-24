@@ -41,7 +41,7 @@ rsppmix <- function(lambda, mix, win, truncate=TRUE) {
     stop("mix must be an object of class normmix.")
   }
 
-  n <- rpois(1, lambda * spatstat::area(win))
+  n <- rpois(1, lambda)
   if (n == 0) {
     stop("0 points in the requested point pattern")
   }
