@@ -53,10 +53,6 @@ plot_avgsurf <- function(fit, win, LL = 30,
   col <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord),
                                                   length = 100))]
 
-  if(is.null(zlims))
-    zlims=c(0,max(zcoord))
-  height=300;
-  width=500;
   #   if(.Platform$OS.type=='windows')
   #   {
   #     scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
