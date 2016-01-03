@@ -37,9 +37,9 @@ plot.normmix <- function(mix, lambda, win, L = 100,
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
   if (grayscale == TRUE) {
-    col <- gray.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
+    col <- gray.colors(100)[findInterval(t(z), seq(min(z), max(z), length = 100))]
   } else {
-    col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
+    col <- jet.colors(100)[findInterval(t(z), seq(min(z), max(z), length = 100))]
   }
 
   if (zlims[1] == 0 && zlims[2] == 0) {
@@ -59,7 +59,7 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   rgl::par3d(userMatrix=
                rgl::rotate3d(U,pi/4,0,0,1))
 
-  rgl::persp3d(x = xcoord, y = ycoord, z = z,
+  rgl::persp3d(x = xcoord, y = ycoord, z = t(z),
                color = col, xlab="x",ylab="y",zlab="",
                zlim=c(zlims[1]-0.01,zlims[2]),
                box = FALSE, axes = FALSE)
