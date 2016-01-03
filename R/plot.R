@@ -9,6 +9,8 @@
 #' @param truncate Whether the density is truncated in the window (truncate)
 #'  or not.
 #' @param title1 The title (on top) for the density plot.
+#' @param zlims The limits of z axis. The default does not has
+#' additional limits on z axis.
 #' @param poc The point coodinates for the title. The default is the top middle
 #' in the 3-D plot.
 #' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
@@ -21,6 +23,7 @@
 #' }
 plot.normmix <- function(mix, lambda, win, L = 100,
                          title1="Poisson Process Intensity", truncate = TRUE,
+                         zlims = c(0, 0),
                          pos=c(0,0,0), grayscale = FALSE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
@@ -39,8 +42,10 @@ plot.normmix <- function(mix, lambda, win, L = 100,
     col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
   }
 
+  if (zlims[1] == 0 && zlims[2] == 0) {
+    zlims=c(0,max(z))
+  }
 
-  zlims=c(0,max(z))
 
 #  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
   rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)

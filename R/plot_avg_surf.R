@@ -8,6 +8,8 @@
 #' @param LL Number of grid on x and y axes.
 #' @param burnin Length of burnin, default value is 1/10 of total number of
 #' iteration.
+#' @param zlims The limits of z axis. The default does not has
+#' additional limits on z axis.
 #' @author Athanasios Christou Micheas, Jiaxun Chen, Yuchen Wang
 #' @export
 #' @examples
@@ -20,7 +22,8 @@
 #' # Plot the average of realized surfaces
 #' plot_avgsurf(fit = post, win = square(1), LL = 30, burnin = 1000)
 plot_avgsurf <- function(fit, win, LL = 30,
-                         burnin = length(fit$allgens_List) / 10) {
+                         burnin = length(fit$allgens_List) / 10,
+                         zlims = c(0, 0)) {
 
   # get limits
   xlims <- c(win$xrange)
@@ -33,7 +36,9 @@ plot_avgsurf <- function(fit, win, LL = 30,
                                                          LL,xlims,ylims)
   #find the highest z
   maxz_height <- max(zmax_genmeanmix)
-  zlims <- c(0, 1.1*maxz_height)
+  if (zlims[1] == 0 && zlims[2] == 0) {
+    zlims <- c(0, 1.1*maxz_height)
+  }
   gridvals  <-  GetGrid_sppmix(LL,xlims,ylims)
   xcoord <- as.vector(gridvals[[1]])
   ycoord <- as.vector(gridvals[[2]])
@@ -60,12 +65,10 @@ plot_avgsurf <- function(fit, win, LL = 30,
   #     width=as.numeric(scr_width[length(scr_width)-1])
   #   }
 
-  rgl::open3d(windowRect=c(width/5,
-                           height/7,
-                           4*width/5,
-                           6*height/7),
-              zoom=1.2)
-  U=rgl::par3d("userMatrix")
+  #  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
+
+    U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
                rgl::rotate3d(U,pi/4,0,0,1))
   zmax=max(zcoord)
@@ -81,4 +84,9 @@ plot_avgsurf <- function(fit, win, LL = 30,
   rgl::text3d(xlims[2],ylims[2],
               zlims[2]
               ,texts= title1)
+  rgl::bgplot3d(suppressWarnings(
+    fields::image.plot(legend.only = TRUE,
+                       smallplot= c(.8,.82,0.05,.7),
+                       zlim = zlims,
+                       col = jet.colors(100))))
 }
