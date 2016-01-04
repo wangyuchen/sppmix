@@ -23,7 +23,6 @@ List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,
                      int const& m,int const& L,
-                     int const& LL,
                      bool const& truncate);
 
 //Birth-Death MCMC
