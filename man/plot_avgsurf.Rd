@@ -4,7 +4,8 @@
 \alias{plot_avgsurf}
 \title{Plot the average intensity surface}
 \usage{
-plot_avgsurf(fit, win, LL = 30, burnin = length(fit$allgens_List)/10)
+plot_avgsurf(fit, win, LL = 30, burnin = length(fit$allgens_List)/10,
+  zlims = c(0, 0))
 }
 \arguments{
 \item{fit}{An object contains all posterior realizations from
@@ -16,6 +17,9 @@ plot_avgsurf(fit, win, LL = 30, burnin = length(fit$allgens_List)/10)
 
 \item{burnin}{Length of burnin, default value is 1/10 of total number of
 iteration.}
+
+\item{zlims}{The limits of z axis. The default does not has
+additional limits on z axis.}
 }
 \description{
 Plot the average of the posterior realizations for the intensity surface

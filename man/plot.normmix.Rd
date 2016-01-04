@@ -5,8 +5,8 @@
 \title{Plot mixture density.}
 \usage{
 \method{plot}{normmix}(mix, lambda, win, L = 100,
-  title1 = "Poisson Process Intensity", truncate = TRUE, pos = c(0, 0, 0),
-  grayscale = FALSE, ...)
+  title1 = "Poisson Process Intensity", truncate = TRUE, zlims = c(0, 0),
+  pos = c(0, 0, 0), grayscale = FALSE, ...)
 }
 \arguments{
 \item{mix}{An object of class \code{\link{normmix}}.}
@@ -21,6 +21,9 @@
 
 \item{truncate}{Whether the density is truncated in the window (truncate)
 or not.}
+
+\item{zlims}{The limits of z axis. The default does not has
+additional limits on z axis.}
 
 \item{...}{Further arguments passed to \code{\link[rgl]{persp3d}}.}
 
