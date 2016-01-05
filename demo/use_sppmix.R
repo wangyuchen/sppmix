@@ -106,7 +106,7 @@ if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
   gensBD <- est_mix_bdmcmc(pp = truemix, m = m, truncate = truncated,
                            lambda = 1, lambdab = 10,
                            hyper = c(5,.01,3,2,1,1), L = L)
-  if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
+  if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?")) {
     cat("Frequency table for the number of components")
   print(table(gensBD$numcomp))
   tab=tabulate(gensBD$numcomp,nbins=gensBD$maxnumcomp)
@@ -121,5 +121,6 @@ if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
          zlims = c(0, 1.1*zmax), truncate = truncated,
          title1 = paste("Intensity surface of posterior means, MAP m=,",m,
                         "components,",truemix$n,"points"))
+  }
 }
 
