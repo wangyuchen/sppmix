@@ -118,6 +118,6 @@ test_labswitch<- function(genmus) {
     }
   }
   cat("No Label switching detected")
-  return(FALSE)
+  return(invisible(FALSE))
 }
 
