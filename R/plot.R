@@ -46,15 +46,10 @@ plot.normmix <- function(mix, lambda, win, L = 100,
     zlims=c(0,max(z))
   }
 
-
-#  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  if (.Platform$OS.type == "unix") {
+    rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  }
   rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
-#   rgl::open3d(windowRect=c(width/5,
-#                            height/7,
-#                            4*width/5,
-#                            6*height/7),
-#               zoom=1.2)
-
   U=rgl::par3d("userMatrix")
   rgl::par3d(userMatrix=
                rgl::rotate3d(U,pi/4,0,0,1))
