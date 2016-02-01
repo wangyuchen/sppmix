@@ -39,4 +39,9 @@ The definition of hyperparameters can be found in Stephens's paper formula (21)-
 # see vignett "Work with 2D Normal Mixtures" for details.
 
 }
+\references{
+Stephens, M. "BAYESIAN ANALYSIS OF MIXTURE MODELS WITH AN UNKNOWN NUMBER OF
+COMPONENTS—AN ALTERNATIVE TO REVERSIBLE JUMP METHODS", The Annals of Statistics 2000,
+Vol. 28, No. 1, 40–74
+}
 
