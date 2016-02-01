@@ -67,13 +67,16 @@ get_post.damcmc_res <- function(fit, burnin) {
               mean_lambda = mean_lambda))
 }
 
-#' @param lambda parameter for BDMCMC
-#' @param lambdab parameter for BDMCMC
-#' @param hyper parameter for BDMCMC
+#' @param lambda Parameter in Poisson prior, lambda = 1 by default.
+#' @param lambdab Birth rate, lambdab = 10 by default.
+#' @param hyper hyperparameters for the hierarchical prior. See 'Details'.
 #' @rdname est_mix
+#' @details
+#' Birth-Death MCMC uses the same notations as the paper from Stephens, M.(2000).
+#' The definition of hyperparameters can be found in Stephens's paper formula (21)-(24).
 #' @export
 est_mix_bdmcmc <- function(pp, m, truncate = FALSE,
-                           lambda, lambdab, hyper,
+                           lambda = 1, lambdab = 10, hyper = c(5,.01,3,2,1,1),
                            L = 5000, LL = 100) {
 
   fit <- BDMCMC2d_sppmix(m, data = cbind(pp$x, pp$y),

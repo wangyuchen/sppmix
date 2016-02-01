@@ -7,8 +7,8 @@
 \usage{
 est_mix_damcmc(pp, m, truncate = FALSE, L = 5000)
 
-est_mix_bdmcmc(pp, m, truncate = FALSE, lambda, lambdab, hyper, L = 5000,
-  LL = 100)
+est_mix_bdmcmc(pp, m, truncate = FALSE, lambda = 1, lambdab = 10,
+  hyper = c(5, 0.01, 3, 2, 1, 1), L = 5000, LL = 100)
 }
 \arguments{
 \item{pp}{point pattern object of class \code{ppp}.}
@@ -21,15 +21,19 @@ component density are restricted within the domain of the point pattern.}
 
 \item{L}{length of MCMC chain, default to 5000.}
 
-\item{lambda}{parameter for BDMCMC}
+\item{lambda}{Parameter in Poisson prior, lambda = 1 by default.}
 
-\item{lambdab}{parameter for BDMCMC}
+\item{lambdab}{Birth rate, lambdab = 10 by default.}
 
-\item{hyper}{parameter for BDMCMC}
+\item{hyper}{hyperparameters for the hierarchical prior. See 'Details'.}
 }
 \description{
 These functions fits a mixture model to spatial point pattern data using
 DAMCMC or BDMCMC.
+}
+\details{
+Birth-Death MCMC uses the same notations as the paper from Stephens, M.(2000).
+The definition of hyperparameters can be found in Stephens's paper formula (21)-(24).
 }
 \examples{
 # see vignett "Work with 2D Normal Mixtures" for details.
