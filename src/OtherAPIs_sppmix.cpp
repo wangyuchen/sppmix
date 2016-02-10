@@ -11,7 +11,6 @@ double ApproxBivNormProb_sppmix(vec const& xlims,
                                 vec const& ylims,vec const& mu,
                                 mat const& sigma,int type)
 {
-
   NumericVector lls(2),uls(2);
   lls(0) = (xlims(0) - mu(0)) / sqrt(sigma(0, 0));
   lls(1) = (ylims(0) - mu(1)) / sqrt(sigma(1, 1));
