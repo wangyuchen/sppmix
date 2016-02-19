@@ -166,27 +166,30 @@ List DAMCMC2d_sppmix(mat const& points,
     for(j=0;j<m;j++)
     {
       //samples mus
-      sum1=sum(zmultinomial.col(j));
+      if(m>1)
+        sum1=sum(zmultinomial.col(j));
+      else
+        sum1=n;
       //     indi=find(zmultinomial.col(j)==1);
 //      Rcout << sum1<<'\n'<< std::endl ;
       if(sum1>0)
-      {
-        newdata=data.rows(find(zmultinomial.col(j)==1));
-        //        Rcout << newdata<< std::endl ;
-        //    if(newdata.n_rows!=sum1){Rcout << "\n"<<"not reading data properly "<<newdata.n_rows<< " "<<sum1 << std::endl ;return List::create();}
-        newmu(0)=sum(newdata.col(0))/sum1;
-        newmu(1)=sum(newdata.col(1))/sum1;
-        //        Rcout << newmu << std::endl ;
-      }
-      else
-      {
-        //       break;
-        // Rcout <<"\n"<< i << " "<< j << " "<<sum1 << std::endl ;
-        //         return List::create();
-        newmu=zeros(2,1);
-        Rcout << "\n"<<"Component with less than 2 points, exiting" << std::endl ;
-        return List::create();
-      }
+        {
+          newdata=data.rows(find(zmultinomial.col(j)==1));
+          //        Rcout << newdata<< std::endl ;
+          //    if(newdata.n_rows!=sum1){Rcout << "\n"<<"not reading data properly "<<newdata.n_rows<< " "<<sum1 << std::endl ;return List::create();}
+          newmu(0)=sum(newdata.col(0))/sum1;
+          newmu(1)=sum(newdata.col(1))/sum1;
+          //        Rcout << newmu << std::endl ;
+        }
+        else
+        {
+          //       break;
+          // Rcout <<"\n"<< i << " "<< j << " "<<sum1 << std::endl ;
+          //         return List::create();
+          newmu=zeros(2,1);
+          Rcout << "\n"<<"sum1==0, Component with less than 2 points, exiting" << std::endl ;
+          return List::create();
+        }
       cov1=invmat2d_sppmix(sum1*geninvsigmas(i,j)+kappa);
       //    if(det(cov1)<=0){Rcout << "\n"<<"Cov1 not pd, "<<cov1 << std::endl ;}
       //      Rcout << newmu << sum1<< std::endl ;
@@ -281,7 +284,8 @@ List DAMCMC2d_sppmix(mat const& points,
     //   Rcout << "2 "<<sum(zmultinomial.col(1))<< std::endl ;
     //    Rcout << consts.row(i+1)<< std::endl ;
 
-    //sample indicators zij
+    if(m>1)
+      //sample indicators zij
     for(dat=0;dat<n;dat++)
     {
       sumd=0;

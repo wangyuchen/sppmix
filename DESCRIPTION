@@ -6,7 +6,8 @@ Authors@R: as.person(c(
     "Jiaxun Chen <chenjiaxun9@hotmail.com> [aut, cre]",
     "Athanasios (Sakis) Christou Micheas <amicheas@stat.missouri.edu> [aut]"
   ))
-Description: This package implemented data structures and methods for modelling spatial point process data using mixtures of normal component.
+Description: This package implemented data structures and methods for modelling
+    spatial point process data using mixtures of normal component.
 Depends:
     R (>= 3.2.1),
     spatstat,
@@ -22,7 +23,8 @@ Imports:
 LinkingTo: Rcpp,
     RcppArmadillo,
     mvtnorm
-RoxygenNote: 5.0.0
-Suggests: knitr,
+RoxygenNote: 5.0.1
+Suggests:
+    knitr,
     rmarkdown
 VignetteBuilder: knitr

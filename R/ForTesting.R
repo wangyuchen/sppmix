@@ -379,7 +379,7 @@ Demo_sppmix<- function()
     xlims<<-c(0,10)
     ylims<<-c(0,10)
     L<<-5000
-    m<<-5
+    m<<-1
     burnin<<-1000
     lamda<<-100
     r<<-30
@@ -423,9 +423,12 @@ Demo_sppmix<- function()
   if(Get_User_Input_sppmix("Simulate from the posterior (DAMCMC)?"))
     gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,trunc=truncated)
 
-  #  cat("passed")
+#  class(gens) <<- "damcmc_res"
+ #   cat("passed")
   if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
   {
+    if (m>1)
+      plot_ind(gens)
     zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
         100,xlims,ylims);
     mix_of_postmeans<<-#MakeMixtureList_sppmix(
@@ -453,11 +456,12 @@ Demo_sppmix<- function()
   if(Get_User_Input_sppmix("Show Chains and Stats?"))
   {
     #  plot_ind(gens)
-    ShowChains(gens$genps,gens$genmus)
+    ShowChains(gens$genps,gens$genmus,m=m)
+#    cat("passed")
     ShowStats(gens$genps,gens$genmus,truemix)
   }
 
-  if(Get_User_Input_sppmix("Check for label switching?"))
+  if(m>1 && Get_User_Input_sppmix("Check for label switching?"))
     CheckLabels(gens$genmus[,,burnin:L])
 
   if(Get_User_Input_sppmix("Show average of intensity surfaces (slow operation)?"))
@@ -605,6 +609,7 @@ ShowChains<- function(genps,genmus,m=5)
     plot(genps[,1],xlab="Iteration",ylab="p",
          type="l",main=
            "Generated mixture probabilities\nComponent 1")
+    if(m>1)
     for (i in 2:min(3,m))
     {
       plot(genps[,i],xlab="Iteration",ylab="p",
@@ -621,6 +626,8 @@ ShowChains<- function(genps,genmus,m=5)
     plot(genmus[1,2,],xlab="Iteration",ylab=
            bquote(mu),type="l",main=
            "Generated mixture means\nComponent 1, y-coord")
+
+    if(m>1)
     for (i in 2:min(3,m))
     {
       plot(genmus[i,1,],xlab="Iteration",ylab=
@@ -651,7 +658,7 @@ FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims
 
   if(!is.null(truemix))
    ShowStats(permgens$permuted_ps,permgens$permuted_mus,truemix)
-  ShowChains(permgens$permuted_ps,permgens$permuted_mus)
+  ShowChains(permgens$permuted_ps,permgens$permuted_mus,m=m)
   allpermgens=list(genps = permgens$permuted_ps,
        genlamdas=allgens$genlamdas ,
        allgens = permgens$permuted_gens)
