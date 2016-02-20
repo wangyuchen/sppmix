@@ -67,26 +67,26 @@ get_post.damcmc_res <- function(fit, burnin) {
               mean_lambda = mean_lambda))
 }
 
-#' @param lambda Parameter in Poisson prior, lambda = 1 by default.
-#' @param lambdab Birth rate, lambdab = 10 by default.
+#' @param lambda1 Parameter in Poisson prior, lambda = 1 by default.
+#' @param lambda2 Birth rate, lambdab = 10 by default.
 #' @param hyper hyperparameters for the hierarchical prior. See 'Details'.
 #' @rdname est_mix
 #' @details
 #' Birth-Death MCMC uses the same notations as the paper from Stephens, M.(2000).
 #' The definition of hyperparameters can be found in Stephens's paper formula (21)-(24).
-#' @references Stephens, M. "BAYESIAN ANALYSIS OF MIXTURE MODELS WITH AN UNKNOWN NUMBER OF
-#' COMPONENTS—AN ALTERNATIVE TO REVERSIBLE JUMP METHODS", The Annals of Statistics 2000,
+#' @references Stephens, M. "Bayesian analysis of mixture models with an unknown
+#' number of components—an alternative to reversible jump methods", The Annals of Statistics 2000,
 #' Vol. 28, No. 1, 40–74
 #'
 #' @export
 est_mix_bdmcmc <- function(pp, m, truncate = FALSE,
-                           lambda = 1, lambdab = 10, hyper = c(5,.01,3,2,1,1),
+                           lambda1 = 1, lambda2 = 10, hyper = c(5,.01,3,2,1,1),
                            L = 5000, LL = 100) {
 
   fit <- BDMCMC2d_sppmix(m, data = cbind(pp$x, pp$y),
                          xlims = Window(pp)$xrange, ylims = Window(pp)$yrange,
                          truncate = truncate,
-                         lamda = lambda, lamdab = lambdab, hyper = hyper,
+                         lamda = lambda1, lamdab = lambda2, hyper = hyper,
                          L = L, LL = LL)
   fit$data <- pp
   class(fit) <- "bdmcmc_res"
