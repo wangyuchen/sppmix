@@ -67,13 +67,13 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   if (grayscale == TRUE) {
     rgl::bgplot3d(suppressWarnings(
       fields::image.plot(legend.only = TRUE,
-                         smallplot= c(.8,.82,0.05,.7),
+#                         smallplot= c(.8,.82,0.05,.7),
                          zlim = zlims,
                          col = gray.colors(100))))
   } else {
     rgl::bgplot3d(suppressWarnings(
       fields::image.plot(legend.only = TRUE,
-                         smallplot= c(.8,.82,0.05,.7),
+#                         smallplot= c(.8,.82,0.05,.7),
                          zlim = zlims,
                          col = jet.colors(100))))
 
