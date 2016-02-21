@@ -50,7 +50,7 @@ Object ```post_mix``` is a list of 2 elements, the first is a normal mixture of 
 Given that the posterior mixture is of class ```normmix```, any operations introduced in *Work with 2D Normal Mixtures* vignette can be applied to it.
 
 ```{r}
-plot_contour(mix = post_mix$post_normmix, lambda = post_mix$mean_lambda,  
+plot_contour(mix = post_mix,  
              pattern = redwood, win = Window(redwood))
 ```
 
@@ -69,7 +69,7 @@ plot_ind(fit)
 ```
 
 ```{r, webgl=TRUE}
-plot(post_mix$post_normmix, post_mix$mean_lambda, Window(fit$data))
+plot(post_mix, Window(fit$data))
 ```
 
 ## Birth-Death MCMC
@@ -78,7 +78,7 @@ To fit a Birth-Death MCMC, use function ```est_mix_bdmcmc```. In this case, the 
 
 ```{r, results='hide'}
 fit2 <- sppmix::est_mix_bdmcmc(pp = redwood, m = 5, truncate = FALSE, 
-                               lambda = 1, lambdab = 10, 
+                               lambda1 = 1, lambda2 = 10, 
                                hyper = c(5,.01,3,2,1,1),
                                L = 50000, LL = 100)
 ```

@@ -9,8 +9,6 @@ inormmix(int_surf, win, x, y, L = 128, truncate = TRUE)
 inormmix(int_surf, win, x, y, L = 128, truncate = TRUE)
 }
 \arguments{
-\item{win}{An object of class \code{\link[spatstat]{owin}}.}
-
 \item{x}{Locations where the density function will be evaluated. It will
 automatically expand it into a grid. If missing, a regular grid over the
 window will be given.}
@@ -18,11 +16,6 @@ window will be given.}
 \item{y}{Locations where the density function will be evaluated. It will
 automatically expand it into a grid. If missing, a regular grid over the
 window will be given.}
-
-\item{L}{Number of grid on x and y axes.}
-
-\item{truncate}{Whether the density is truncated in the window (truncate)
-or not.}
 
 \item{lambda}{Mean intensity value}
 

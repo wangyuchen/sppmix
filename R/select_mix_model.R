@@ -1,6 +1,9 @@
 #' @export
-selectMix <- function(pp, Ms, L = 5000, LL = 100, burnin = 1000,
+selectMix <- function(pp, Ms, L = 5000, burnin = 1000,
                       truncate = FALSE) {
+  if (any(Ms < 2)) {
+    stop("Operation existed. Must have at least 2 components.")
+  }
   n <- pp$n
   pattern <- cbind(pp$x,pp$y)
   lognfac <- log(sqrt(2*pi*n)) + n*log(n) - n
@@ -10,14 +13,14 @@ selectMix <- function(pp, Ms, L = 5000, LL = 100, burnin = 1000,
   ICLC <- rep(0, mmax)
   marginal <- rep(0, mmax)
   for (m in 1:mmax) {
-   post_real <- est_mix_damcmc(pp, m = Ms[m], L = L, LL = LL,
+   post_real <- est_mix_damcmc(pp, m = Ms[m], L = L,
                                truncate = truncate)
    zs <- GetAvgLabelsDiscrete2Multinomial_sppmix(
      post_real$genzs[(burnin + 1):L, ], Ms[m])
    zsn0 <- zs[zs!=0]
    entropy <- sum(-zsn0*log(zsn0))
-   real <- FixLS_da(post_real, pp$window)
-   marginal[m] <- normmix_marginal(real)
+   real <- FixLS_da(post_real)
+   marginal[m] <- normmix_marginal(real, burnin = burnin)
    post_est <- get_post(real)
    mlambda <- post_est$mean_lambda
    mix <- vector("list", m)

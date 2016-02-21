@@ -2,8 +2,7 @@
 #'
 #' Plot the density surface of a mixture.
 #'
-#' @param mix An object of class \code{\link{normmix}}.
-#' @param lambda intensity for a homogeneous Poisson process.
+#' @param mix An object of class \code{\link{normmix_intensity}}.
 #' @param win An object of class \code{\link[spatstat]{owin}}.
 #' @param L Number of grid on x and y axes.
 #' @param truncate Whether the density is truncated in the window (truncate)
@@ -21,7 +20,7 @@
 #'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
 #'   plot(mix1, 100, square(2))
 #' }
-plot.normmix <- function(mix, lambda, win, L = 100,
+plot.normmix_intensity <- function(mix, win, L = 100,
                          title1="Poisson Process Intensity", truncate = TRUE,
                          zlims = c(0, 0),
                          pos=c(0,0,0), grayscale = FALSE, ...) {
@@ -31,7 +30,7 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   xlims <- c(win$xrange)
   ylims <- c(win$yrange)
 
-  z <- lambda*dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
+  z <- mix$lambda*dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
 
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
@@ -67,13 +66,13 @@ plot.normmix <- function(mix, lambda, win, L = 100,
   if (grayscale == TRUE) {
     rgl::bgplot3d(suppressWarnings(
       fields::image.plot(legend.only = TRUE,
-                         smallplot= c(.8,.82,0.05,.7),
+#                         smallplot= c(.8,.82,0.05,.7),
                          zlim = zlims,
                          col = gray.colors(100))))
   } else {
     rgl::bgplot3d(suppressWarnings(
       fields::image.plot(legend.only = TRUE,
-                         smallplot= c(.8,.82,0.05,.7),
+#                         smallplot= c(.8,.82,0.05,.7),
                          zlim = zlims,
                          col = jet.colors(100))))
 
@@ -124,8 +123,7 @@ plot.sppmix <- function(spp, ...) {
 #' Create a contour plot for the intensity surface with or without realizations
 #' on it.
 #'
-#' @param mix Object of class normmix.
-#' @param lambda intensity for a homogeneous Poisson process.
+#' @param mix Object of class \code{\link{normmix_intensity}}.
 #' @param pattern Object of class \code{\link{ppp}}
 #' @param win Object of class \code{\link{owin}}
 #' @param L number of grids on each coordinate.  The default is L=100.
@@ -148,14 +146,14 @@ plot.sppmix <- function(spp, ...) {
 #' # plot the theoretical intensity surface with a realization
 #' plot_contour(mix1,pp1,spatstat::square(1))
 #' @export
-plot_contour <- function(mix, lambda, pattern, win = Window(pattern), L = 100,
+plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
                          title="Mixture intensity with",
                          points = TRUE, filled = TRUE, truncate = TRUE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
   surf <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)
-  z <- lambda*surf$v
+  z <- mix$lambda*surf$v
   grid <- expand.grid(xcoord,ycoord)
   temp <- data.frame(grid$Var1,grid$Var2,as.vector(t(z)))
   names(temp) <- c("x","y","z")
@@ -170,7 +168,7 @@ plot_contour <- function(mix, lambda, pattern, win = Window(pattern), L = 100,
   if (filled == TRUE){
     if (points == TRUE){
       title1 <- list(
-        bquote(paste(lambda,"=",.(lambda),", n=",.(pattern$n))),
+        bquote(paste(lambda,"=",.(mix$lambda),", n=",.(pattern$n))),
         title
       )
       filled.contour(x=xcoord,y=ycoord, z=t(z),color = jet.colors,
@@ -214,9 +212,9 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
   post_mix <- get_post(fit, burnin = burnin)
 
   # rgl plots don't wait for ENTER, so it has to appear first
-  plot(post_mix$post_normmix, post_mix$mean_lambda, Window(fit$data))
+  plot(post_mix, Window(fit$data))
 
-  plot_contour(post_mix$post_normmix, post_mix$mean_lambda, fit$data)
+  plot_contour(post_mix, fit$data)
   print(plot_ind(fit, burnin))
   plot_chains(fit, burnin)
   return(invisible())

@@ -9,18 +9,9 @@ dnormmix(mix, win, x, y, L = 128, truncate = TRUE)
 dnormmix(mix, win, x, y, L = 128, truncate = TRUE)
 }
 \arguments{
-\item{mix}{An object of class \code{\link{normmix}}.}
-
-\item{win}{An object of class \code{\link[spatstat]{owin}}.}
-
 \item{x, y}{Locations where the density function will be evaluated. It will
 automatically expand it into a grid. If missing, a regular grid over the
 window will be given.}
-
-\item{L}{Number of grid on x and y axes.}
-
-\item{truncate}{Whether the density is truncated in the window (truncate)
-or not.}
 
 \item{x, y}{Locations where the density function will be evaluated. It will
 automatically expand it into a grid. If missing, a regular grid over the

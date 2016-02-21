@@ -7,7 +7,7 @@
 \usage{
 est_mix_damcmc(pp, m, truncate = FALSE, L = 5000)
 
-est_mix_bdmcmc(pp, m, truncate = FALSE, lambda = 1, lambdab = 10,
+est_mix_bdmcmc(pp, m, truncate = FALSE, lambda1 = 1, lambda2 = 10,
   hyper = c(5, 0.01, 3, 2, 1, 1), L = 5000, LL = 100)
 }
 \arguments{
@@ -21,9 +21,9 @@ component density are restricted within the domain of the point pattern.}
 
 \item{L}{length of MCMC chain, default to 5000.}
 
-\item{lambda}{Parameter in Poisson prior, lambda = 1 by default.}
+\item{lambda1}{Parameter in Poisson prior, lambda = 1 by default.}
 
-\item{lambdab}{Birth rate, lambdab = 10 by default.}
+\item{lambda2}{Birth rate, lambdab = 10 by default.}
 
 \item{hyper}{hyperparameters for the hierarchical prior. See 'Details'.}
 }
@@ -40,8 +40,8 @@ The definition of hyperparameters can be found in Stephens's paper formula (21)-
 
 }
 \references{
-Stephens, M. "BAYESIAN ANALYSIS OF MIXTURE MODELS WITH AN UNKNOWN NUMBER OF
-COMPONENTS—AN ALTERNATIVE TO REVERSIBLE JUMP METHODS", The Annals of Statistics 2000,
+Stephens, M. "Bayesian analysis of mixture models with an unknown
+number of components—an alternative to reversible jump methods", The Annals of Statistics 2000,
 Vol. 28, No. 1, 40–74
 }
 
