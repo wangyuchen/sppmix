@@ -4,14 +4,12 @@
 \alias{plot_contour}
 \title{Plot contour for intensity surface}
 \usage{
-plot_contour(mix, lambda, pattern, win = Window(pattern), L = 100,
+plot_contour(mix, pattern, win = Window(pattern), L = 100,
   title = "Mixture intensity with", points = TRUE, filled = TRUE,
   truncate = TRUE, ...)
 }
 \arguments{
-\item{mix}{Object of class normmix.}
-
-\item{lambda}{intensity for a homogeneous Poisson process.}
+\item{mix}{Object of class \code{\link{normmix_intensity}}.}
 
 \item{pattern}{Object of class \code{\link{ppp}}}
 

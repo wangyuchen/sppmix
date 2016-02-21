@@ -62,9 +62,9 @@ get_post.damcmc_res <- function(fit, burnin) {
     post_mus[[i]] <- mus[i, ]
     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
   }
-
-  return(list(post_normmix = normmix(post_ps, post_mus, post_sigmas),
-              mean_lambda = mean_lambda))
+  post_normmix <- normmix(post_ps, post_mus, post_sigmas)
+  post_intensity <- normmix_intensity(post_normmix, mean_lambda)
+  return(post_intensity)
 }
 
 #' @param lambda1 Parameter in Poisson prior, lambda = 1 by default.
@@ -126,9 +126,9 @@ get_post.bdmcmc_res <- function(fit, comp, burnin) {
   for (i in 1:comp) {
     post_mus[[i]] <- mus[i, ]
   }
-
-  return(list(post_normmix = normmix(post_ps, post_mus, sigmas),
-              mean_lambda = mean_lambda))
+  post_normmix = normmix(post_ps, post_mus, sigmas)
+  post_intensity <- normmix_intensity(post_normmix, mean_lambda)
+  return(post_intensity)
 }
 
 
