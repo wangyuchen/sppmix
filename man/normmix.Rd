@@ -3,14 +3,20 @@
 \name{normmix}
 \alias{normmix}
 \alias{print.normmix}
+\alias{print.normmix_intensity}
 \alias{summary.normmix}
+\alias{summary.normmix_intensity}
 \title{Mixture in 2d with normal components.}
 \usage{
-normmix(ps, mus, sigmas)
+normmix(ps, mus, sigmas, lambda)
 
 \method{print}{normmix}(mix)
 
+\method{print}{normmix_intensity}(int_surf)
+
 \method{summary}{normmix}(mix)
+
+\method{summary}{normmix_intensity}(normmix_intensity)
 }
 \arguments{
 \item{ps}{Vector of component probabilities.}
@@ -21,7 +27,9 @@ center of each component.}
 \item{sigmas}{A list where every element is a 2 by 2 matrix, defining the
 covariance of each component.}
 
-\item{mix}{An objecto of class \code{\link{normmix}}}
+\item{lambda}{optional parameter of average intensity.}
+
+\item{mix}{An object of class \code{\link{normmix}}}
 }
 \value{
 An object of class "normmix" containing the following components:

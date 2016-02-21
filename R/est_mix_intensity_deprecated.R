@@ -45,6 +45,17 @@ est_mix_intensity_deprecated <- function(pattern, win, m, L = 1000,
     return(propmu)
   }
 
+  as.normmix <- function(ps, mus, sigmas) {
+    # coerce mus and sigmas in DAMCMC format into normmix
+    mu <- list()
+    sigma <- list()
+    for (i in 1:nrow(mus)) {
+      mu[[i]] <- as.numeric(mus[i, ])
+      sigma[[i]] <- sigmas[, , i]
+    }
+    return(normmix(ps, mu, sigma))
+  }
+
   sample_sigma <- function(j, mu, beta = beta, zmultinom) {
     # sample sigma from proposal distribution for one component
     sum1 <- sum(zmultinom == j)

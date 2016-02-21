@@ -7,13 +7,18 @@
 rnormmix(m, sig0, sigdf, win, rand_m = FALSE)
 }
 \arguments{
-\item{m}{Number of component if \code{rand_m = FALSE}. When \code{rand_m = TRUE}, number of component is random and this is the maximum number of components.}
+\item{m}{Number of component if \code{rand_m = FALSE}. When
+\code{rand_m = TRUE}, number of component is random and this is the maximum
+number of components.}
 
-\item{sig0}{Tunning parameter in generating random matrix from Wishart distribution.}
+\item{sig0}{Tunning parameter in generating random matrix from Wishart
+distribution.}
 
-\item{sigdf}{Degree of freedom in generating random matrix from Wishart distribution.}
+\item{sigdf}{Degree of freedom in generating random matrix from Wishart
+distribution.}
 
-\item{win}{Object of class \code{spatstat::owin}. The mean vectors are inside this window.}
+\item{win}{Object of class \code{spatstat::owin}. The mean vectors are
+inside this window.}
 
 \item{rand_m}{Whether the number of components are random or fixed (default).}
 }
@@ -21,7 +26,8 @@ rnormmix(m, sig0, sigdf, win, rand_m = FALSE)
 Object of class \code{normmix}.
 }
 \description{
-Generate a mixture on a 2d window where the mean and variance of the components are random. The number of component can either be fixed or random.
+Generate a mixture on a 2d window where the mean and variance of the
+components are random. The number of component can either be fixed or random.
 }
 \examples{
 mix1 <- rnormmix(3, .01, 5, square(5))
