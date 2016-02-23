@@ -4,7 +4,7 @@
 \alias{rnormmix}
 \title{Generate mixture with normal components.}
 \usage{
-rnormmix(m, sig0, sigdf, win, rand_m = FALSE)
+rnormmix(m, sig0, sigdf, win = spatstat::square(1), rand_m = FALSE)
 }
 \arguments{
 \item{m}{Number of component if \code{rand_m = FALSE}. When
@@ -17,8 +17,8 @@ distribution.}
 \item{sigdf}{Degree of freedom in generating random matrix from Wishart
 distribution.}
 
-\item{win}{Object of class \code{spatstat::owin}. The mean vectors are
-inside this window.}
+\item{win}{An object of class \code{spatstat::owin} with default value
+\code{spatstat::square(1)}, The mean vectors are inside this window.}
 
 \item{rand_m}{Whether the number of components are random or fixed (default).}
 }
@@ -31,7 +31,7 @@ components are random. The number of component can either be fixed or random.
 }
 \examples{
 mix1 <- rnormmix(3, .01, 5, square(5))
-mix2 <- rnormmix(8, .01, 10, square(1), rand_m = TRUE)
+mix2 <- rnormmix(8, .01, 10, rand_m = TRUE)
 
 }
 

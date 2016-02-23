@@ -2,21 +2,15 @@
 % Please edit documentation in R/normmix.R
 \name{normmix}
 \alias{normmix}
-\alias{print.normmix}
-\alias{print.normmix_intensity}
+\alias{summary.intensity_surface}
 \alias{summary.normmix}
-\alias{summary.normmix_intensity}
 \title{Mixture in 2d with normal components.}
 \usage{
-normmix(ps, mus, sigmas, lambda)
-
-\method{print}{normmix}(mix)
-
-\method{print}{normmix_intensity}(int_surf)
+normmix(ps, mus, sigmas, lambda = NULL, win = NULL)
 
 \method{summary}{normmix}(mix)
 
-\method{summary}{normmix_intensity}(normmix_intensity)
+\method{summary}{intensity_surface}(mix)
 }
 \arguments{
 \item{ps}{Vector of component probabilities.}
@@ -24,31 +18,34 @@ normmix(ps, mus, sigmas, lambda)
 \item{mus}{A list where every element is a vector of length 2, defining the
 center of each component.}
 
-\item{sigmas}{A list where every element is a 2 by 2 matrix, defining the
-covariance of each component.}
+\item{sigmas}{A list where every element is a 2 by 2 covariance matrix,
+defining the covariance for each component.}
 
-\item{lambda}{optional parameter of average intensity.}
+\item{lambda}{optional parameter of average intensity. If set, the returned
+object will be an intensity surface.}
+
+\item{win}{optional parameter of domain. Must be set with intensity value to
+create an intensity surface.}
 
 \item{mix}{An object of class \code{\link{normmix}}}
-}
-\value{
-An object of class "normmix" containing the following components:
- \item{m}{Number of components.}
- \item{ps}{Vector of component probabilities.}
- \item{mus}{List of mean vectors of components.}
- \item{sigmas}{List of covariance matrix of components.}
 }
 \description{
 Class of mixture in 2d with bivariate normal components.
 }
 \examples{
-mix1 <- normmix(ps=c(.3, .7), mus=list(c(0, 0), c(1, 1)),
-                sigmas=list(.01*diag(2), .01*diag(2)))
+mix1 <- normmix(ps = c(.3, .7),
+                mus = list(c(0.2, 0.2), c(.8, .8)),
+                sigmas = list(.01*diag(2), .01*diag(2)))
 mix1
-summary(mix1)
-if (require(spatstat)) {
-  plot(mix1, square(1))
-}
+
+
+intsurf1 <- normmix(ps = c(.3, .7),
+                    mus = list(c(0.2, 0.2), c(.8, .8)),
+                    sigmas = list(.01*diag(2), .01*diag(2)),
+                    lambda = 100,
+                    win = square(1))
+intsurf1
+
 }
 \seealso{
 \code{\link{rnormmix}} for generating random mixture.
