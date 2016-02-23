@@ -124,7 +124,7 @@ double ApproxCompMass_sppmix(vec const& xlims,
     approx++;
   }
   return approx/L;
-*/
+//*/
   return ApproxBivNormProb_sppmix(xlims,
       ylims,mu,sigma,2);
 }

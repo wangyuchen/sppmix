@@ -106,9 +106,14 @@ double rExp_sppmix(double const& a)
 vec rDirichlet_sppmix(vec const& d){
   int k = d.size();
   vec gens(k);
+  if(k==1)
+  {
+    gens(0)=1;
+    return gens;
+  }
   for(int i=0;i<k;i++)
-    gens(i)=//Rcpp::rgamma(1,1.0,1.0/d(i))[0];
-      rExp_sppmix(1.0/d(i));
+    gens(i)=Rcpp::rgamma(1,d(i),d(i))[0];
+     // rExp_sppmix(1.0/d(i));
   return gens/sum(gens);
 }
 

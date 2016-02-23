@@ -23,7 +23,16 @@ List DAMCMC2d_sppmix(mat const& data,
                      vec const& xlims,
                      vec const& ylims,
                      int const& m,int const& L,
-                     bool const& truncate);
+                     bool const& truncate,
+                     vec const& hyperparams);
+List DAMCMC2dExtras_sppmix(mat const& data,
+                     vec const& xlims,
+                     vec const& ylims,
+                     int const& m,
+                     int const& L,
+                     int const& burnin,
+                     bool const& truncate,
+                     vec const& hyperparams);
 
 //Birth-Death MCMC
 //file: BDMCMC2d_sppmix.cpp

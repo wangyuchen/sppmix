@@ -288,6 +288,60 @@ Plot3dGrayScale_sppmix<- function(xcoord,ycoord,zcoord,
       zlim = zlims,col = gray.colors(100))))
 }
 
+#' @export
+Plot3d_xyz<- function(xcoord,ycoord,zcoord,
+    title1="3d Points",
+    xlims=c(0,1),ylims=c(0,1),zlims=NULL)
+{
+#  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+#                                   "#7FFF7F", "yellow", "#FF7F00", "red",
+#                                   "#7F0000"))
+#  cols <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord), length = 100))]
+
+  #  title2=as.character(title1)
+  #  library(rgl)
+  #  rgl::rgl.bringtotop()
+  #  rgl::par3d(params=rgl::r3dDefaults)
+  #.Platform
+  height=300;
+  width=500;
+  if(.Platform$OS.type=='windows')
+  {
+    scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
+    scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
+    height=as.numeric(scr_height[length(scr_height)-1])
+    width=as.numeric(scr_width[length(scr_width)-1])
+  }
+
+  #  height=as.integer(system("wmic desktopmonitor get screenheight"));
+  #  width=as.integer(system("wmic desktopmonitor get screenwidth"));
+  #  cat(width/2.0)
+  rgl::open3d(windowRect=c(width/5,
+                           height/7,
+                           4*width/5,
+                           6*height/7),
+              zoom=1.2)
+  #rotation about the x-axis, 45 degrees
+  U=rgl::par3d("userMatrix")
+  rgl::par3d(userMatrix=
+               rgl::rotate3d(U,pi/4,0,0,1))
+  zmax=max(zcoord)
+  Rangez=zmax-min(zcoord);
+  rgl::plot3d(x = xcoord, y = ycoord,
+              z = zcoord,
+               xlab="x",ylab="y",zlab="z",
+               zlim=c(zlims[1]-0.01,zlims[2]),
+               box = FALSE, axes = FALSE)
+  rgl::axis3d('x')
+  rgl::axis3d('y')
+  rgl::axis3d('z-+',pos = c(xlims[1], ylims[2], 0))
+  rgl::rgl.lines(c(xlims[1], xlims[1]),
+                 c(ylims[2], ylims[2]), zlims, color = 'black')
+  rgl::title3d(main=NULL)
+  rgl::text3d(xlims[2],ylims[2],
+              zlims[2]#+0.2*Rangez
+              ,texts=title1)
+}
 
 #' @export
 Save_AllOpenRglGraphs<- function(
@@ -379,7 +433,7 @@ Demo_sppmix<- function()
     xlims<<-c(0,10)
     ylims<<-c(0,10)
     L<<-5000
-    m<<-1
+    m<<-5
     burnin<<-1000
     lamda<<-100
     r<<-30
@@ -472,7 +526,7 @@ Demo_sppmix<- function()
     FixLabels(gens,data1=gendata,truemix,1.1*maxz_height,
               m1=m,xlims1=xlims,ylims1=ylims)
   }
-  #  sppmix::BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,31,FALSE,1,20,c(15,.01,3,2,1,1))
+  #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,31,FALSE,1,20,c(15,.01,3,2,1,1))
 
   if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
   {

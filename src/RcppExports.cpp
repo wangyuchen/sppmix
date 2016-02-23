@@ -37,22 +37,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// ApproxMHRatiomu_sppmix
-double ApproxMHRatiomu_sppmix(vec const& xlims, vec const& ylims, vec const& curmu, vec const& propmu, mat const& sigma, int const& num);
-RcppExport SEXP sppmix_ApproxMHRatiomu_sppmix(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP curmuSEXP, SEXP propmuSEXP, SEXP sigmaSEXP, SEXP numSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
-    Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
-    Rcpp::traits::input_parameter< vec const& >::type curmu(curmuSEXP);
-    Rcpp::traits::input_parameter< vec const& >::type propmu(propmuSEXP);
-    Rcpp::traits::input_parameter< mat const& >::type sigma(sigmaSEXP);
-    Rcpp::traits::input_parameter< int const& >::type num(numSEXP);
-    __result = Rcpp::wrap(ApproxMHRatiomu_sppmix(xlims, ylims, curmu, propmu, sigma, num));
-    return __result;
-END_RCPP
-}
 // ApproxMHRatiosig_sppmix
 double ApproxMHRatiosig_sppmix(vec const& xlims, vec const& ylims, vec const& mu, mat const& cursigma, mat const& propsigma, int const& num);
 RcppExport SEXP sppmix_ApproxMHRatiosig_sppmix(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP cursigmaSEXP, SEXP propsigmaSEXP, SEXP numSEXP) {
@@ -108,9 +92,27 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// DAMCMC2dExtras_sppmix
+List DAMCMC2dExtras_sppmix(mat const& points, vec const& xlims, vec const& ylims, int const& m, int const& L, int const& burnin, bool const& truncate, vec const& hyperparams);
+RcppExport SEXP sppmix_DAMCMC2dExtras_sppmix(SEXP pointsSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP burninSEXP, SEXP truncateSEXP, SEXP hyperparamsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< mat const& >::type points(pointsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type xlims(xlimsSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type ylims(ylimsSEXP);
+    Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int const& >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< bool const& >::type truncate(truncateSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type hyperparams(hyperparamsSEXP);
+    __result = Rcpp::wrap(DAMCMC2dExtras_sppmix(points, xlims, ylims, m, L, burnin, truncate, hyperparams));
+    return __result;
+END_RCPP
+}
 // DAMCMC2d_sppmix
-List DAMCMC2d_sppmix(mat const& points, vec const& xlims, vec const& ylims, int const& m, int const& L, bool const& truncate);
-RcppExport SEXP sppmix_DAMCMC2d_sppmix(SEXP pointsSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP truncateSEXP) {
+List DAMCMC2d_sppmix(mat const& points, vec const& xlims, vec const& ylims, int const& m, int const& L, bool const& truncate, vec const& hyperparams);
+RcppExport SEXP sppmix_DAMCMC2d_sppmix(SEXP pointsSEXP, SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP mSEXP, SEXP LSEXP, SEXP truncateSEXP, SEXP hyperparamsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -120,7 +122,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int const& >::type m(mSEXP);
     Rcpp::traits::input_parameter< int const& >::type L(LSEXP);
     Rcpp::traits::input_parameter< bool const& >::type truncate(truncateSEXP);
-    __result = Rcpp::wrap(DAMCMC2d_sppmix(points, xlims, ylims, m, L, truncate));
+    Rcpp::traits::input_parameter< vec const& >::type hyperparams(hyperparamsSEXP);
+    __result = Rcpp::wrap(DAMCMC2d_sppmix(points, xlims, ylims, m, L, truncate, hyperparams));
     return __result;
 END_RCPP
 }

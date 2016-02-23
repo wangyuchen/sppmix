@@ -408,3 +408,4 @@ bool Check4LabelSwitching_sppmix(vec const& chain)
   }
   return LabelSwitchingPresent;
 }
+
