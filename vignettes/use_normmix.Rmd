@@ -43,7 +43,14 @@ summary(mix1)
 ```
 
 
-It prints out the $\mu$'s but still not the $\Sigma$'s. You can also use ```is.normmix``` to test if an object is a valid normal mixture (currently it only check the ```class``` of the object).
+It prints out the $\mu$'s but still not the $\Sigma$'s. You can also use ```is.normmix``` to test if an object is a valid normal mixture.
+
+## Create Intensity surface
+A normal mixture is just a step away from an intensity surface. In most 
+situations, you may have a intensity value $lambda$ associated with the normal
+mixture. An intensity value indicates how many points the normal mixture will 
+have on average if a domain is defined. 
+
 
 
 ## Generate Mixture with Random Components
