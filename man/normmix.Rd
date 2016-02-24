@@ -27,7 +27,17 @@ object will be an intensity surface.}
 \item{win}{optional parameter of domain. Must be set with intensity value to
 create an intensity surface.}
 
-\item{mix}{An object of class \code{\link{normmix}}}
+\item{mix}{An object of class \code{normmix}}
+}
+\value{
+An object of class "normmix" containing the following components:
+ \item{m}{Number of components.}
+ \item{ps}{Vector of component probabilities.}
+ \item{mus}{List of mean vectors of components.}
+ \item{sigmas}{List of covariance matrix of components.}
+ \item{intensity}{optional intensity value if lambda is provided when calling
+ \code{normmix}.}
+ \item{window}{optional window object of class \code{\link{spatstat::owin}}.}
 }
 \description{
 Class of mixture in 2d with bivariate normal components.

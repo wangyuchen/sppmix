@@ -12,11 +12,6 @@ ApproxCompMass_sppmix <- function(xlims, ylims, mu, sigma) {
 }
 
 #' @export
-ApproxMHRatiomu_sppmix <- function(xlims, ylims, curmu, propmu, sigma, num) {
-    .Call('sppmix_ApproxMHRatiomu_sppmix', PACKAGE = 'sppmix', xlims, ylims, curmu, propmu, sigma, num)
-}
-
-#' @export
 ApproxMHRatiosig_sppmix <- function(xlims, ylims, mu, cursigma, propsigma, num) {
     .Call('sppmix_ApproxMHRatiosig_sppmix', PACKAGE = 'sppmix', xlims, ylims, mu, cursigma, propsigma, num)
 }
@@ -32,8 +27,13 @@ BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, LL, truncate, lam
 }
 
 #' @export
-DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, truncate) {
-    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, truncate)
+DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, truncate, hyperparams) {
+    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, truncate, hyperparams)
+}
+
+#' @export
+DAMCMC2dExtras_sppmix <- function(points, xlims, ylims, m, L, burnin, truncate, hyperparams) {
+    .Call('sppmix_DAMCMC2dExtras_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, burnin, truncate, hyperparams)
 }
 
 #' @export

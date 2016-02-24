@@ -78,15 +78,7 @@ plot.normmix_intensity <- function(mix, win, L = 100,
 
   }
 }
-#' @export
-Plots_off<- function()
-{
-  graphics.off()
-  while (rgl::rgl.cur()>0)
-  {
-    rgl::rgl.close()
-  }
-}
+
 
 #' Plot spatial point pattern generated from mixture.
 #'
@@ -195,27 +187,3 @@ plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
   }
 }
 
-#' Plot result from DAMCMC fit
-#'
-#' @examples
-#'
-#' fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-#'                               L = 5000, LL = 100)
-#' plot(fit)
-#' @export
-plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
-  old_par <- getOption("device.ask.default")
-  devAskNewPage(ask = TRUE)
-  on.exit(devAskNewPage(ask = old_par))
-
-
-  post_mix <- get_post(fit, burnin = burnin)
-
-  # rgl plots don't wait for ENTER, so it has to appear first
-  plot(post_mix, Window(fit$data))
-
-  plot_contour(post_mix, fit$data)
-  print(plot_ind(fit, burnin))
-  plot_chains(fit, burnin)
-  return(invisible())
-}

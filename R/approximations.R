@@ -98,11 +98,12 @@ dnormmix <- function(mix, win, x, y, L = 128, truncate = TRUE) {
 #'   int <- inormmix(100, mix1, square(2))
 #'  plot(int)
 #' }
-inormmix <- function(int_surf, win, x, y, L = 128, truncate = TRUE) {
+inormmix <- function(intsurf, x, y, L = 128, truncate = TRUE) {
+  win <- intsurf$window
   if (missing(x)) x <- seq(win$xrange[1], win$xrange[2], length.out = L)
   if (missing(y)) y <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
-  intensity <- int_surf$lambda * dnormmix(normmix_intensity, win, x, y,
+  intensity <- intsurf$lambda * dnormmix(intsurf, win, x, y,
                                           truncate = truncate)$v
 
   RVAL <- spatstat::im(matrix(intensity, nrow = length(y),

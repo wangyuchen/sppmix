@@ -18,8 +18,8 @@
 #'  \item{mus}{List of mean vectors of components.}
 #'  \item{sigmas}{List of covariance matrix of components.}
 #'  \item{intensity}{optional intensity value if lambda is provided when calling
-#'  normmix().}
-#'  \item{window}{optional window object of class \code{\link{spatstat::owin().}
+#'  \code{normmix}.}
+#'  \item{window}{optional window object of class \code{\link{spatstat::owin}}.}
 #'
 #' @seealso \code{\link{rnormmix}} for generating random mixture.
 #' @export
@@ -60,6 +60,15 @@ normmix <- function(ps, mus, sigmas, lambda = NULL, win = NULL) {
   RVAL
 }
 
+#' @export
+change_win <- function(intsurf, new_win) {
+  stopifnot(is.intensity_surface(intsurf))
+  stopifnot(spatstat::is.owin(new_win))
+
+  intsurf$window <- new_win
+  intsurf
+}
+
 is.normmix <- function(mix) {
   # check class of object, if TRUE, assuming it's created by normmix() and
   # subject to all its constraints.
@@ -73,6 +82,7 @@ is.intensity_surface <- function(mix) {
   ifelse(inherits(mix, "intensity_surface"), TRUE, FALSE)
 }
 
+
 #' @export
 print.normmix <- function(mix) {
   cat("Normal Mixture with", mix$m, "component(s).\n")
@@ -85,7 +95,7 @@ print.intensity_surface <- function(mix) {
   NextMethod("print", mix)
 }
 
-#' @param mix An object of class \code{\link{normmix}}
+#' @param mix An object of class \code{normmix}
 #' @rdname normmix
 #' @export
 summary.normmix <- function(mix) {
@@ -103,7 +113,7 @@ summary.normmix <- function(mix) {
 summary.intensity_surface <- function(mix) {
   cat("Average number of points over window:", mix$intensity, "\n")
   print(summary(mix$window))
-  NextMethod("print", mix)
+  NextMethod("print", mix, cov = cov)
 }
 
 
@@ -135,6 +145,7 @@ rnormmix <- function(m, sig0, sigdf,
   if (!spatstat::is.owin(win)) {
     stop("win must be of class owin.")
   }
+
   if (rand_m) {
     # number of components is random
     m <- sample(1:m, 1)

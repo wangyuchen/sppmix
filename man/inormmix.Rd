@@ -4,7 +4,7 @@
 \alias{inormmix}
 \title{Calculate intensity of locations under a mixture.}
 \usage{
-inormmix(int_surf, win, x, y, L = 128, truncate = TRUE)
+inormmix(intsurf, x, y, L = 128, truncate = TRUE)
 }
 \arguments{
 \item{x}{Locations where the density function will be evaluated. It will
