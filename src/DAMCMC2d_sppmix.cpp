@@ -287,7 +287,7 @@ List DAMCMC2d_sppmix(mat const& points,
     //   Rcout << "2 "<<sum(zmultinomial.col(1))<< std::endl ;
     //    Rcout << consts.row(i+1)<< std::endl ;
 
-    if(m>1)
+//    if(m>1)
       //sample indicators zij
     for(dat=0;dat<n;dat++)
     {
@@ -306,19 +306,34 @@ List DAMCMC2d_sppmix(mat const& points,
         //        Rcout << mutemp1<< std::endl ;
         qij(j)=genps(i+1,j)*consts(i+1,j)*
           exp(-.5*as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1)));
+/*        if (qij(j)>1.0f)
+        {
+          Rcout <<"\nconsts(i+1,j)="<<consts(i+1,j)<< std::endl ;
+          Rcout <<"\ngenps(i+1,j)="<<genps(i+1,j)<< std::endl ;
+          Rcout <<"\nquad="<<as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1))<< std::endl ;
+          Rcout <<"\ndat="<<dat<< std::endl ;
+          Rcout <<"\nj="<<j<< std::endl ;
+          Rcout <<"\nm="<<m<< std::endl ;
+          Rcout <<"\n Error, density gives probability >1. Rerun with truncated set to TRUE, value="<<qij(j)<< std::endl ;
+          return List::create();
+        }*/
         sumd=sumd+qij(j);
         //        Rcout << qij(dat,j)<< std::endl ;
       }
-      if (sumd>1.0f)
+/*      if (sumd>1.0f)
       {
         Rcout <<"\n Error, model gives probability >1. Rerun with truncated set to TRUE, value="<<sumd<< std::endl ;
         return List::create();
-      }
+      }*/
       qs=qij/sumd;
       //if(sum(qs)<1)
       //Rcout << sum(qs)<< std::endl ;
       //      if (sum(qij)==1)
-      zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qs),1,m);
+      if (m>1)
+        zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qs),1,m);
+      else
+        zmultinomial.row(dat)=ones<ivec>(m);
+//      zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qs),1,m);
       //      zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qij/sum(qij)),1,m);
 //            Rcout << sum(zmultinomial.row(dat))<< std::endl ;
     }

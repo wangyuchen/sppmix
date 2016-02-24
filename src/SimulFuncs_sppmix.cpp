@@ -111,10 +111,15 @@ vec rDirichlet_sppmix(vec const& d){
     gens(0)=1;
     return gens;
   }
+  double sumd=0;
   for(int i=0;i<k;i++)
-    gens(i)=Rcpp::rgamma(1,d(i),d(i))[0];
-     // rExp_sppmix(1.0/d(i));
-  return gens/sum(gens);
+  {
+    gens(i)=//Rcpp::rgamma(1,d(i),1)[0];//shape,scale
+      Rcpp::rgamma(1,d(i),1/d(i))[0];//shape,scale
+      //rExp_sppmix(1.0/d(i));
+    sumd+=gens(i);
+  }
+  return gens/sumd;
 }
 
 //' @export

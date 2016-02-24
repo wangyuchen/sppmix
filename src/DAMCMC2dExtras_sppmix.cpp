@@ -327,19 +327,25 @@ List DAMCMC2dExtras_sppmix(mat const& points,
         //        Rcout << mutemp1<< std::endl ;
         MixDens(dat,j)=genps(i+1,j)*consts(i+1,j)*
           exp(-.5*as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1)));
-        if (MixDens(dat,j)>1.0f)
+/*        if (MixDens(dat,j)>1.0f)
         {
-          Rcout <<"\n Error, density gives probability >1. Rerun with truncated set to TRUE, value="<<MixDens(dat,j)<< std::endl ;
+          Rcout <<"\nconsts(i+1,j)="<<consts(i+1,j)<< std::endl ;
+          Rcout <<"\ngenps(i+1,j)="<<genps(i+1,j)<< std::endl ;
+          Rcout <<"\nquad="<<as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1))<< std::endl ;
+          Rcout <<"\ndat="<<dat<< std::endl ;
+          Rcout <<"\nj="<<j<< std::endl ;
+          Rcout <<"\nm="<<m<< std::endl ;
+          Rcout <<"\nError, density gives probability >1. Rerun with truncated set to TRUE, value="<<MixDens(dat,j)<< std::endl ;
           return List::create();
-        }
+        }*/
         sumd=sumd+MixDens(dat,j);
         // Rcout << MixDens(dat,j)<< std::endl ;
       }
-      if (sumd>1.0f)
+/*      if (sumd>1.0f)
       {
-        Rcout <<"\n Error, model gives probability >1. Rerun with truncated set to TRUE, value="<<sumd<< std::endl ;
+        Rcout <<"\nError, mixture model gives probability >1.\nRerun with truncated set to TRUE, value="<<sumd<< std::endl ;
         return List::create();
-      }
+      }*/
       qs=trans(MixDens.row(dat)/sumd);
       if(i>burnin)
       {
@@ -574,9 +580,9 @@ List DAMCMC2dExtras_sppmix(mat const& points,
 //sum(over zij of pi(theta\x,zij))/L
 //use MAP estimators for theta
   marginal=marginal/numiters;
-  Rcout <<"\nMarginal Monte Carlo Approx="<<marginal<< std::endl ;
-  marginal=exp(loglikelihood);
-  Rcout <<"Marginal aprox="<<marginal<< std::endl ;
+//  Rcout <<"\nMarginal Monte Carlo Approx="<<marginal<< std::endl ;
+//  marginal=exp(loglikelihood);
+//  Rcout <<"Marginal aprox="<<marginal<< std::endl ;
 
   return List::create(
     Named("allgens_List") = allgens,

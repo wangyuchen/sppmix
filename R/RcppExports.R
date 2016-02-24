@@ -27,13 +27,13 @@ BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, LL, truncate, lam
 }
 
 #' @export
-DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, truncate, hyperparams) {
-    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, truncate, hyperparams)
+DAMCMC2dExtras_sppmix <- function(points, xlims, ylims, m, L, burnin, truncate, hyperparams) {
+    .Call('sppmix_DAMCMC2dExtras_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, burnin, truncate, hyperparams)
 }
 
 #' @export
-DAMCMC2dExtras_sppmix <- function(points, xlims, ylims, m, L, burnin, truncate, hyperparams) {
-    .Call('sppmix_DAMCMC2dExtras_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, burnin, truncate, hyperparams)
+DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, truncate, hyperparams) {
+    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, truncate, hyperparams)
 }
 
 #' @export
