@@ -113,7 +113,7 @@ summary.normmix <- function(mix) {
 summary.intensity_surface <- function(mix) {
   cat("Average number of points over window:", mix$intensity, "\n")
   print(summary(mix$window))
-  NextMethod("print", mix, cov = cov)
+  NextMethod("print", mix)
 }
 
 

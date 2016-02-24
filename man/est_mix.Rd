@@ -5,7 +5,7 @@
 \alias{est_mix_damcmc}
 \title{Estimate mixture model using MCMC}
 \usage{
-est_mix_damcmc(pp, m, truncate = FALSE, L = 5000)
+est_mix_damcmc(pp, m, truncate = FALSE, L = 5000, hyper_da = c(3, 1, 1))
 
 est_mix_bdmcmc(pp, m, truncate = FALSE, lambda1 = 1, lambda2 = 10,
   hyper = c(5, 0.01, 3, 2, 1, 1), L = 5000, LL = 100)
@@ -21,11 +21,13 @@ component density are restricted within the domain of the point pattern.}
 
 \item{L}{length of MCMC chain, default to 5000.}
 
+\item{hyper_da}{hyperparameters for DAMCMC, default is (3, 1, 1).}
+
 \item{lambda1}{Parameter in Poisson prior, lambda = 1 by default.}
 
 \item{lambda2}{Birth rate, lambdab = 10 by default.}
 
-\item{hyper}{hyperparameters for the hierarchical prior. See 'Details'.}
+\item{hyper_da}{hyperparameters for the hierarchical prior. See 'Details'.}
 }
 \description{
 These functions fits a mixture model to spatial point pattern data using

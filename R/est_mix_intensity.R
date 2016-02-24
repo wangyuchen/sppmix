@@ -9,19 +9,19 @@
 #' @param truncate logical, indicating whether truncation is used, where the
 #' component density are restricted within the domain of the point pattern.
 #' @param L length of MCMC chain, default to 5000.
-#'
+#' @param hyper_da hyperparameters for DAMCMC, default is (3, 1, 1).
 #' @rdname est_mix
 #' @examples
 #' # see vignett "Work with 2D Normal Mixtures" for details.
 #'
 #' @export
 est_mix_damcmc <- function(pp, m, truncate = FALSE,
-                           L = 5000) {
+                           L = 5000, hyper_da = c(3, 1, 1)) {
 
   fit <- DAMCMC2d_sppmix(points = cbind(pp$x, pp$y),
                          xlims = Window(pp)$xrange, ylims = Window(pp)$yrange,
                          m = m, truncate = truncate,
-                         L = L)
+                         L = L, hyperparams = hyper_da)
   fit$data <- pp
   class(fit) <- "damcmc_res"
   return(invisible(fit))
@@ -62,13 +62,14 @@ get_post.damcmc_res <- function(fit, burnin) {
     post_mus[[i]] <- mus[i, ]
     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
   }
-  post_intensity <- normmix(post_ps, post_mus, post_sigmas, mean_lambda)
+  post_intensity <- normmix(post_ps, post_mus, post_sigmas, mean_lambda,
+                            fit$data$window)
   return(post_intensity)
 }
 
 #' @param lambda1 Parameter in Poisson prior, lambda = 1 by default.
 #' @param lambda2 Birth rate, lambdab = 10 by default.
-#' @param hyper hyperparameters for the hierarchical prior. See 'Details'.
+#' @param hyper_da hyperparameters for the hierarchical prior. See 'Details'.
 #' @rdname est_mix
 #' @details
 #' Birth-Death MCMC uses the same notations as the paper from Stephens, M.(2000).
@@ -102,18 +103,23 @@ get_post.bdmcmc_res <- function(fit, comp, burnin) {
 
   numcomp <- fit$numcomp
   numcomp[1:burnin] <- 0
-  ind <- fit$numcomp == comp
+  ind <- numcomp == comp
 
-  comp_rlz <- GetBDCompRealiz_sppmix(fit$allgens_List[-(1:burnin)],
-                                     fit$genlamdas[-(1:burnin)],
-                                     fit$numcomp[-(1:burnin)], comp)
+  # comp_rlz <- GetBDCompRealiz_sppmix(fit$allgens_List,
+  #                                    fit$genlamdas,
+  #                                    fit$numcomp, comp)
 
 
   post_ps <- colMeans(fit$genps[ind, , drop = FALSE])
   post_ps <- post_ps[seq_len(comp)]
 
+  if (any(is.nan(post_ps))) {
+    stop(paste("This BDMCMC does not contain any ", comp, " components
+               realizations"))
+  }
+
   mus <- apply(fit$genmus[, , ind, drop = FALSE], 1:2, mean)
-  mus <- mus[seq_len(comp), ]
+  mus <- matrix(mus[seq_len(comp), ], comp, 2)
 
   mean_mat <- function(mats) Reduce("+", mats) / length(mats)
   sigmas <- apply(fit$gensigmas[ind, , drop = FALSE], 2, mean_mat)
@@ -125,12 +131,33 @@ get_post.bdmcmc_res <- function(fit, comp, burnin) {
   for (i in 1:comp) {
     post_mus[[i]] <- mus[i, ]
   }
-  post_normmix = normmix(post_ps, post_mus, sigmas)
-  post_intensity <- normmix_intensity(post_normmix, mean_lambda)
+  post_intensity <- normmix(post_ps, post_mus, sigmas, mean_lambda,
+                                      fit$data$window)
   return(post_intensity)
 }
 
 
+#' @export
+get_bdmcmc_rlz <- function(fit, comp) {
+
+  L <- length(fit$allgens)
+
+  res <- list()
+  ind <- fit$numcomp == comp
+
+  res$allgens_List <- fit$allgens_List[ind]
+  res$genps <- fit$genps[ind, seq_len(comp), drop = FALSE]
+  res$genmus <- fit$genmus[seq_len(comp), , ind, drop = FALSE]
+
+  res$gensigmas <- fit$gensigmas[ind, seq_len(comp), drop = FALSE]
+
+  res$genlamdas <- fit$genlamdas[ind, 1, drop = FALSE]
+  res$genzs <- fit$genzs[ind, , drop = FALSE]
+  res$data <- fit$data
+
+  class(res) <- "damcmc_res"
+  return(res)
+}
 
 
 
