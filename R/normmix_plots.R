@@ -2,7 +2,7 @@
 #'
 #' Plot the density surface of a mixture.
 #'
-#' @param mix An object of class \code{\link{normmix_intensity}}.
+#' @param mix An object of class \code{\link{intensity_surface}}.
 #' @param win An object of class \code{\link[spatstat]{owin}}.
 #' @param L Number of grid on x and y axes.
 #' @param truncate Whether the density is truncated in the window (truncate)
@@ -20,7 +20,7 @@
 #'   mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
 #'   plot(mix1, 100, square(2))
 #' }
-plot.normmix_intensity <- function(mix, win, L = 100,
+plot.intensity_surface <- function(mix, win = mix$window, L = 100,
                          title1="Poisson Process Intensity", truncate = TRUE,
                          zlims = c(0, 0),
                          pos=c(0,0,0), grayscale = FALSE, ...) {
@@ -30,7 +30,7 @@ plot.normmix_intensity <- function(mix, win, L = 100,
   xlims <- c(win$xrange)
   ylims <- c(win$yrange)
 
-  z <- mix$lambda*dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
+  z <- mix$intensity*dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)$v
 
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
@@ -145,7 +145,7 @@ plot_contour <- function(mix, pattern, win = Window(pattern), L = 100,
   ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
 
   surf <- dnormmix(mix, win = win, xcoord, ycoord, truncate = truncate)
-  z <- mix$lambda*surf$v
+  z <- mix$intensity*surf$v
   grid <- expand.grid(xcoord,ycoord)
   temp <- data.frame(grid$Var1,grid$Var2,as.vector(t(z)))
   names(temp) <- c("x","y","z")
