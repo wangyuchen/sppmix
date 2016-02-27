@@ -367,50 +367,97 @@ Go<- function()
 {
 #just for testing, run Demo_sppmix instead
   #do all the plotting with a common maximum z value
-  xlims<<-c(0,10)
-  ylims<<-c(0,10)
+ Plots_off()
+   xlims<<-c(0,1)
+  ylims<<-c(0,1)
   L<<-5000
-  m<<-5
+  m<<-3
   burnin<<-1000
   lamda<<-100
   r<<-30
-  truncated<<-FALSE
+#  truncated<<-FALSE
   LL<<-50
   maxnumcomp<<-10
 
-  truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
+  ps=c(.4, .2, .4)
+  mus=list(c(0.2, 0.2), c(0.2, 0.8), c(0.8, 0.8))
+  sigmas=list(.02*diag(2), .01*diag(2), .01*diag(2))
+  mix2 <- normmix(ps, mus,sigmas)
+  pp2 <- rsppmix(lamda, mix2, square(1))
+  truemix=vector("list", m)
+  for(i in 1:m)
+  {
+    mui=mus[[i]]
+    sigi=sigmas[[i]]
+    compi=list(p = ps[i], mu = mui, sigma = sigi)
+    truemix[[i]]=compi
+  }
+  gendata<<-cbind(pp2$x,pp2$y)
+  if(Get_User_Input_sppmix("Apply truncation?"))
+    truncated<<-TRUE
+  else
+    truncated<<-FALSE
 
-  gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,trunc=FALSE)
+  gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,truncated,c(3,.3,1))
 
-  zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
-                                           100,xlims,ylims);
-  mix_of_postmeans<<-#MakeMixtureList_sppmix(
-    MakeMixtureList(gens$allgens_List,burnin)
-  mean_lambda<<-mean(gens$genlamdas[burnin:L]);
-  zmax_genmeanmix=mean_lambda *
-    GetMixtureMaxz_sppmix(mix_of_postmeans,
-                          100,xlims,ylims);
-  #find the highest z
-  maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
+#  if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
+  if(1){
+ #   if (m>1)
+    plot_ind(gens)
+#    print(summary(truemix))
+    zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
+                                             100,xlims,ylims);
+#    cat("passed")
+    mix_of_postmeans<<-#MakeMixtureList_sppmix(
+      MakeMixtureList(gens$allgens_List,burnin)
+    mean_lambda<<-mean(gens$genlamdas[burnin:L]);
+    zmax_genmeanmix=mean_lambda *
+      GetMixtureMaxz_sppmix(mix_of_postmeans,
+                            100,xlims,ylims);
+#    cat("passed1")
+    #find the highest z
+    maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
+    #do all the plotting with a common maximum z value
+    PlotNormalMixture(mix1=truemix,data1=gendata,
+                      m1=m,lamda1=lamda,xlims1=xlims,
+                      ylims1=ylims,L1=100,
+                      title1="True mixture",zlims1=c(0,1.1*maxz_height),
+                      title3d=paste("True mixture intensity surface,",m,"components,",n,"points"))
 
-  PlotNormalMixture(mix1=truemix,data1=gendata,
-                    m1=m,lamda1=lamda,
-                    xlims1=xlims,ylims1=ylims,L1=100,
-                    title1="True mixture",
-                    zlims1=c(0,1.1*maxz_height),
-                    title3d=paste("True mixture intensity surface,",m,"components,",n,"points"))
+    PlotNormalMixture(mix1=mix_of_postmeans,
+                      data1=gendata,
+                      m1=m,lamda1=mean_lambda,xlims1=xlims,
+                      ylims1=ylims,
+                      L1=100,title1="Posterior means",zlims1=c(0,1.1*maxz_height),
+                      title3d=paste("Intensity surface of posterior means,",m,"components,",n,"points"))
+  }
+  if(Get_User_Input_sppmix("Show Chains and Stats?"))
+  {
+    #  plot_ind(gens)
+    ShowChains(gens$genps,gens$genmus,m=m)
+    #    cat("passed")
+    ShowStats(gens$genps,gens$genmus,truemix)
+  }
 
-  PlotNormalMixture(mix1=mix_of_postmeans,
-                    data1=gendata,
-                    m1=m,lamda1=mean_lambda,
-                    xlims1=xlims,ylims1=ylims,
-                    L1=100,
-                    title1="Posterior means",
-                    zlims1=c(0,1.1*maxz_height),
-                    title3d=paste("Intensity surface of posterior means,",m,"components,",n,"points"))
+  if(m>1 && Get_User_Input_sppmix("Check for label switching?"))
+    CheckLabels(gens$genmus[,,burnin:L])
 
-  gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
-  PostGenBDMCMC_sppmix(gensBD,maxz_height)
+  if(Get_User_Input_sppmix("Show average of intensity surfaces (slow operation)?"))
+    Show3dAvgofsurfaces(gens,LL,burnin,xlims,ylims,zlims=c(0,1.1*maxz_height))
+
+  if(Get_User_Input_sppmix("Apply relabeling algorithm?"))
+  {
+    FixLabels(gens,data1=gendata,truemix,1.1*maxz_height,
+              m1=m,xlims1=xlims,ylims1=ylims)
+  }
+  #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,31,FALSE,1,20,c(15,.01,3,2,1,1))
+
+  if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
+  {
+    gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
+    if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
+      PostGenBDMCMC_sppmix(gensBD,maxz_height)
+  }
 
 }
 
@@ -433,7 +480,7 @@ Demo_sppmix<- function()
     xlims<<-c(0,10)
     ylims<<-c(0,10)
     L<<-5000
-    m<<-5
+    m<<-2
     burnin<<-1000
     lamda<<-100
     r<<-30
@@ -474,8 +521,11 @@ Demo_sppmix<- function()
   if(Get_User_Input_sppmix("Generate the true mixture?"))
     truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
 
+  genPPP<<-spatstat::ppp(gendata[,1],gendata[,2],
+                         xlims,ylims,check=FALSE)
+
   if(Get_User_Input_sppmix("Simulate from the posterior (DAMCMC)?"))
-    gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,trunc=truncated)
+    gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,truncated,c(3,1,1))
 
 #  class(gens) <<- "damcmc_res"
  #   cat("passed")
@@ -584,7 +634,7 @@ PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
     xlims1=xlims,ylims1=ylims,L1=100,
     title1="Posterior means",
     zlims1=c(0,1.1*maxz_height),
-    title3d=paste("Intensity surface of posterior means, MAP m=",m,",",n,"points"))
+    title3d=paste("Intensity surface of posterior means, MAP m=",MAPcomp,",",n,"points"))
 
   if(0)
   {

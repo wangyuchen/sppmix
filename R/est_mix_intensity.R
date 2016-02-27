@@ -14,6 +14,17 @@
 #' @examples
 #' # see vignett "Work with 2D Normal Mixtures" for details.
 #'
+#' @return A list of MCMC realizations
+#' \item{allgens_List}{A list of generated nornal mixture.}
+#' \item{genps}{Matrix of probabilities of components in the normal
+#' mixture.}
+#' \item{genmus}{Matrix of means of components in the normal
+#' mixture.}
+#' \item{gensigmas}{Matrix of covariance matrices of components in the normal
+#'  mixture.}
+#' \item{genzs}{Matrix of component indicators of points.}
+#' \item{genlambdas}{Matrix of lambda(average intensity).}
+#' \item{data}{The original point pattern.}
 #' @export
 est_mix_damcmc <- function(pp, m, truncate = FALSE,
                            L = 5000, hyper_da = c(3, 1, 1)) {
@@ -32,6 +43,10 @@ est_mix_damcmc <- function(pp, m, truncate = FALSE,
 #' @param fit object from \code{est_mix_damcmc} or \code{est_mix_bdmcmc}.
 #' @param burnin number of burn-in iterations.
 #'
+#' @return An object of class \code{intensity_surface}.
+#'
+#' @details
+#' For Birth-Death MCMC, the number of component need to be specified.
 #' @export
 #' @examples
 #'

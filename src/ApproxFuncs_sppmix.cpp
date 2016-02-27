@@ -175,9 +175,10 @@ double ApproxMHRatiomu_sppmix(
 //                                curmu,sigma)/
 //          ApproxNormCdf2d_sppmix(uplim,
 //                         propmu,sigma),num);
-return pow(ApproxCompMass_sppmix(xlims,ylims,
-    curmu,sigma)/ApproxCompMass_sppmix(xlims,
-    ylims,propmu,sigma),num);
+return pow(ApproxCompMass_sppmix(xlims,
+    ylims,propmu,sigma)/
+    ApproxCompMass_sppmix(xlims,ylims,
+         curmu,sigma),num);
     //  return approxFmu/approxFpropmu;
 }
 
@@ -230,9 +231,10 @@ double ApproxMHRatiosig_sppmix(
                   mu,cursigma)/
                ApproxNormCdf2d_sppmix(uplim,
                     mu,propsigma),num);*/
-  return pow(ApproxCompMass_sppmix(xlims,ylims,
-        mu,cursigma)/ApproxCompMass_sppmix(
-        xlims,ylims,mu,propsigma),num);
+  return pow(ApproxCompMass_sppmix(
+        xlims,ylims,mu,propsigma)/
+       ApproxCompMass_sppmix(xlims,ylims,
+         mu,cursigma),num);
 }
 
 

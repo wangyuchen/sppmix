@@ -27,6 +27,14 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   mat meanmus=zeros(m,2);
   cube meansigmas=zeros(2,2,m);
   mat meanzs=zeros(n,m);
+  mat tempsig(2,2),sumsig,newdata,propmu=zeros(1,2),
+    genmutemp=zeros(1,2),
+    mutemp1=zeros(1,2),propsigma,
+    sumxmu,ps1,ps2,beta,cov1,MixDens(n,m);
+  vec approx=ones(m),
+    ds,qs=zeros(m),mu1=zeros(2),
+    newmu=zeros(2);
+//  bool singularities=false;
 
   double numiters=L-burnin;
   int i,j,r,dat;
@@ -59,16 +67,15 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   Idenmat(1,1)=1;
   kappa(0,1)=0;
   kappa(1,0)=0;
-  kappa(0,0)=1/(Rx*Rx);
-  kappa(1,1)=1/(Ry*Ry);
+  kappa(0,0)=100/(Rx*Rx);
+  kappa(1,1)=100/(Ry*Ry);
   kappainv(0,1)=0;
   kappainv(1,0)=0;
   //  kappainv.eye(2,2);
-  kappainv(0,0)=Rx*Rx;
-  kappainv(1,1)=Ry*Ry;
+  kappainv(0,0)=Rx*Rx/100;
+  kappainv(1,1)=Ry*Ry/100;
   //hypers 3:a=3, 4:g=.3, 5:gam=1
-  double //a=3,g=1,gam=1;
-    a=hyperparams(0),g=hyperparams(1),
+  double a=hyperparams(0),g=hyperparams(1),
       gam=hyperparams(2);
   mat hmat(2,2),hmatinv(2,2);
   hmat(0,1)=0;
@@ -83,13 +90,25 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   hmatinv(1,1)=a*Ry*Ry/(100*g);
   //starting values
 //  return List::create();
+  sumxmu=zeros(2,2);
+  newmu(0)=sum(data.col(0))/n;
+  newmu(1)=sum(data.col(1))/n;
+  for(r=0;r<n;r++)
+    sumxmu=sumxmu+trans(data.row(r)-newmu.t())*(data.row(r)-newmu.t());
+  //      Rcout << sumxmu<<"\n"<<std::endl;
+  ps2=invmat2d_sppmix(2*Idenmat+sumxmu/(n-1));
   for (i=0;i<m;i++)
   {
     //    genmus.slice(0);
     genmus(i,0,0)=data(which(i),0);
     genmus(i,1,0)=data(which(i),1);
-    gensigmas(0,i)=kappainv;
-    geninvsigmas(0,i)=kappa;//invmat2d_sppmix(gensigmas(0,i));
+    geninvsigmas(0,i)=rWishart_sppmix(2*a,ps2);//kappa;//invmat2d_sppmix(gensigmas(0,i));
+    gensigmas(0,i)=invmat2d_sppmix(geninvsigmas(0,i));//kappainv;
+/*    if(det(gensigmas(0,i))<.001 || det(geninvsigmas(0,i))<.001)
+    {
+      Rcout <<"\nNear singular covariance for starting value. Det(Sigma)="<<det(gensigmas(0,i))<< std::endl ;
+//      return List::create();
+    }*/
     genps(0,i)=1.0/m;
     consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
@@ -116,13 +135,6 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   //  Rcout << sum(zmultinomial.col(1))<< std::endl ;
   //Rcout << zmultinomial<< std::endl ;
   //    return List::create();
-  mat sumsig,newdata,propmu=zeros(1,2),
-    genmutemp=zeros(1,2),
-    mutemp1=zeros(1,2),propsigma,
-    sumxmu,ps1,ps2,beta,cov1,MixDens(n,m);
-  vec approx=ones(m),
-    ds,qs=zeros(m),mu1=zeros(2),
-    newmu=zeros(2);
 
   double MHjump=0,ratio=1,sumd,approxcompj;//,quad;
   //setup grid for truncation
@@ -143,7 +155,8 @@ List DAMCMC2dExtras_sppmix(mat const& points,
 //  int countiter=0;
   double entropy=0,marginal=0;
 //  double sumlik=0;
-  double sumentropy=0,density_at_pp=1,
+  double //sumentropy=0,
+    density_at_pp=1,
     density_at_pp_prev=1;
   vec //Entropysum=zeros(n),
     DensityAtXiPrev=zeros(n),
@@ -270,6 +283,8 @@ List DAMCMC2dExtras_sppmix(mat const& points,
       }
       else
         ratio=1;
+//      if (det(propsigma)<0.001)
+//        ratio=0;
       if(Rcpp::runif(1)[0]<ratio)
       {
         geninvsigmas(i+1,j)=cov1;//invmat2d_sppmix(propsigma);
@@ -285,13 +300,14 @@ List DAMCMC2dExtras_sppmix(mat const& points,
       {
         mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
-        approxcompj=ApproxCompMass_sppmix(
+        approx[j]=ApproxCompMass_sppmix(
           xlims,ylims,mu1,gensigmas(i+1,j));
       }
       else
-        approxcompj=1;
-      consts(i+1,j)=1.0/(approxcompj*
-        sqrt(det(2*datum::pi*gensigmas(i+1,j))));
+        approx[j]=1;
+ //     approx[j]=approxcompj;
+//      consts(i+1,j)=1.0/(approxcompj*
+ //       sqrt(det(2*datum::pi*gensigmas(i+1,j))));
     }
     //sample component probs
     genps.row(i+1)=rDirichlet_sppmix(ds).t();
@@ -320,32 +336,52 @@ List DAMCMC2dExtras_sppmix(mat const& points,
         //        Rcout << genmutemp<< std::endl ;
         //        Rcout << data.row(dat)<< std::endl ;
         //        mutemp1=data.row(dat)-genmutemp;
-        mutemp1(0)=data(dat,0)-genmus(j,0,i+1);
-        mutemp1(1)=data(dat,1)-genmus(j,1,i+1);
+//       mutemp1(0)=data(dat,0)-genmus(j,0,i+1);
+ //       mutemp1(1)=data(dat,1)-genmus(j,1,i+1);
         //        quad=as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1));
-        //        Rcout << quad<< std::endl ;
         //        Rcout << mutemp1<< std::endl ;
-        MixDens(dat,j)=genps(i+1,j)*consts(i+1,j)*
-          exp(-.5*as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1)));
-/*        if (MixDens(dat,j)>1.0f)
-        {
+    //    tempsig=geninvsigmas(i+1,j);
+    //    Rcout << tempsig<< std::endl ;
+    mu1(0)=genmus(j,0,i+1);
+    mu1(1)=genmus(j,1,i+1);
+    MixDens(dat,j)=genps(i+1,j)*
+      dNormal_sppmix(data.row(dat).t(),
+      mu1,gensigmas(i+1,j))/approx[j];
+//     MixDens(dat,j)=genps(i+1,j)*consts(i+1,j)*
+   //       exp(-.5*Quad_sppmix(trans(mutemp1),geninvsigmas(i+1,j)));
+          //  as_scalar(mutemp1*geninvsigmas(i+1,j)* trans(mutemp1))
+//        if (det(gensigmas(i+1,j))<0.001)
+//        if (MixDens(dat,j)>1.0)
+ //       {
+ //         singularities=true;
+ /*         Rcout <<"\ndet(gensigmas(i+1,j))="<<det(gensigmas(i+1,j))<< std::endl ;
+          Rcout <<"\nmu1="<<mu1<< std::endl ;
+          Rcout <<"\ndata.row(dat)="<<data.row(dat)<< std::endl ;
+          Rcout <<"\ngensigmas(i+1,j)="<<gensigmas(i+1,j)<< std::endl ;
           Rcout <<"\nconsts(i+1,j)="<<consts(i+1,j)<< std::endl ;
           Rcout <<"\ngenps(i+1,j)="<<genps(i+1,j)<< std::endl ;
-          Rcout <<"\nquad="<<as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1))<< std::endl ;
+          Rcout <<"\nquad="<<Quad_sppmix(mu1,
+             geninvsigmas(i+1,j))<< std::endl ;
           Rcout <<"\ndat="<<dat<< std::endl ;
+          Rcout <<"\napprox[j]="<<approx[j]<< std::endl ;
+          Rcout <<"\ni+1="<<i+1<< std::endl ;
           Rcout <<"\nj="<<j<< std::endl ;
           Rcout <<"\nm="<<m<< std::endl ;
-          Rcout <<"\nError, density gives probability >1. Rerun with truncated set to TRUE, value="<<MixDens(dat,j)<< std::endl ;
-          return List::create();
-        }*/
+          Rcout <<"\nError, density gives probability >1. Rerun with truncated set to TRUE, value="<<MixDens(dat,j)<< std::endl ;*/
+ //         Rcout <<"\nWarning: near singular covariance matrix, value="<< det(gensigmas(i+1,j))<< std::endl ;
+//          return List::create();
+//        }//*/
         sumd=sumd+MixDens(dat,j);
         // Rcout << MixDens(dat,j)<< std::endl ;
       }
-/*      if (sumd>1.0f)
+/*      if (sumd>1.0)
       {
+        Rcout <<"\ni+1="<<i+1<< std::endl ;
+        Rcout <<"\ngenps.row(i+1)="<<genps.row(i+1)<< std::endl ;
+        Rcout <<"sum genps.row(i+1)="<<sum(genps.row(i+1))<< std::endl ;
         Rcout <<"\nError, mixture model gives probability >1.\nRerun with truncated set to TRUE, value="<<sumd<< std::endl ;
         return List::create();
-      }*/
+      }//*/
       qs=trans(MixDens.row(dat)/sumd);
       if(i>burnin)
       {
@@ -378,6 +414,11 @@ List DAMCMC2dExtras_sppmix(mat const& points,
       }
     }
     bool accepted=false;
+/*    if(singularities)
+    {
+      ratio=0;
+      singularities=false;
+    }*/
     if(Rcpp::runif(1)[0]<ratio)
     {
       accepted=true;
@@ -416,7 +457,8 @@ List DAMCMC2dExtras_sppmix(mat const& points,
         DensityAtXiPrev(dat)=DensityAtXiCur(dat);
 //        Entropysum(dat)=0;
 //       Rcout <<"\n sdfsdfsdf"<< std::endl ;
-        for(j=0;j<m;j++)
+
+/*        for(j=0;j<m;j++)
         {
           //gives always 0 for zij=0 or 1
 //          if(zmultinomial(dat,j)>0)
@@ -437,11 +479,12 @@ List DAMCMC2dExtras_sppmix(mat const& points,
                 log(zhatsprev(dat,j));
           }
         }
-        zhatsprev.row(dat)=zhats.row(dat);
+        zhatsprev.row(dat)=zhats.row(dat);//*/
       }
     }
     if(i>burnin)
     {
+      sumz+=zmultinomial;
       if(accepted)
         marginal+=density_at_pp;
       else
@@ -560,13 +603,19 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   }
 */
   double lik=0;//,sumentropy=0;
+  entropy=0;
   for(i=0;i<n;i++)
   {
 //    Rcout <<"DensityAtXiSum(i)="<<DensityAtXiSum(i)<< std::endl ;
     lik+=log(DensityAtXiSum(i)/numiters);
 //   sumentropy+=Entropysum(i)/(L-burnin);
+    for(j=0;j<m;j++)
+    {
+      if(sumz(i,j)>0)
+        entropy=entropy-sumz(i,j)*log(sumz(i,j)/numiters)/numiters;
+    }
   }
-  entropy=-sumentropy/numiters;
+//  entropy=-sumentropy/numiters;
   loglikelihood=n*log(meanlamda)-meanlamda-lognfac+lik;
   Rcout <<"\nEntropy aprox="<<entropy<< std::endl ;
   Rcout <<"Neg LogLik approx="<<-loglikelihood<< std::endl ;
@@ -583,6 +632,9 @@ List DAMCMC2dExtras_sppmix(mat const& points,
 //  Rcout <<"\nMarginal Monte Carlo Approx="<<marginal<< std::endl ;
 //  marginal=exp(loglikelihood);
 //  Rcout <<"Marginal aprox="<<marginal<< std::endl ;
+
+//  if(singularities)
+//    Rcout <<"\nWarning: there were near singular covariance matrices during computation"<< std::endl ;
 
   return List::create(
     Named("allgens_List") = allgens,

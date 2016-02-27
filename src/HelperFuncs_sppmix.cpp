@@ -5,6 +5,14 @@
 
 //' @export
 // [[Rcpp::export]]
+double Quad_sppmix(vec const& v,mat const& m)
+{
+  return m(0,0)*v(0)*v(0)+m(1,1)*v(1)*v(1)
+  +m(0,1)*v(0)*v(1)+m(1,0)*v(1)*v(0);
+}
+
+//' @export
+// [[Rcpp::export]]
 double Factorial_sppmix(int x)
 {
   double num=1;
@@ -52,7 +60,7 @@ double densNormMixatx_sppmix(vec const& atx,List const& mix)
     invsigk=invmat2d_sppmix(sigmak);
     c1=1.0/sqrt(det(2*datum::pi*sigmak));
     val=val+psj*c1*
-      exp(-.5*as_scalar(trans(mu1)*invsigk*mu1));
+      exp(-.5*Quad_sppmix(mu1,invsigk));
   }
   return val;
 }
@@ -414,5 +422,24 @@ List GetMax_sppmix(vec const& v)
   return List::create(
     Named("max") = max_value,
     Named("pos") = pos);
+}
+
+
+//' @export
+// [[Rcpp::export]]
+double dNormal_sppmix(vec const& atx,vec const& mu,
+                      mat const& sig)
+{
+  vec v(2);
+  v(0)=atx(0)-mu(0);
+  v(1)=atx(1)-mu(1);
+  double detsig=sig(0,0)*sig(1,1)-sig(0,1)*sig(1,0);
+  mat invsig(2,2);
+  invsig(0,0)=sig(1,1)/detsig;
+  invsig(0,1)=-sig(0,1)/detsig;
+  invsig(1,0)=-sig(1,0)/detsig;
+  invsig(1,1)=sig(0,0)/detsig;
+  return exp(-.5*Quad_sppmix(v,invsig))
+    /(2*datum::pi*sqrt(detsig));
 }
 

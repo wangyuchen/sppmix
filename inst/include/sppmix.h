@@ -124,6 +124,9 @@ double GetMixtureMaxz_sppmix(List const& genmix,int const& len,vec const& xlims,
 List MakeMixtureList_sppmix(List const& gens_list,int const& burnin);
 List CheckInWindow_sppmix(mat const& points,vec const& xlims,vec const& ylims,bool const& truncate);
 List GetMax_sppmix(vec const& v);
+double dNormal_sppmix(vec const& atx,vec const& mu,
+                      mat const& sig);
+double Quad_sppmix(vec const& v,mat const& m);
 
 //Functions that connect to other APIs
 //file: OtherAPIs_sppmix.cpp

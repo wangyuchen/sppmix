@@ -127,6 +127,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// Quad_sppmix
+double Quad_sppmix(vec const& v, mat const& m);
+RcppExport SEXP sppmix_Quad_sppmix(SEXP vSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< vec const& >::type v(vSEXP);
+    Rcpp::traits::input_parameter< mat const& >::type m(mSEXP);
+    __result = Rcpp::wrap(Quad_sppmix(v, m));
+    return __result;
+END_RCPP
+}
 // Factorial_sppmix
 double Factorial_sppmix(int x);
 RcppExport SEXP sppmix_Factorial_sppmix(SEXP xSEXP) {
@@ -380,6 +392,19 @@ BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< vec const& >::type v(vSEXP);
     __result = Rcpp::wrap(GetMax_sppmix(v));
+    return __result;
+END_RCPP
+}
+// dNormal_sppmix
+double dNormal_sppmix(vec const& atx, vec const& mu, mat const& sig);
+RcppExport SEXP sppmix_dNormal_sppmix(SEXP atxSEXP, SEXP muSEXP, SEXP sigSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< vec const& >::type atx(atxSEXP);
+    Rcpp::traits::input_parameter< vec const& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< mat const& >::type sig(sigSEXP);
+    __result = Rcpp::wrap(dNormal_sppmix(atx, mu, sig));
     return __result;
 END_RCPP
 }
