@@ -60,14 +60,7 @@ normmix <- function(ps, mus, sigmas, lambda = NULL, win = NULL) {
   RVAL
 }
 
-#' @export
-change_win <- function(intsurf, new_win) {
-  stopifnot(is.intensity_surface(intsurf))
-  stopifnot(spatstat::is.owin(new_win))
 
-  intsurf$window <- new_win
-  intsurf
-}
 
 is.normmix <- function(mix) {
   # check class of object, if TRUE, assuming it's created by normmix() and
@@ -90,30 +83,44 @@ print.normmix <- function(mix) {
 
 #' @export
 print.intensity_surface <- function(mix) {
-  cat("Intensity surface with average intensity:", mix$intensity, "\n")
+  cat("Theoretical average number of points over window:",
+      mix$intensity, "\n")
   print(mix$window)
-  NextMethod("print", mix)
+  NextMethod()
+}
+
+#' @export
+print.summary_normmix <- function(mix_df) {
+  with(mix_df,
+       for (i in unique(comp)) {
+         cat("Component", i, "is centered at", "[",
+             round(mu[comp == i][1], 2), ",", round(mu[comp == i][2], 2), "]",
+             "with probability", round(ps[comp == i][1], 4), "\n")
+         prmatrix(mix_df[comp == i, 4:5], rowlab = rep("", 2),
+                  collab = c("covariance", "matrix:"))
+       }
+  )
 }
 
 #' @param mix An object of class \code{normmix}
 #' @rdname normmix
 #' @export
 summary.normmix <- function(mix) {
-  cat(paste("Normal Mixture with", mix$m, "components:\n"))
+  comps <- vector("list", mix$m)
   for (i in 1:mix$m) {
-    cat("Component", i, "is centered at", "(",
-        round(mix$mus[[i]][1], 2), ",",
-        round(mix$mus[[i]][2], 2), ")",
-        "with probability", round(mix$ps[[i]], 4), "\n")
+    comps[[i]] <- data.frame(comp = i, ps = mix$ps[[i]],
+               mu = mix$mus[[i]], sigma = mix$sigmas[[i]])
   }
+  RVAL <- do.call(rbind, comps)
+  class(RVAL) <- c("summary_normmix", oldClass(RVAL))
+  RVAL
 }
 
 #' @rdname normmix
 #' @export
 summary.intensity_surface <- function(mix) {
-  cat("Average number of points over window:", mix$intensity, "\n")
-  print(summary(mix$window))
-  NextMethod("print", mix)
+  print(mix)
+  NextMethod()
 }
 
 
@@ -162,5 +169,30 @@ rnormmix <- function(m, sig0, sigdf,
   }
 
   normmix(ps, mus, sigmas)
+}
+
+
+to_int_surf <- function(mix, lambda = NULL, win = NULL) {
+  if (is.intensity_surface(mix)) {
+    # input is intensity surface
+    intsurf <- mix
+    if (!missing(lambda)) {
+      stopifnot(lambda > 0)
+      intsurf$intensity <- lambda
+    }
+    if (!missing(win)) {
+      stopifnot(spatstat::is.owin(win))
+      intsurf$window <- win
+    }
+
+  } else if (is.normmix(mix)) {
+    # input is normmix, create intensity surface
+    stopifnot(!missing(lambda) & !missing(win))
+    intsurf <- normmix(mix$ps, mix$mus, mix$sigmas,
+                       lambda = lambda, win = win)
+  } else {
+    stop("mix must be of class normmix or intensity surface")
+  }
+  intsurf
 }
 
