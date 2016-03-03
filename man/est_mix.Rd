@@ -29,6 +29,19 @@ component density are restricted within the domain of the point pattern.}
 
 \item{hyper_da}{hyperparameters for the hierarchical prior. See 'Details'.}
 }
+\value{
+A list of MCMC realizations
+\item{allgens_List}{A list of generated nornal mixture.}
+\item{genps}{Matrix of probabilities of components in the normal
+mixture.}
+\item{genmus}{Matrix of means of components in the normal
+mixture.}
+\item{gensigmas}{Matrix of covariance matrices of components in the normal
+ mixture.}
+\item{genzs}{Matrix of component indicators of points.}
+\item{genlambdas}{Matrix of lambda(average intensity).}
+\item{data}{The original point pattern.}
+}
 \description{
 These functions fits a mixture model to spatial point pattern data using
 DAMCMC or BDMCMC.

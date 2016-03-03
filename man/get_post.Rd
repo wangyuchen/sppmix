@@ -11,8 +11,14 @@ get_post(obj, ...)
 
 \item{burnin}{number of burn-in iterations.}
 }
+\value{
+An object of class \code{intensity_surface}.
+}
 \description{
 Calculate posterior mixture from estimated mixture
+}
+\details{
+For Birth-Death MCMC, the number of component need to be specified.
 }
 \examples{
 

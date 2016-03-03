@@ -37,6 +37,11 @@ DAMCMC2dExtras_sppmix <- function(points, xlims, ylims, m, L, burnin, truncate, 
 }
 
 #' @export
+Quad_sppmix <- function(v, m) {
+    .Call('sppmix_Quad_sppmix', PACKAGE = 'sppmix', v, m)
+}
+
+#' @export
 Factorial_sppmix <- function(x) {
     .Call('sppmix_Factorial_sppmix', PACKAGE = 'sppmix', x)
 }
@@ -139,6 +144,11 @@ CheckInWindow_sppmix <- function(points, xlims, ylims, truncate) {
 #' @export
 GetMax_sppmix <- function(v) {
     .Call('sppmix_GetMax_sppmix', PACKAGE = 'sppmix', v)
+}
+
+#' @export
+dNormal_sppmix <- function(atx, mu, sig) {
+    .Call('sppmix_dNormal_sppmix', PACKAGE = 'sppmix', atx, mu, sig)
 }
 
 #' @export
