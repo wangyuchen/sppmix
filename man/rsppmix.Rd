@@ -4,17 +4,17 @@
 \alias{rsppmix}
 \title{Generate a spatial point pattern from normal mixture.}
 \usage{
-rsppmix(lambda, mix, win, truncate = TRUE)
+rsppmix(intsurf, truncate = TRUE, lambda, win)
 }
 \arguments{
-\item{lambda}{Intensity of the spatial point pattern}
+\item{truncate}{Whether to truncate the points outside the domain,
+default to TRUE.}
 
-\item{mix}{Object of class normmix}
+\item{lambda}{Intensity of the spatial point pattern}
 
 \item{win}{Object of class spatstat::owin}
 
-\item{truncate}{Whether to truncate the points outside the domain,
-default to TRUE.}
+\item{mix}{Object of class normmix}
 }
 \value{
 A point pattern of class \code{c("sppmix", "ppp")}.

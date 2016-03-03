@@ -171,7 +171,7 @@ rnormmix <- function(m, sig0, sigdf,
   normmix(ps, mus, sigmas)
 }
 
-
+#' @export
 to_int_surf <- function(mix, lambda = NULL, win = NULL) {
   if (is.intensity_surface(mix)) {
     # input is intensity surface

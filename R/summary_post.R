@@ -22,7 +22,7 @@ summary.damcmc_res <- function(fit, dgt = 2) {
     poststats = GetStats_sppmix(fit$genps[,i], alpha=0.05)
     poststats <- sapply(poststats, format, digits = dgt)
 
-    cat("\n----------------Component ",i,"------------\n")
+    cat("\n---------------- Component ",i,"------------\n")
     #cat(paste("Probability: true =",truemix[[i]]$p))
     cat(paste("\nProbability: posterior mean =",
               poststats$Mean,"\n"))

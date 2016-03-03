@@ -36,31 +36,38 @@
 #' rsppmix(200, mix1, spatstat::square(1), truncate = FALSE)
 
 
-rsppmix <- function(lambda, mix, win, truncate=TRUE) {
-  if (!is.normmix(mix)) {
-    stop("mix must be an object of class normmix.")
+rsppmix <- function(intsurf, truncate = TRUE, lambda, win) {
+
+  if (!is.intensity_surface(intsurf)) {
+    if (!is.normmix(intsurf)) stop("mix must be an object of class normmix.")
+    stopifnot(missing(lambda) | missing(win))
+    intsurf <- xxxxxfunction(intsurf, lambda, win)
   }
 
-  n <- rpois(1, lambda)
+  win <- intsurf$window
+
+  n <- rpois(1, intsurf$intensity)
+
   if (n == 0) {
-    stop("0 points in the requested point pattern")
+    stop("Intensity value too small.")
   }
 
   gen_n_from_mix <- function(n, mix) {
     comp <- sample(1:mix$m, size = n, replace = TRUE, prob = mix$ps)
     spp <- vector("list", length(unique(comp)))
     for (k in unique(comp)) {
-      spp[[k]] <- mvtnorm::rmvnorm(sum(comp == k),
+      snd <- mvtnorm::rmvnorm(sum(comp == k),
                                    mix$mus[[k]], mix$sigmas[[k]])
+      spp[[k]] <- cbind(snd, comp = k)
     }
     return(do.call(rbind, spp))
   }
 
-  spp <- gen_n_from_mix(n, mix)
+  spp <- gen_n_from_mix(n, intsurf)
 
   if (truncate == TRUE) {
     while (sum(spatstat::inside.owin(spp[, 1], spp[, 2], win)) < n) {
-      spp <- rbind(spp, gen_n_from_mix(n, mix))
+      spp <- rbind(spp, gen_n_from_mix(n, intsurf))
     }
     spp <- spp[spatstat::inside.owin(spp[, 1], spp[, 2], win), ][1:n, ]
   } else {
@@ -68,7 +75,8 @@ rsppmix <- function(lambda, mix, win, truncate=TRUE) {
                   "points are outside window."))
   }
 
-  RVAL <- as.ppp(spp, W=win, check = truncate)
+  RVAL <- as.ppp(spp[, 1:2], W=win, check = truncate)
+  RVAL$comp <- spp[, 3]
   class(RVAL) <- c("sppmix", "ppp")
   return(RVAL)
 }
