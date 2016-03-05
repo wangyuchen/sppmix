@@ -129,20 +129,23 @@ PlotNormalMixture<- function(mix1,data1,
 #       main=paste("Mixture with",m,"components",
  #                 "\n",n,"points"));
 
+  Plot2d_sppmix(data1,mix1,lamda1,xlims1,ylims1,
+                title1,xlab1,ylab1,100)
+
   xcoord <- seq(xlims1[1], xlims1[2], length.out = L1);
   ycoord <- seq(ylims1[1], ylims1[2], length.out = L1);
-
   if(0==1)
   {#use the package routine
     normmix1=MakeNormMixFromMixtureList(mix1);
-    plot(normmix1, lamda,
+    plot(normmix1, lamda1,
         win=spatstat::owin(xlims1, ylims1),
         L = 100,
       title1="Poisson Process Intensity", truncate = TRUE)
   }
   else
   {#use the Plot3d_sppmix routine
-    zcoord <- lamda*dNormMix_sppmix(mix1, xcoord, ycoord);
+    print(mix1)
+    zcoord <- lamda1*dNormMix_sppmix(mix1, xcoord, ycoord);
     Plot3d_sppmix(xcoord,ycoord,zcoord,
                   title1=title3d,
                   xlims1,ylims1,zlims1)
@@ -155,11 +158,11 @@ PlotNormalMixture<- function(mix1,data1,
 
 
 #' @export
-Plot2d_sppmix<- function(data1,lamda1=100,
+Plot2d_sppmix<- function(data1,mix1,lamda1=100,
                  xlims1=c(-3,3),
                  ylims1=c(-3,3),
                  title1="Mixture intensity",
-                 xlab1="x",ylab1="y")
+                 xlab1="x",ylab1="y",L1=51)
 {
   # windows()
   n=nrow(data1)
@@ -175,12 +178,38 @@ Plot2d_sppmix<- function(data1,lamda1=100,
   )
   #  Now output each line The text in the list is converted to expressions do.call
 
-  plot(data1,pch=20,
-       xlab=xlab1,#xlab="longitude",
-       ylab=ylab1,#ylab="latitude",
-       xlim=xlims1,
-       ylim=ylims1,main="")
-  mtext(do.call(expression, titleLines),side=3,line=0:1)
+#  plot(data1,pch=20,xlab=xlab1,#xlab="longitude",
+#       ylab=ylab1,#ylab="latitude",
+#       xlim=xlims1, ylim=ylims1,main="")
+#  mtext(do.call(expression, titleLines),side=3,line=0:1)
+
+  #2d Intensity plot
+  xcoord <- seq(xlims1[1], xlims1[2], length.out = L1);
+  ycoord <- seq(ylims1[1], ylims1[2], length.out = L1);
+  zcoord <- lamda1*dNormMix_sppmix(mix1, xcoord, ycoord);
+  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                                   "#7FFF7F", "yellow", "#FF7F00", "red",
+                                   "#7F0000"))
+
+#  par(mai=c(0.5, .5, .5, 0.5))
+#  image(x=xcoord,y=ycoord,z=zcoord,xlab=xlab1,
+#        cex=0.8, ylab=ylab1,axes = TRUE,
+#        main="",col= cols)
+#  library("grDevices")
+  filled.contour(x=xcoord,y=ycoord, z=zcoord,
+                 color = jet.colors,
+                 plot.axes = { axis(1);
+                   axis(2);
+                   points(data1[,1], data1[,2], col="Black",pch = 20,cex=0.8)},
+                 frame.plot = FALSE, asp = 1,
+                 nlevels =50,axes = TRUE)
+#  points(data1,pch=20,cex=0.1)
+  mtext(do.call(expression, titleLines),
+        #adj = 0,
+        side=3,line=0:1)
+#  par(mai=c(1, 1, 1, 1))
+
+
 }
 
 #' @export
@@ -393,6 +422,7 @@ Go<- function()
     truemix[[i]]=compi
   }
   gendata<<-cbind(pp2$x,pp2$y)
+  n<<-nrow(gendata)
   if(Get_User_Input_sppmix("Apply truncation?"))
     truncated<<-TRUE
   else
@@ -450,11 +480,11 @@ Go<- function()
     FixLabels(gens,data1=gendata,truemix,1.1*maxz_height,
               m1=m,xlims1=xlims,ylims1=ylims)
   }
-  #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,31,FALSE,1,20,c(15,.01,3,2,1,1))
+  #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,FALSE,1,20,c(15,.01,3,2,1,1))
 
   if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
   {
-    gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
+    gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,FALSE,1,10,c(5,.01,3,2,1,1))
     if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
       PostGenBDMCMC_sppmix(gensBD,maxz_height)
   }
@@ -532,7 +562,7 @@ Demo_sppmix<- function()
   if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
   {
     if (m>1)
-      plot_ind(gens)
+      print(plot_ind(gens))
     zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
         100,xlims,ylims);
     mix_of_postmeans<<-#MakeMixtureList_sppmix(
@@ -576,11 +606,11 @@ Demo_sppmix<- function()
     FixLabels(gens,data1=gendata,truemix,1.1*maxz_height,
               m1=m,xlims1=xlims,ylims1=ylims)
   }
-  #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,31,FALSE,1,20,c(15,.01,3,2,1,1))
+  #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,FALSE,1,20,c(15,.01,3,2,1,1))
 
   if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
   {
-    gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,LL,FALSE,1,10,c(5,.01,3,2,1,1))
+    gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,FALSE,1,10,c(5,.01,3,2,1,1))
     if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
       PostGenBDMCMC_sppmix(gensBD,maxz_height)
   }
@@ -750,10 +780,10 @@ ShowChains<- function(genps,genmus,m=5)
 FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims1=c(0,10),burnin=1000)
 {
 #  z=sppmix::FixLabels(gens,truemix)
-  permgens<<-PostGenGetBestPerm_sppmix(allgens$allgens_List);
+  permgens<<-PostGenGetBestPerm_sppmix(allgens$allgens_List[(burnin+1):L]);
 #  permuted_means=GetAllMeans_sppmix(permgens$permuted_gens,burnin)
   mix_of_permuted_means=MakeMixtureList(permgens$permuted_gens,burnin);
-  mean_lambda<<-mean(allgens$genlamdas[burnin:L]);
+  mean_lambda<<-mean(allgens$genlamdas[(burnin+1):L]);
   PlotNormalMixture(mix1=mix_of_permuted_means,
     data1=data1,m1=m1,lamda1=mean_lambda,
     xlims1=xlims1,ylims1=ylims1,

@@ -15,7 +15,6 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
                      vec const& xlims,
                      vec const& ylims,
                      int const& L,
-                     int const& LL,
                      bool const& truncate,
                      double const& lamda,
                      double const& lamdab,
@@ -151,7 +150,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
   //    return List::create();
 //  Rcout << "passed2" << std::endl ;
   //setup grid for truncation
-  vec ticsx=zeros(LL),ticsy=zeros(LL);
+/*  vec ticsx=zeros(LL),ticsy=zeros(LL);
   for (i=0;i<LL;i++)
   {
     ticsx(i)=mins(0)+i*(maxs(0)-mins(0))/(LL-1);
@@ -161,7 +160,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
   for(j=0;j<LL-1;j++)
     for(i=0;i<LL-1;i++)
       areas(i,j)=(ticsx(i+1)-ticsx(i))*(ticsy(j+1)-ticsy(j));
-
+*/
   int pt1,indInf=0;//,countiter=0;
   //start MCMC
   Rcout << "Preliminaries done. Starting Birth-Death MCMC" << std::endl ;

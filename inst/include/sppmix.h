@@ -42,7 +42,6 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
                      vec const& xlims,
                      vec const& ylims,
                      int const& L,
-                     int const& LL,
                      bool const& truncate,
                      double const& lamda,
                      double const& lamdab,
@@ -100,7 +99,7 @@ vec GetCompDistr_sppmix(vec const& numcomp,int const& maxnumcomp);
 List GetBDCompRealiz_sppmix(List const& genBDmix,vec const& genlamdas,vec const& numcomp,int const& comp);
 mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat const& genzs,int const& m);
 bool Check4LabelSwitching_sppmix(vec const& chain);
-
+List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens);
 //Helper functions
 //file: HelperFuncs_sppmix.cpp
 double Factorial_sppmix(int x);
@@ -127,7 +126,7 @@ List GetMax_sppmix(vec const& v);
 double dNormal_sppmix(vec const& atx,vec const& mu,
                       mat const& sig);
 double Quad_sppmix(vec const& v,mat const& m);
-
+double dNormal1d_sppmix(double const& atx,double const& mu,double const& sigsq);
 //Functions that connect to other APIs
 //file: OtherAPIs_sppmix.cpp
 double ApproxBivNormProb_sppmix(vec const& xlims,

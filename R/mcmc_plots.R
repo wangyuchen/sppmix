@@ -66,18 +66,30 @@ plot_ind <- function(fit, burnin = length(fit$allgens_List) / 10) {
   zs <- GetAvgLabelsDiscrete2Multinomial_sppmix(fit$genzs[(burnin + 1):L, ], m)
   plot_df <- tidyr::gather(data.frame(zs, point = 1:nrow(zs)),
                            comp, probability, -point)
-  plot_df$component <- as.integer(gsub("X", "", plot_df$comp)) - 0.5
+  names(plot_df)[3]="Probability"
+  plot_df$component <- as.integer(gsub("X", "", plot_df$comp))# - 0.5
 
   ggplot2::qplot(point, component, data = plot_df, geom = "segment",
-                 col = probability, xend = point, yend = component + 1,
-                 size = I(5)) +
+                 col = Probability, xend = point, yend = component+.5 ,
+                 y=component-.5 ) +
     ggplot2::scale_color_gradient(low = "white", high = "black") +
-    ggplot2::coord_cartesian(ylim = c(.5, m + .5), xlim = c(0, nrow(zs) + 1)) +
+    #    ggplot2::coord_cartesian(ylim = c(.5, m + .5), xlim = c(0, nrow(zs) + 1)) +
     ggplot2::theme_classic() +
-    ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, size = 2)) +
-    ggplot2::scale_y_discrete() +
-    ggplot2::ggtitle("Plot of membership indicator")
+    ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, size = 1)) +
+    ggplot2::ylim(.5, m+.5) +
+    #    ggplot2::annotate("text", x = 2:3, y = 20:21, label = c("my label", "label 2"))+
+    #    ggplot2::xlim(.5,nrow(zs)+.5) +
+    ggplot2::scale_x_discrete(
+      #      limits=c(1,nrow(zs)),
+      breaks=seq(1,nrow(zs),length=5)
+      ,labels=waiver()
+    )+
+    ggplot2::coord_cartesian(xlim = c(-5, nrow(zs)+5 )) +
+    ggplot2::xlab("Point")+
+    ggplot2::ylab("Component")+
+    ggplot2::ggtitle("Membership indicators")
 }
+
 
 
 

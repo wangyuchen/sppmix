@@ -409,3 +409,81 @@ bool Check4LabelSwitching_sppmix(vec const& chain)
   return LabelSwitchingPresent;
 }
 
+//' @export
+// [[Rcpp::export]]
+List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
+{
+  //apply burnin before calling this function
+  //it uses the identifiability constraint
+  //p1<p2<p3<...<pm to permute all realizations
+  int i,j,k,L=allgens.size();
+  List permuted_gens(L),mix1=allgens[0];
+  int m=mix1.size();
+  cube permgenmus=zeros(m,2,L);
+  field<mat> permgensigmas(L,m);
+  mat permgenps=zeros(L,m);
+//  Rcout << "m="<<m<<std::endl ;
+//  Rcout << "L="<<L<<std::endl ;
+  vec cur_sig(4),mu1(2);
+  for(i=0;i<L;i++)
+  {
+    //get the vector that orders the ps
+    vec cur_ps=GetRealiz_ps_sppmix(allgens,i);
+    mat cur_mus=GetRealiz_mus_sppmix(allgens,i);
+    mat cur_sigmas=GetRealiz_sigmas_sppmix(allgens,i);
+//    Rcout << "passed"<<std::endl ;
+//    Rcout << "\ncur_ps="<< cur_ps.t()<<std::endl ;
+    vec dists(m),permind(m);
+    for(j=0;j<m;j++)
+    {
+      //find distance from origin and get ordering
+      mu1=cur_mus.row(j).t();
+      cur_sig=trans(cur_sigmas.row(j));
+      dists(j)=cur_ps(j)*cur_ps(j)+
+        mu1(0)*mu1(0)+mu1(1)*mu1(1)
+        +cur_sig(0)*cur_sig(0)
+        +cur_sig(1)*cur_sig(1)
+        +cur_sig(2)*cur_sig(2)
+        +cur_sig(3)*cur_sig(3);
+    }
+    uvec indices=sort_index(dists);// = sort_index(cur_ps);
+    //    Rcout << "\nindices="<< indices.t()<<std::endl ;
+    for(j=0;j<m;j++)
+    {
+      permind(j)=indices(j)+1;
+    }
+ //   Rcout << "passed"<<std::endl ;
+    vec perm_ps=Permute_vec_sppmix(cur_ps,permind);
+//    Rcout << "\nperm_ps="<< perm_ps.t()<<std::endl ;
+    //    Rcout << "passed1"<<std::endl ;
+    mat perm_mus=Permute_mat_sppmix(cur_mus,permind);
+ //   Rcout << "passed"<<std::endl ;
+    mat sig=zeros(2,2),perm_sigmas=Permute_mat_sppmix(cur_sigmas,permind);
+    List mix2(m);
+    for(j=0;j<m;j++)
+    {
+      sig(0,0)=perm_sigmas(j,0);
+      sig(0,1)=perm_sigmas(j,1);
+      sig(1,0)=perm_sigmas(j,2);
+      sig(1,1)=perm_sigmas(j,3);
+      //     Rcout << perm_mus.row(j)<< std::endl ;
+      mu1(0)=perm_mus(j,0);
+      mu1(1)=perm_mus(j,1);
+      //     Rcout << "passed2"<< std::endl ;
+      mix2[j]=List::create(
+        Named("p") = perm_ps(j),
+        Named("mu") = mu1,
+        Named("sigma") = sig);
+      permgensigmas(i,j)=sig;
+    }
+    permuted_gens[i]=mix2;
+    permgenps.row(i)=perm_ps.t();
+    permgenmus.slice(i)=perm_mus;
+  }
+  printf("\rDone                                                      \n");
+  return List::create(
+    Named("permuted_gens") = permuted_gens,
+    Named("permuted_ps") = permgenps,
+    Named("permuted_mus") = permgenmus,
+    Named("permuted_sigmas") = permgensigmas);
+}

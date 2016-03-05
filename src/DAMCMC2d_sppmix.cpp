@@ -19,8 +19,8 @@ List DAMCMC2d_sppmix(mat const& points,
   cube genmus=zeros(m,2,L);
   //all elements in the field are 2x2 matrices
   field<mat> gensigmas(L,m),geninvsigmas(L,m);
-  mat genz=zeros(L,n),genps=zeros(L,m),
-    consts=zeros(L,m);
+  mat genz=zeros(L,n),genps=zeros(L,m);
+  //  consts=zeros(L,m);
   vec meanps=zeros(m);
   mat meanmus=zeros(m,2);
   cube meansigmas=zeros(2,2,m);
@@ -108,7 +108,7 @@ List DAMCMC2d_sppmix(mat const& points,
 //    gensigmas(0,i)=kappainv;
 //    geninvsigmas(0,i)=kappa;//invmat2d_sppmix(gensigmas(0,i));
     genps(0,i)=1.0/m;
-    consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
+//    consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
   imat prevz,zmultinomial(n,m);
 //     Rcout <<"passed"<< std::endl ;
@@ -132,7 +132,7 @@ List DAMCMC2d_sppmix(mat const& points,
   //Rcout << zmultinomial<< std::endl ;
   //    return List::create();
 
-  double MHjump=0,ratio=1,sumd,approxcompj;//,quad;
+  double MHjump=0,ratio=1,sumd;//,approxcompj;//,quad;
   //setup grid for truncation
   int sum1;
 /*
@@ -332,11 +332,11 @@ List DAMCMC2d_sppmix(mat const& points,
         }//*/
           //        qij(j)=genps(i+1,j)*consts(i+1,j)*
 //          exp(-.5*Quad_sppmix(mutemp1,geninvsigmas(i+1,j)));
-/*        if (qij(j)>1.0f)
+ /*       if (qij(j)>1.0f)
         {
           Rcout <<"\ni="<<i<< std::endl ;
           Rcout <<"\ndet(gensigmas(i+1,j))="<<det(gensigmas(i+1,j))<< std::endl ;
-          Rcout <<"\nconsts(i+1,j)="<<consts(i+1,j)<< std::endl ;
+//          Rcout <<"\nconsts(i+1,j)="<<consts(i+1,j)<< std::endl ;
           Rcout <<"\ngenps(i+1,j)="<<genps(i+1,j)<< std::endl ;
           Rcout <<"\nquad="<<as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1))<< std::endl ;
           Rcout <<"\ndat="<<dat<< std::endl ;
@@ -348,11 +348,11 @@ List DAMCMC2d_sppmix(mat const& points,
         sumd=sumd+qij(j);
         //        Rcout << qij(dat,j)<< std::endl ;
       }
-/*      if (sumd>1.0f)
+  /*    if (sumd>1.0f)
       {
         Rcout <<"\n Error, model gives probability >1. Rerun with truncated set to TRUE, value="<<sumd<< std::endl ;
         return List::create();
-      }*/
+      }//*/
       qs=qij/sumd;
       //if(sum(qs)<1)
       //Rcout << sum(qs)<< std::endl ;

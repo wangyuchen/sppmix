@@ -424,13 +424,34 @@ List GetMax_sppmix(vec const& v)
     Named("pos") = pos);
 }
 
+//' @export
+// [[Rcpp::export]]
+double dNormal1d_sppmix(double const& atx,
+                        double const& mu,double const& sigsq)
+{
+  return exp(-.5*(atx-mu)*(atx-mu)/sigsq)/sqrt(2*3.141593*sigsq);
+}
 
 //' @export
 // [[Rcpp::export]]
 double dNormal_sppmix(vec const& atx,vec const& mu,
                       mat const& sig)
 {
-  vec v(2);
+  double rho=sig(0,1)/sqrt(sig(0,0)*sig(1,1));
+/*  Rcout <<"\nrho="<<rho<< std::endl ;
+  double val1=dNormal1d_sppmix(atx(0),mu(0),sig(0,0));
+  double val2=dNormal1d_sppmix(atx(1),
+    mu(1)+rho*sqrt(sig(1,1)/sig(0,0))*
+    (atx(0)-mu(0)),sig(1,1)*(1-rho*rho));
+  Rcout <<"\nval1="<<val1<< std::endl ;
+  Rcout <<"\nval2="<<val2<< std::endl ;
+  Rcout <<"\nval1*val2="<<val1*val2<< std::endl ;
+  return val1*val2;*/
+  return dNormal1d_sppmix(atx(0),mu(0),sig(0,0))*
+    dNormal1d_sppmix(atx(1),
+    mu(1)+rho*sqrt(sig(1,1)/sig(0,0))*
+      (atx(0)-mu(0)),sig(1,1)*(1-rho*rho));
+/*  vec v(2);
   v(0)=atx(0)-mu(0);
   v(1)=atx(1)-mu(1);
   double detsig=sig(0,0)*sig(1,1)-sig(0,1)*sig(1,0);
@@ -439,7 +460,22 @@ double dNormal_sppmix(vec const& atx,vec const& mu,
   invsig(0,1)=-sig(0,1)/detsig;
   invsig(1,0)=-sig(1,0)/detsig;
   invsig(1,1)=sig(0,0)/detsig;
-  return exp(-.5*Quad_sppmix(v,invsig))
-    /(2*datum::pi*sqrt(detsig));
+  */
+ // double logdens=-log(2*datum::pi)-
+//    .5*log(detsig)-.5*Quad_sppmix(v,invsig);
+//  return exp(logdens);
+ // if(detsig<0.001)
+//    Rcout <<"\nnear singular sigma, detsig="<<detsig<< std::endl ;
+//  return exp(-.5*Quad_sppmix(v,invsig))/(2*3.141593*sqrt(detsig));
+//  mat q=v.t()*invmat2d_sppmix(sig)*v;
+//  return exp(-.5*q(0,0))/sqrt(det(2*3.141593*sig));
+//Rcout <<"\nrho="<<rho<< std::endl ;
+//Rcout <<"\ndetsig="<<detsig<< std::endl ;
+//double val=exp(-.5*((v(0)*v(0)/sig(0,0)
+//  +v(1)*v(1)/sig(1,1))-2*rho*v(0)*v(1)/
+//  sqrt(sig(0,0)*sig(1,1)))/(1-rho*rho))
+//  /(2*3.141593*sqrt(sig(0,0)*sig(1,1)*(1-rho*rho)));
+//return val;
 }
+
 

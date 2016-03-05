@@ -115,7 +115,7 @@ vec rDirichlet_sppmix(vec const& d){
   for(int i=0;i<k;i++)
   {
     gens(i)=//Rcpp::rgamma(1,d(i),1)[0];//shape,scale
-      Rcpp::rgamma(1,d(i),1/d(i))[0];//shape,scale
+      Rcpp::rgamma(1,d(i),d(i))[0];//shape,scale
       //rExp_sppmix(1.0/d(i));
     sumd+=gens(i);
   }
