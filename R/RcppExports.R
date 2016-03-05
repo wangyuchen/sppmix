@@ -22,8 +22,8 @@ ApproxBayesianModelAvgIntensity_sppmix <- function(genBDmix, lamdas, numcomp, di
 }
 
 #' @export
-BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, LL, truncate, lamda, lamdab, hyper) {
-    .Call('sppmix_BDMCMC2d_sppmix', PACKAGE = 'sppmix', maxnumcomp, data, xlims, ylims, L, LL, truncate, lamda, lamdab, hyper)
+BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, truncate, lamda, lamdab, hyper) {
+    .Call('sppmix_BDMCMC2d_sppmix', PACKAGE = 'sppmix', maxnumcomp, data, xlims, ylims, L, truncate, lamda, lamdab, hyper)
 }
 
 #' @export
@@ -147,6 +147,11 @@ GetMax_sppmix <- function(v) {
 }
 
 #' @export
+dNormal1d_sppmix <- function(atx, mu, sigsq) {
+    .Call('sppmix_dNormal1d_sppmix', PACKAGE = 'sppmix', atx, mu, sigsq)
+}
+
+#' @export
 dNormal_sppmix <- function(atx, mu, sig) {
     .Call('sppmix_dNormal_sppmix', PACKAGE = 'sppmix', atx, mu, sig)
 }
@@ -199,6 +204,11 @@ GetAvgLabelsDiscrete2Multinomial_sppmix <- function(genzs, m) {
 #' @export
 Check4LabelSwitching_sppmix <- function(chain) {
     .Call('sppmix_Check4LabelSwitching_sppmix', PACKAGE = 'sppmix', chain)
+}
+
+#' @export
+PostGenGetBestPermIdenConstraint_sppmix <- function(allgens) {
+    .Call('sppmix_PostGenGetBestPermIdenConstraint_sppmix', PACKAGE = 'sppmix', allgens)
 }
 
 #' @export

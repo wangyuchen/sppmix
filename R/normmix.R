@@ -7,8 +7,8 @@
 #'  center of each component.
 #' @param sigmas A list where every element is a 2 by 2 covariance matrix,
 #' defining the covariance for each component.
-#' @param lambda optional parameter of average intensity. If set, the returned
-#' object will be an intensity surface.
+#' @param lambda optional parameter of theoretical average number of points.
+#' If set, the returned object will be an intensity surface.
 #' @param win optional parameter of domain. Must be set with intensity value to
 #' create an intensity surface.
 #'
@@ -170,7 +170,18 @@ rnormmix <- function(m, sig0, sigdf,
 
   normmix(ps, mus, sigmas)
 }
-
+#' Convert normmix object to intensity_surface object or change lambda or window
+#' for intensity_surface object
+#'
+#' @param mix object with class normmix or intensity_surface. See Detail and Example.
+#' @param lambda optional parameter of average intensity.
+#' @param win optional parameter of domain.
+#'
+#' @details
+#' If the class of mix is normmix, lambda and win are used to convert mix to an
+#' intensity surface class. If the class of mix is intensity_surface, lambda
+#' and win are used to change the original setting of lambda and win.
+#'
 #' @export
 to_int_surf <- function(mix, lambda = NULL, win = NULL) {
   if (is.intensity_surface(mix)) {

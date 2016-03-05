@@ -38,7 +38,7 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
    mean_mat <- function(mats) Reduce("+", mats) / length(mats)
    sigmas <- apply(permgens$permuted_sigmas[-(1:burnin), ], 2, mean_mat)
 
-   mean_lambda <- mean(gens$genlamdas[burnin:L])
+   mean_lambda <- mean(gens$genlamdas[(burnin + 1):L])
 
    post_mus <- post_sigmas <- vector("list", m)
    for (i in 1:m) {

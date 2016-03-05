@@ -7,14 +7,14 @@
 rsppmix(intsurf, truncate = TRUE, lambda, win)
 }
 \arguments{
+\item{intsurf}{Object of class intensity_surface}
+
 \item{truncate}{Whether to truncate the points outside the domain,
 default to TRUE.}
 
 \item{lambda}{Intensity of the spatial point pattern}
 
 \item{win}{Object of class spatstat::owin}
-
-\item{mix}{Object of class normmix}
 }
 \value{
 A point pattern of class \code{c("sppmix", "ppp")}.
@@ -36,16 +36,13 @@ domain, it will generate another \code{n} points until there are more than
   the generated spatial point pattern.
 }
 \examples{
-# generate a mixture with given ps, mus and sigmas
-mix1 <- normmix(ps=c(.5, .5),
+# generate a intensity surface
+intsurf1 <- normmix(ps=c(.5, .5),
                 mus=list(c(.2, .2), c(.7, .7)),
-                sigmas=list(.01*diag(2), .02*diag(2)))
-rsppmix(200, mix1, spatstat::square(1))
-
-# Using different window
-rsppmix(200, mix1, spatstat::square(2))
+                sigmas=list(.01*diag(2), .02*diag(2)), 200, square(1))
+rsppmix(intsurf1)
 
 # If truncate = FALSE it will generate points outside the window
-rsppmix(200, mix1, spatstat::square(1), truncate = FALSE)
+rsppmix(intsurf1, truncate = FALSE)
 }
 

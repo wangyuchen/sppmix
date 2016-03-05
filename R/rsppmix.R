@@ -3,7 +3,7 @@
 #' Generate a spatial point pattern from a given mixture with normal components.
 #'
 #' @param lambda Intensity of the spatial point pattern
-#' @param mix Object of class normmix
+#' @param intsurf Object of class intensity_surface
 #' @param win Object of class spatstat::owin
 #' @param truncate Whether to truncate the points outside the domain,
 #' default to TRUE.
@@ -23,17 +23,14 @@
 #' @return A point pattern of class \code{c("sppmix", "ppp")}.
 #' @export
 #' @examples
-#' # generate a mixture with given ps, mus and sigmas
-#' mix1 <- normmix(ps=c(.5, .5),
+#' # generate a intensity surface
+#' intsurf1 <- normmix(ps=c(.5, .5),
 #'                 mus=list(c(.2, .2), c(.7, .7)),
-#'                 sigmas=list(.01*diag(2), .02*diag(2)))
-#' rsppmix(200, mix1, spatstat::square(1))
-#'
-#' # Using different window
-#' rsppmix(200, mix1, spatstat::square(2))
+#'                 sigmas=list(.01*diag(2), .02*diag(2)), 200, square(1))
+#' rsppmix(intsurf1)
 #'
 #' # If truncate = FALSE it will generate points outside the window
-#' rsppmix(200, mix1, spatstat::square(1), truncate = FALSE)
+#' rsppmix(intsurf1, truncate = FALSE)
 
 
 rsppmix <- function(intsurf, truncate = TRUE, lambda, win) {
@@ -41,7 +38,7 @@ rsppmix <- function(intsurf, truncate = TRUE, lambda, win) {
   if (!is.intensity_surface(intsurf)) {
     if (!is.normmix(intsurf)) stop("mix must be an object of class normmix.")
     stopifnot(missing(lambda) | missing(win))
-    intsurf <- xxxxxfunction(intsurf, lambda, win)
+    intsurf <- to_int_surf(intsurf, lambda, win)
   }
 
   win <- intsurf$window

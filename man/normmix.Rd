@@ -21,8 +21,8 @@ center of each component.}
 \item{sigmas}{A list where every element is a 2 by 2 covariance matrix,
 defining the covariance for each component.}
 
-\item{lambda}{optional parameter of average intensity. If set, the returned
-object will be an intensity surface.}
+\item{lambda}{optional parameter of theoretical average number of points.
+If set, the returned object will be an intensity surface.}
 
 \item{win}{optional parameter of domain. Must be set with intensity value to
 create an intensity surface.}
