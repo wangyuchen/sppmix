@@ -37,7 +37,7 @@ rsppmix <- function(intsurf, truncate = TRUE, lambda, win) {
 
   if (!is.intensity_surface(intsurf)) {
     if (!is.normmix(intsurf)) stop("mix must be an object of class normmix.")
-    stopifnot(missing(lambda) | missing(win))
+    stopifnot(!missing(lambda) & !missing(win))
     intsurf <- to_int_surf(intsurf, lambda, win)
   }
 

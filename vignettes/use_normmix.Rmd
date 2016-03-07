@@ -36,20 +36,26 @@ mix1
 ```
 
 
-It will be of class ```normmix```, and there's some default S3 methods associated with it. You've already seen the ```print``` method, where it only tells you how many component you have. To know more details, you can use the ```summary``` method.
+It will be of class ```normmix```, and there's some default S3 methods associated with it. If you want more details on the normal mixture, you can use the ```summary``` method. It will give you every piece of information about the normal mixture. 
 
 ```{r}
 summary(mix1)
 ```
 
-
-It prints out the $\mu$'s but still not the $\Sigma$'s. You can also use ```is.normmix``` to test if an object is a valid normal mixture.
-
 ## Create Intensity surface
-A normal mixture is just a step away from an intensity surface. In most 
-situations, you may have a intensity value $lambda$ associated with the normal
-mixture. An intensity value indicates how many points the normal mixture will 
-have on average if a domain is defined. 
+An intensity surface generated from the normal mixture is another data structure that we use in this package. For an intensity surface, it will need a region and an average number of points over the region besides the normal mixture.
+
+To create an intensity surface, you'll need two more additional parameters to  ```normmix()``` function: the average number of points ```lambda``` and an window object of class ```spatstat::owin()```. 
+
+```{r}
+intsurf1 <- normmix(ps = c(.3, .7),
+                    mus = list(c(0.2, 0.2), c(.8, .8)),
+                    sigmas = list(.01*diag(2), .01*diag(2)),
+                    lambda = 100,
+                    win = square(1))
+intsurf1
+
+```
 
 
 
@@ -74,7 +80,7 @@ mix3
 After you created a normal mixture, you may want to simulate a point pattern from it. You could do it with ```rsppmix```. 
 
 ```{r}
-pp1 <- rsppmix(50, mix1, square(1))
+pp1 <- rsppmix(mix1, lambda = 50, win = square(1))
 pp1
 ```
 
