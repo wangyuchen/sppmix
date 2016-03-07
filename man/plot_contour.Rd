@@ -4,12 +4,11 @@
 \alias{plot_contour}
 \title{Plot contour for intensity surface}
 \usage{
-plot_contour(mix, pattern, win = Window(pattern), L = 100,
-  title = "Mixture intensity with", points = TRUE, filled = TRUE,
-  truncate = TRUE, ...)
+plot_contour(intsurf, pattern, win = intsurf$window, L = 256,
+  title = "Mixture intensity with", filled = TRUE, truncate = TRUE, ...)
 }
 \arguments{
-\item{mix}{Object of class \code{\link{normmix_intensity}}.}
+\item{intsurf}{Object of class \code{\link{intensity_surface}}.}
 
 \item{pattern}{Object of class \code{\link{ppp}}}
 
@@ -18,9 +17,6 @@ plot_contour(mix, pattern, win = Window(pattern), L = 100,
 \item{L}{number of grids on each coordinate.  The default is L=100.}
 
 \item{title}{title for the contour plot.}
-
-\item{points}{Logical flag indicating whether plot realizations, i.e.
-locations, with the contour plot. The default is TRUE.}
 
 \item{filled}{Logical flag indicating whether plot filled contour plot.
 The default is TRUE.}
@@ -36,12 +32,12 @@ on it.
 }
 \examples{
 # generate a mixture with given ps, mus and sigmas
-mix1 <- normmix(ps=c(.5, .5),
+intsurf1 <- normmix(ps=c(.5, .5),
                 mus=list(c(.2, .2), c(.7, .7)),
                 sigmas=list(.01*diag(2), .02*diag(2)))
-# generate a realization from mixture mix1
-pp1 <- rsppmix(200, mix1, spatstat::square(1))
+# generate a realization from mixture intsurf1
+pp1 <- rsppmix(200, intsurf1, spatstat::square(1))
 # plot the theoretical intensity surface with a realization
-plot_contour(mix1,pp1,spatstat::square(1))
+plot_contour(intsurf1,pp1,spatstat::square(1))
 }
 

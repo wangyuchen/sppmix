@@ -60,6 +60,7 @@ mc_gof <- function(pp, intsurf, alpha, L = 5000, burnin = L/10,
     mus <- split(post$genmus[, , (i+burnin)], 1:m)
     sigma <- post$gensigmas[(i+burnin), ]
     mix_real <- normmix(ps, mus, sigma, lambda = lambda, win = win)
+    ow <- options("warn")
     options(warn = -1)
     pp_pred <- rsppmix(mix_real, truncate = truncate)
     options(ow)

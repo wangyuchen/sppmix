@@ -4,12 +4,12 @@
 \alias{plot.intensity_surface}
 \title{Plot mixture density.}
 \usage{
-\method{plot}{intensity_surface}(mix, win = mix$window, L = 100,
+\method{plot}{intensity_surface}(intsurf, win = intsurf$window, L = 100,
   title1 = "Poisson Process Intensity", truncate = TRUE, zlims = c(0, 0),
   pos = c(0, 0, 0), grayscale = FALSE, ...)
 }
 \arguments{
-\item{mix}{An object of class \code{\link{intensity_surface}}.}
+\item{intsurf}{An object of class \code{\link{intensity_surface}}.}
 
 \item{win}{An object of class \code{\link[spatstat]{owin}}.}
 
@@ -33,8 +33,8 @@ Plot the density surface of a mixture.
 }
 \examples{
 if (require(spatstat)) {
-  mix1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
-  plot(mix1, 100, square(2))
+  intsurf1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
+  plot(intsurf1)
 }
 }
 
