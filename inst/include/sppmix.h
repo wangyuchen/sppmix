@@ -58,7 +58,7 @@ int rBinom_sppmix(int const& n,double const& p);
 //double rGamma_sppmix(double const& a,double const& b);
 double rExp_sppmix(double const& a);
 vec rDirichlet_sppmix(vec const& d);
-ivec rMultinomial_sppmix(int const& n,vec const& ps);
+vec rMultinomial_sppmix(int const& n,vec const& ps);
 List rNormMix_sppmix(int const& lamda,List const& mix);
 vec rPerm_sppmix(int const& n);
 

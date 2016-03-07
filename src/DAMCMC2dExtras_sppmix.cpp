@@ -114,9 +114,9 @@ List DAMCMC2dExtras_sppmix(mat const& points,
     genps(0,i)=1.0/m;
 //    consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
-  imat prevz,sumz(n,m),zmultinomial(n,m);
+  mat prevz,sumz(n,m),zmultinomial(n,m);
   mat zhats(n,m),zhatsprev(n,m);
-  sumz=zeros<imat>(n,m);
+  sumz=zeros<mat>(n,m);
 //     Rcout <<"passed"<< std::endl ;
   if(m==1)
     for (dat=0;dat<n;dat++)
@@ -412,7 +412,7 @@ List DAMCMC2dExtras_sppmix(mat const& points,
       if (m>1)
         zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qs),1,m);
       else
-        zmultinomial.row(dat)=ones<ivec>(m);
+        zmultinomial.row(dat)=ones<vec>(m);
 //            Rcout << sum(zmultinomial.row(dat))<< std::endl ;
     }
     ratio=1;

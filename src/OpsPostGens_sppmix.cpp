@@ -413,24 +413,29 @@ bool Check4LabelSwitching_sppmix(vec const& chain)
 // [[Rcpp::export]]
 List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
 {
+  //allgens is all of the List output from DAMCMC
   //apply burnin before calling this function
   //it uses the identifiability constraint
-  //p1<p2<p3<...<pm to permute all realizations
-  int i,j,k,L=allgens.size();
-  List permuted_gens(L),mix1=allgens[0];
-  int m=mix1.size();
+  //to permute all realizations
+  List allgens_List=allgens[0];
+  int i,j,k,L=allgens_List.size();
+//    Rcout << "L="<<L<<std::endl ;
+  List permuted_gens(L),mix1=allgens_List[0];
+  mat allgens_zs=allgens[4];
+  int m=mix1.size(),n=allgens_zs.n_cols;
   cube permgenmus=zeros(m,2,L);
   field<mat> permgensigmas(L,m);
   mat permgenps=zeros(L,m);
+  mat permgenzs=zeros(L,n);
 //  Rcout << "m="<<m<<std::endl ;
 //  Rcout << "L="<<L<<std::endl ;
   vec cur_sig(4),mu1(2);
   for(i=0;i<L;i++)
   {
     //get the vector that orders the ps
-    vec cur_ps=GetRealiz_ps_sppmix(allgens,i);
-    mat cur_mus=GetRealiz_mus_sppmix(allgens,i);
-    mat cur_sigmas=GetRealiz_sigmas_sppmix(allgens,i);
+    vec cur_ps=GetRealiz_ps_sppmix(allgens_List,i);
+    mat cur_mus=GetRealiz_mus_sppmix(allgens_List,i);
+    mat cur_sigmas=GetRealiz_sigmas_sppmix(allgens_List,i);
 //    Rcout << "passed"<<std::endl ;
 //    Rcout << "\ncur_ps="<< cur_ps.t()<<std::endl ;
     vec dists(m),permind(m);
@@ -485,5 +490,6 @@ List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
     Named("permuted_gens") = permuted_gens,
     Named("permuted_ps") = permgenps,
     Named("permuted_mus") = permgenmus,
-    Named("permuted_sigmas") = permgensigmas);
+    Named("permuted_sigmas") = permgensigmas,
+    Named("permuted_zs") = permgenzs);
 }

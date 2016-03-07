@@ -115,8 +115,9 @@ vec rDirichlet_sppmix(vec const& d){
   for(int i=0;i<k;i++)
   {
     gens(i)=//Rcpp::rgamma(1,d(i),1)[0];//shape,scale
-      Rcpp::rgamma(1,d(i),d(i))[0];//shape,scale
-      //rExp_sppmix(1.0/d(i));
+      Rcpp::rgamma(1,d(i),1)[0];//shape,scale
+//    Rcpp::rgamma(1,d(i),1/d(i))[0];//shape,scale
+    //rExp_sppmix(1.0/d(i));
     sumd+=gens(i);
   }
   return gens/sumd;
@@ -124,9 +125,9 @@ vec rDirichlet_sppmix(vec const& d){
 
 //' @export
 // [[Rcpp::export]]
-ivec rMultinomial_sppmix(int const& n,vec const& ps){
+vec rMultinomial_sppmix(int const& n,vec const& ps){
   int j,i,k=ps.size();
-  ivec gen = zeros<ivec>(k) ;
+  vec gen = zeros<vec>(k) ;
   //  if(sum(p)<1)
   //    Rcout << "\n"<<p<<","<<sum(p) << std::endl ;
   gen(0)=//Rcpp::rbinom(1,n,ps(0))[0];//

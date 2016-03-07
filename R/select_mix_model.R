@@ -1,6 +1,59 @@
+#' Mixture Model Selection
+#'
+#' Finds the best number of components by computing
+#' model selection criteria, including
+#' AIC (Akaike Information Criterion),
+#' BIC (Bayesian Information Criterion),
+#' ICLC (Integrated Classification Likelihood Criterion),
+#' and the Bayes factors of models with different
+#' number of components against each other.
+#' The entertained model is based on the posterior means
+#' of MCMC runs, for several numbers of components
+#' defined in the vector Ms.
+#' @inheritParams
+#' @param runallperms Set to 0 to use an approximation to the
+#' Likelihood and Entropy within the MCMC (not affected by label switching).
+#' Set to 1 to use an identifiability constraint
+#' in order to remove label switching from the posterior
+#' means. Set to 2 to run through all permutations and use decision
+#' theory (minimize squared error loss) to obtain
+#' the best permutation and then compute the posterior
+#' means (BEST approach, but very slow operation). The default is 0.
+#' @return A list containing the following components:
+#' \item{AIC}{the values of the AIC criterion}
+#' \item{BIC}{the values of the BIC criterion}
+#' \item{ICLC}{the values of the ICLC criterion}
+#' \item{BayesFactor}{a matrix with all the Bayes Factors}
+#' \item{Marginal}{the values of the marginal density}
+#' \item{LogLikelihood}{the values of the LogLikelihood}
+#'
+#' @references McLachlan, G., and Peel, D. (2000). Finite Mixture Models. Wiley-Interscience.
+#'
+#' Jasra, A., Holmes, C.C. and Stephens, D. A. (2005). Markov Chain Monte Carlo Methods and the Label Switching Problem in Bayesian Mixture. Statistical Science, 20, 50-67.
+#'
+#' @author Sakis Micheas, Jiaxun Chen, Yuchen Wang
 #' @export
+#' @examples
+#' # create the true mixture
+#' truemix <- normmix(ps=c(.2, .6,.2), mus=list(c(0.3, 0.3), c(0.7, 0.7), c(0.5, 0.5)),
+#' sigmas = list(.005*diag(2), .001*diag(2), .001*diag(2)))
+#' # generate the point pattern
+#' genPPP <- rsppmix(100,truemix,square(1))
+#' plot(genPPP)
+#' # compute model selection criteria
+#' ModelSel=selectMix(genPPP,1:5,runallperms=0)
+#' # show info
+#' ModelSel
+#' ModelSel=selectMix(genPPP,1:5,runallperms=1)
+#' # show info
+#' ModelSel
+#' ModelSel=selectMix(genPPP,1:5,runallperms=2)
+#' # show info
+#' ModelSel
 selectMix <- function(pp, Ms, L = 10000, burnin = 1000,
-                      truncate = FALSE) {
+                      truncate = FALSE,
+                      runallperms=0)
+{
   if (any(Ms < 1)) {
     stop("Operation exited. Must have at least 1 component.")
   }
@@ -17,7 +70,7 @@ selectMix <- function(pp, Ms, L = 10000, burnin = 1000,
   {
 #   post_real<-est_mix_damcmc(pp, m = Ms[m], L = L,truncate = truncate)
     cat(paste("\n================ # Components=",Ms[m],"===============\n"))
-    if(1)
+    if(runallperms==0)
     {
       # Start the clock!
       ptm1 <- proc.time()
@@ -32,33 +85,57 @@ selectMix <- function(pp, Ms, L = 10000, burnin = 1000,
     loglikelihood[m]=post_real$LogLikelihood;
     }
     else
-    {#too damn slow, forget about it
-    post_real<-DAMCMC2d_sppmix(cbind(pp$x, pp$y),
-     Window(pp)$xrange,Window(pp)$yrange,Ms[m],L,
-     truncate,c(3,1,1))
-    meanlamda=mean(post_real$genlamdas[(burnin+1):L])
-    real <- FixLS_da(post_real)
-    marginal[m] <- normmix_marginal(real, burnin = burnin)
-    post_est <- get_post(real)
-    mlambda <- post_est$mean_lambda
-    mix <- vector("list", m)
-    for(i in 1:Ms[m]){
-      mix[[i]]=list(p = post_est$post_normmix$ps[i],
-                    mu = post_est$post_normmix$mus[[i]],
-                    sigma = post_est$post_normmix$sigmas[[i]]);
-    }
-    den <-densNormMix_atxy_sppmix(pattern, mix)
+    {
+      # Start the clock!
+      ptm1 <- proc.time()
+      post_real<-DAMCMC2d_sppmix(cbind(pp$x, pp$y),
+       Window(pp)$xrange,Window(pp)$yrange,Ms[m],L,
+       truncate,c(3,1,1))
+      # Stop the clock
+      ptm<-proc.time() - ptm1
+      cat(paste("\nComputation time in seconds:",ptm[[1]],"\n"))
+      meanlamda=mean(post_real$genlamdas[(burnin+1):L])
+    if(runallperms==2)
+      real<<-PostGenGetBestPerm_sppmix(post_real$allgens_List)
+    else
+      real<<-PostGenGetBestPermIdenConstraint_sppmix(post_real)
+#    marginal[m] <-  normmix_marginal(real, burnin = burnin)
+#get the marginal
+    cat("Calculating the entropy and the marginal...")
+    if(runallperms==2)
+      den <-sapply( real$permuted_gens[(burnin+1):L], densNormMix_atxy_sppmix, atxy = pattern)
+    else
+      den <-sapply( real$allgens_List[(burnin+1):L], densNormMix_atxy_sppmix, atxy = pattern)
+    logden <- log(den)
+    sumlogden <- colSums(logden)
+    marginal[m] <- sum(exp(sumlogden))
 
-#    cat("\npassed")
+#    post_est <- get_post(real)
+    if(runallperms==2)
+      mix_of_postmeans<<-MakeMixtureList(
+        real$permuted_gens,burnin)
+    else
+      mix_of_postmeans<<-MakeMixtureList(
+        real$allgens_List,burnin)
+    den <-densNormMix_atxy_sppmix(pattern, mix_of_postmeans)
+
     loglikelihood[m] <- -lognfac + n*log(meanlamda) - meanlamda +
       sum(log(den))
 
+#    cat("\npassed")
+    if(runallperms==2)
+    #use best permutation on the z's
+      permuted_genzs=PermuteZs_sppmix(
+        post_real$genzs ,real$best_perm)
+    else
+      permuted_genzs=post_real$genzs;
     zs <- GetAvgLabelsDiscrete2Multinomial_sppmix(
-      post_real$genzs[(burnin + 1):L, ], Ms[m])
+      permuted_genzs[(burnin + 1):L, ], Ms[m])
     zsn0 <- zs[zs!=0]
     entropy <- sum(-zsn0*log(zsn0))
+    cat(" Done\n")
 #    marginal[m] <- normmix_marginal(permgens$permuted_gens, burnin = burnin)
-    cat("\npassed1")
+#    cat("\npassed1")
     }
     r <-6 * Ms[m]
     AIC[m] <- 2 * r - 2 * loglikelihood[m]

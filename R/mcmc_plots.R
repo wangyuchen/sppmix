@@ -93,6 +93,7 @@ plot_ind <- function(fit, burnin = length(fit$allgens_List) / 10) {
 
 
 
+
 #' Plot the average intensity surface
 #'
 #' Plot the average of the posterior realizations for the intensity surface

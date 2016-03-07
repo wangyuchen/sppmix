@@ -20,7 +20,7 @@ List DAMCMC2d_sppmix(mat const& points,
   //all elements in the field are 2x2 matrices
   field<mat> gensigmas(L,m),geninvsigmas(L,m);
   mat genz=zeros(L,n),genps=zeros(L,m);
-  //  consts=zeros(L,m);
+  mat consts=zeros(L,m);
   vec meanps=zeros(m);
   mat meanmus=zeros(m,2);
   cube meansigmas=zeros(2,2,m);
@@ -108,9 +108,9 @@ List DAMCMC2d_sppmix(mat const& points,
 //    gensigmas(0,i)=kappainv;
 //    geninvsigmas(0,i)=kappa;//invmat2d_sppmix(gensigmas(0,i));
     genps(0,i)=1.0/m;
-//    consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
+    consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
-  imat prevz,zmultinomial(n,m);
+  mat prevz,zmultinomial(n,m);
 //     Rcout <<"passed"<< std::endl ;
   if(m==1)
     for (dat=0;dat<n;dat++)
@@ -293,8 +293,8 @@ List DAMCMC2d_sppmix(mat const& points,
       else
         approx[j]=1;
 //      approx[j]=approxcompj;
-//      consts(i+1,j)=1.0/(approxcompj*
- //       sqrt(det(2*datum::pi*gensigmas(i+1,j))));
+      consts(i+1,j)=1.0/(approx[j]*
+        sqrt(det(2*datum::pi*gensigmas(i+1,j))));
     }
     //sample component probs
     genps.row(i+1)=rDirichlet_sppmix(ds).t();
@@ -316,22 +316,22 @@ List DAMCMC2d_sppmix(mat const& points,
         //        Rcout << genmutemp<< std::endl ;
         //        Rcout << data.row(dat)<< std::endl ;
         //        mutemp1=data.row(dat)-genmutemp;
-//        mutemp1(0)=data(dat,0)-genmus(j,0,i+1);
-//        mutemp1(1)=data(dat,1)-genmus(j,1,i+1);
         //        quad=as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1));
         //        Rcout << quad<< std::endl ;
         //        Rcout << mutemp1<< std::endl ;
-        mu1(0)=genmus(j,0,i+1);
+/*        mu1(0)=genmus(j,0,i+1);
         mu1(1)=genmus(j,1,i+1);
         qij(j)=genps(i+1,j)*dNormal_sppmix(data.row(dat).t(),
-                mu1,gensigmas(i+1,j))/approx[j];
+                mu1,gensigmas(i+1,j))/approx[j];*/
 /*        if (det(gensigmas(i+1,j))<0.000001)
         {
           Rcout <<i<< std::endl ;
           singularities=true;
         }//*/
-          //        qij(j)=genps(i+1,j)*consts(i+1,j)*
-//          exp(-.5*Quad_sppmix(mutemp1,geninvsigmas(i+1,j)));
+        mu1(0)=data(dat,0)-genmus(j,0,i+1);
+        mu1(1)=data(dat,1)-genmus(j,1,i+1);
+        qij(j)=genps(i+1,j)*consts(i+1,j)*
+          exp(-.5*Quad_sppmix(mu1,geninvsigmas(i+1,j)));
  /*       if (qij(j)>1.0f)
         {
           Rcout <<"\ni="<<i<< std::endl ;
@@ -360,7 +360,7 @@ List DAMCMC2d_sppmix(mat const& points,
       if (m>1)
         zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qs),1,m);
       else
-        zmultinomial.row(dat)=ones<ivec>(m);
+        zmultinomial.row(dat)=ones<vec>(m);
 //      zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qs),1,m);
       //      zmultinomial.row(dat)=reshape(rMultinomial_sppmix(1,qij/sum(qij)),1,m);
 //            Rcout << sum(zmultinomial.row(dat))<< std::endl ;
