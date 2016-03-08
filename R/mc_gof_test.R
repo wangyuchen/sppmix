@@ -50,9 +50,9 @@ mc_gof <- function(pp, intsurf, alpha, L = 5000, burnin = L/10,
   # get posterior realizations
   post <- est_mix_damcmc(pp = pp, m = m, truncate = truncate, L = L)
   # post_mix <- get_post(post)
-  T_max <- rep(0,L)
-  T_mean <- rep(0,L)
-  T_var <- rep(0,L)
+  T_max <- rep(0, (L - burnin))
+  T_mean <- rep(0, (L - burnin))
+  T_var <- rep(0, (L - burnin))
   # get posterior predictive sample
   for (i in 1:(L-burnin)) {
     lambda <- post$genlamdas[i+burnin]
@@ -75,7 +75,7 @@ mc_gof <- function(pp, intsurf, alpha, L = 5000, burnin = L/10,
     }
     for (k in ind) {
       ppk <- pp_pred[pp_pred$comp == k]
-      distk <- rowSums((cbind(ppk$x, ppk$y) - mus[[k]])^2)
+      distk <- sqrt(rowSums((cbind(ppk$x, ppk$y) - mus[[k]])^2))
       summean <- summean + mean(distk)
       summax <- summax + max(distk)
       sumvar <- sumvar + var(distk)
@@ -94,7 +94,7 @@ mc_gof <- function(pp, intsurf, alpha, L = 5000, burnin = L/10,
   probz <- GetAvgLabelsDiscrete2Multinomial_sppmix(post$genzs[(burnin + 1):L, ],
                                                    m)
     for (j in 1:m) {
-    distj <- probz[, j]*rowSums((cbind(pp$x, pp$y) - intsurf$mus[[k]])^2)
+    distj <- probz[, j]*sqrt(rowSums((cbind(pp$x, pp$y) - intsurf$mus[[j]])^2))
     summean <- summean + mean(distj)
     summax <- summax + max(distj)
     sumvar <- sumvar + var(distj)
