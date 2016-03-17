@@ -96,7 +96,7 @@ print.summary_normmix <- function(mix_df) {
          cat("Component", i, "is centered at", "[",
              round(mu[comp == i][1], 2), ",", round(mu[comp == i][2], 2), "]",
              "with probability", round(ps[comp == i][1], 4), "\n")
-         prmatrix(mix_df[comp == i, 4:5], rowlab = rep("", 2),
+         prmatrix(round(mix_df[comp == i, 4:5], 4), rowlab = rep("", 2),
                   collab = c("covariance", "matrix:"))
        }
   )
@@ -109,7 +109,7 @@ summary.normmix <- function(mix) {
   comps <- vector("list", mix$m)
   for (i in 1:mix$m) {
     comps[[i]] <- data.frame(comp = i, ps = mix$ps[[i]],
-               mu = mix$mus[[i]], sigma = mix$sigmas[[i]])
+                             mu = mix$mus[[i]], sigma = mix$sigmas[[i]])
   }
   RVAL <- do.call(rbind, comps)
   class(RVAL) <- c("summary_normmix", oldClass(RVAL))
@@ -135,7 +135,7 @@ summary.intensity_surface <- function(mix) {
 #' number of components.
 #' @param sig0 Tunning parameter in generating random matrix from Wishart
 #' distribution.
-#' @param sigdf Degree of freedom in generating random matrix from Wishart
+#' @param df Degree of freedom in generating random matrix from Wishart
 #' distribution.
 #' @param win An object of class \code{spatstat::owin} with default value
 #' \code{spatstat::square(1)}, The mean vectors are inside this window.
@@ -147,28 +147,27 @@ summary.intensity_surface <- function(mix) {
 #' mix1 <- rnormmix(3, .01, 5, square(5))
 #' mix2 <- rnormmix(8, .01, 10, rand_m = TRUE)
 #'
-rnormmix <- function(m, sig0, sigdf,
-                     win = spatstat::square(1), rand_m = FALSE) {
-  if (!spatstat::is.owin(win)) {
-    stop("win must be of class owin.")
-  }
-
+rnormmix <- function(m, sig0, df, rand_m = FALSE,
+                     xlim = c(0, 1), ylim = c(0, 1)) {
   if (rand_m) {
     # number of components is random
     m <- sample(1:m, 1)
   }
 
-  ps <- rdirichlet(1, rep(1, m))
-  mus <- list()
-  sigmas <- list()
+  gen_ps <- rdirichlet(1, rep(1, m))
+  gen_mu <- cbind(x = runif(m, xlim[1], xlim[2]),
+                  y = runif(m, ylim[1], ylim[2]))
+  gen_sigma <- stats::rWishart(m, df, sig0 * diag(2))
+
+  mus <- vector(mode = "list", length = m)
+  sigmas <- vector(mode = "list", length = m)
 
   for (k in 1:m) {
-    mus[[k]] <- c(runif(1, win$xrange[1], win$xrange[2]),
-                  runif(1, win$yrange[1], win$yrange[2]))
-    sigmas[[k]] <- stats::rWishart(1, sigdf, sig0 * diag(2))[, , 1]
+    mus[[k]] <- gen_mu[k, ]
+    sigmas[[k]] <- gen_sigma[, , k]
   }
 
-  normmix(ps, mus, sigmas)
+  normmix(gen_ps, mus, sigmas)
 }
 #' Convert normmix object to intensity_surface object or change lambda or window
 #' for intensity_surface object

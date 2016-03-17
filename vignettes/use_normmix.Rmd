@@ -8,88 +8,104 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-```{r, echo=FALSE} 
+```{r, echo=FALSE, message=FALSE} 
 library(knitr)
+library(sppmix)
 opts_chunk$set(fig.width = 5, fig.height = 4)
 ```
-A 2D normal mixture is a basic building block of this package. We created our 
-own mixture class ```normmix```. In this vignette, you'll learn how to create, 
-plot and manipulate a ```normmix``` object.
+A two dimensional normal mixture is a basic building block of this package. We created a S3 class `normmix` and related methods for operations with normal mixture. In this vignette, you'll learn everything that related to a `normmix` object.
+
+## Normal Mixtures
+### Definition of a Normal Mixture
+The class `normmix` is definied to be a 2D normal mixture, which consists the following parameters:
+
+1. Number of mixture components $m$.
+2. Probablity $p$ for each component normal distribution.
+3. Mean vector $\mu$ for each component.
+4. Covariance matrix $\Sigma$ for each component.
+
+Where $m$ should be greater than zero and the sum of $p$ should be $1$.
+
+### Create a 2D Normal Mixture
+
+There are two ways to create a normal mixture in `sppmix`. If you know all the parameters beforehand, you can use `normmix()` to create it. If you don't know specifically what specific mixture you want, you can use `rnormmix()` to simulate a normal mixture to play with.
 
 
-## Create Normal Mixtures
-If you have already had a mixture you want to explore using ```sppmix```, you could start by creating a ```normmix``` object with it. You will need three essential elements for each component to create a 2D normal mixture:
+#### Generate Mixture from fixed parameter
 
-1. Probability $p$ of falling into the component.
-2. A vector $\mu$ of length two, which contains the center of the component.
-3. A variance-covariance matrix $\Sigma$ for the component.
+In the first approach, you'll need to know to pass `ps`, `mus` and `sigmas` to `normmix()`. Probability $p$'s should be passed in as a vector, whereas $\mu$'s and $\Sigma$'s in a list, each component of the list corresponding to the component in the mixture. The following example shows how to create a normal mixture with given parameter.
 
-Because these elements differ in their dimension, there's different ways of organizing them in R. We expect the probability $p$'s to be organized into a vector, while the $\mu$'s and $\Sigma$'s in a list.
-
-```{r, message=FALSE}
-library(sppmix)
+```{r}
 ps <- c(.3, .7)
 mus <- list(c(0, 0), c(1, 1))
 sigmas <- list(.01 * diag(2), .01 * diag(2))
-mix1 <- normmix(ps, mus, sigmas)
+mix1 <- normmix(ps = ps, mus = mus, sigmas = sigmas)
 mix1
 ```
 
 
-It will be of class ```normmix```, and there's some default S3 methods associated with it. If you want more details on the normal mixture, you can use the ```summary``` method. It will give you every piece of information about the normal mixture. 
+It will be of class `normmix`, and there's some default S3 methods associated with it. If you want more details on the normal mixture, you can use the ```summary``` method. It will give you every piece of information about this normal mixture. 
 
 ```{r}
 summary(mix1)
 ```
 
-## Create Intensity surface
-An intensity surface generated from the normal mixture is another data structure that we use in this package. For an intensity surface, it will need a region and an average number of points over the region besides the normal mixture.
+#### Generate Mixture from Simulation
+If you don't have a specific normal mixture you want to work with (which is always the case), you may want to simulate a normal mixture. `rnormmix()` will allow you to simulate normal mixtures in different ways.
 
-To create an intensity surface, you'll need two more additional parameters to  ```normmix()``` function: the average number of points ```lambda``` and an window object of class ```spatstat::owin()```. 
+Generating a normal mixture requires generating covariance matrix $\Sigma$'s from a Wishart distribution. We use a Wishart distribution $W_2(V, n)$ with scale matrix $V = \sigma_0 I_2$ to generate $\Sigma$'s. $\sigma_0$ is a scale parameter and $n$ is the degree of freedom.
 
 ```{r}
-intsurf1 <- normmix(ps = c(.3, .7),
-                    mus = list(c(0.2, 0.2), c(.8, .8)),
-                    sigmas = list(.01*diag(2), .01*diag(2)),
-                    lambda = 100,
-                    win = square(1))
-intsurf1
+mix2 <- rnormmix(m = 3, sig0 = .1, df = 5)
+summary(mix2)
+```
+
+
+By default, `normmix()` will restrict the component mean within $(0, 1)$. You can change that by specify `xlim` and `ylim` parameters. There's also another option that allows you to simulate not only parameters, but also number of components. When `rand_m` is true, it will generate a mixture with random number of component where the maximum possible component number is $m$.
+
+```{r}
+mix3 <- rnormmix(m = 5, sig0 = .1, df = 5, rand_m = TRUE, ylim = c(0, 5))
+summary(mix3)
+```
+
+
+## Create Intensity Surface
+An intensity surface generated from the normal mixture is another data structure we used a lot in this package. The `intensity_surface` class inherits from the `normmix` class. Besides the parameters for normal mixture, it will need two more parameters, a region (or window), and an average number of points over that region.
+
+There's also two ways to create an intensity surface. You can either specify the parameters directly or add those additional parameters to a existing `normmix` object.
+
+### Create Intensity Surface from Scratch
+
+To create an intensity surface from scratch, you'll call `normmix()` with two more additional parameters: the average number of points `lambda` and an window object of class `spatstat::owin`. 
+
+```{r}
+# intsurf1 <- normmix(ps = c(.3, .7),
+#                     mus = list(c(0.2, 0.2), c(.8, .8)),
+#                     sigmas = list(.01*diag(2), .01*diag(2)),
+#                     lambda = 100,
+#                     win = square(1))
+# intsurf1
 
 ```
 
 
 
-## Generate Mixture with Random Components
-If you don't have a specific normal mixture you want to work with (which is often the case), you may want to simulate a normal mixture from some parameters. ```rnormmix``` will allow you to simulate normal mixtures with fixed or random number of components.
-
-When generating a random normal mixture, you'll need to specify a window that the centers of the components lie in. This is facilitated by the ```owin``` class in the ```spatstat``` package. Currently only squared window is supported, please check documentation of ```spatstat``` on how to work with ```owin``` class.
-
-You'll also need some parameter for the Wishart distribution because we need to simulate the $\Sigma$'s from a Wishart distribution.
-
-```{r}
-mix2 <- rnormmix(3, sig0 = .01, sigdf = 5, win = square(5))
-mix2
-
-# generate random number of components
-mix3 <- rnormmix(8, sig0 = .01, sigdf = 10, square(5), rand_m = TRUE)
-mix3
-```
 
 
 ## Generating Point Pattern from Normal Mixtures
 After you created a normal mixture, you may want to simulate a point pattern from it. You could do it with ```rsppmix```. 
 
 ```{r}
-pp1 <- rsppmix(mix1, lambda = 50, win = square(1))
-pp1
+# pp1 <- rsppmix(mix1, lambda = 50, win = square(1))
+# pp1
 ```
 
 
 ```pp1``` is a point pattern of class ``` c("sppmix", "ppp")```. It inherites the ```ppp``` class from ```spatstat```, but we also enhenced it with different methods only worked for ```sppmix```. For example, you could plot it in a different way than in ```spatstat```.
 
 ```{r, fig.show='hold'}
-plot(pp1)
-plot.ppp(pp1)
+# plot(pp1)
+# plot.ppp(pp1)
 ```
 
 
