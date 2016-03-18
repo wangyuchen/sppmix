@@ -1,4 +1,6 @@
-#' sppmix: A package for mixture models of spatial point patterns
+#' sppmix: Poisson point process modeling using mixture models for the intensity function
+#'
+#' Modeling spatial point patterns using Poisson point processes with mixture intensity function
 #'
 #' This package implemented data structures and methods for modelling spatial
 #' point process data using mixtures of normal component.

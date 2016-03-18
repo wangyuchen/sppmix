@@ -21,7 +21,7 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   //all elements in the field are 2x2 matrices
   field<mat> gensigmas(L,m),geninvsigmas(L,m);
   mat genz=zeros(L,n),genps=zeros(L,m);
- //   consts=zeros(L,m);
+  mat consts=zeros(L,m);
 
   vec meanps=zeros(m);
   mat meanmus=zeros(m,2);
@@ -112,7 +112,7 @@ List DAMCMC2dExtras_sppmix(mat const& points,
       return List::create();
     }//*/
     genps(0,i)=1.0/m;
-//    consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
+    consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
   mat prevz,sumz(n,m),zmultinomial(n,m);
   mat zhats(n,m),zhatsprev(n,m);
@@ -309,8 +309,8 @@ List DAMCMC2dExtras_sppmix(mat const& points,
       else
         approx[j]=1;
  //     approx[j]=approxcompj;
-//      consts(i+1,j)=1.0/(approxcompj*
- //       sqrt(det(2*datum::pi*gensigmas(i+1,j))));
+      consts(i+1,j)=1.0/(approx[j]*
+        sqrt(det(2*datum::pi*gensigmas(i+1,j))));
     }
     //sample component probs
     genps.row(i+1)=rDirichlet_sppmix(ds).t();
@@ -339,19 +339,19 @@ List DAMCMC2dExtras_sppmix(mat const& points,
         //        Rcout << genmutemp<< std::endl ;
         //        Rcout << data.row(dat)<< std::endl ;
         //        mutemp1=data.row(dat)-genmutemp;
-//       mutemp1(0)=data(dat,0)-genmus(j,0,i+1);
- //       mutemp1(1)=data(dat,1)-genmus(j,1,i+1);
         //        quad=as_scalar(mutemp1*geninvsigmas(i+1,j)*trans(mutemp1));
         //        Rcout << mutemp1<< std::endl ;
     //    tempsig=geninvsigmas(i+1,j);
     //    Rcout << tempsig<< std::endl ;
-        mu1(0)=genmus(j,0,i+1);
-        mu1(1)=genmus(j,1,i+1);
-        MixDens(dat,j)=genps(i+1,j)*
-          dNormal_sppmix(data.row(dat).t(),mu1,
-          gensigmas(i+1,j))/approx[j];
-//     MixDens(dat,j)=genps(i+1,j)*consts(i+1,j)*
-   //       exp(-.5*Quad_sppmix(trans(mutemp1),geninvsigmas(i+1,j)));
+   //     mu1(0)=genmus(j,0,i+1);
+   //     mu1(1)=genmus(j,1,i+1);
+//        MixDens(dat,j)=genps(i+1,j)*
+//          dNormal_sppmix(data.row(dat).t(),mu1,
+//          gensigmas(i+1,j))/approx[j];
+       mu1(0)=data(dat,0)-genmus(j,0,i+1);
+       mu1(1)=data(dat,1)-genmus(j,1,i+1);
+        MixDens(dat,j)=genps(i+1,j)*consts(i+1,j)*
+          exp(-.5*Quad_sppmix(mu1,geninvsigmas(i+1,j)));
           //  as_scalar(mutemp1*geninvsigmas(i+1,j)* trans(mutemp1))
 //        if (det(gensigmas(i+1,j))<0.001)
  /*       if (MixDens(dat,j)>1.0)
@@ -497,7 +497,8 @@ List DAMCMC2dExtras_sppmix(mat const& points,
                 log(zhatsprev(dat,j));
           }
         }
-        zhatsprev.row(dat)=zhats.row(dat);//*/
+        if(accepted)
+          zhatsprev.row(dat)=zhats.row(dat);//*/
       }
     }
     if(i>burnin)
@@ -524,9 +525,8 @@ List DAMCMC2dExtras_sppmix(mat const& points,
       }
     }//*/
   }
-  printf("\rDone                                                      \n");
-  printf("\rMH acceptance %3.1f%%",100.0*MHjump/L);
-  printf("\nMH acceptance for Sigmas %3.1f%%",100.0*MHJumpSigma/(L*m));
+  printf("\rDone. Metropolis-Hastings acceptance: %3.1f%%\n",100.0*MHjump/L);
+//  printf("\nMH acceptance for Sigmas %3.1f%%",100.0*MHJumpSigma/(L*m));
 
   //create a list, with each element corresponding
   //to a single realization, which itself is a list
@@ -660,7 +660,7 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   marginal=marginal/numiters;
 //  Rcout <<"\nMarginal Monte Carlo Approx="<<marginal<< std::endl ;
 //  marginal=exp(loglikelihood);
-//  Rcout <<"Marginal aprox="<<marginal<< std::endl ;
+  Rcout <<"Marginal aprox="<<marginal<< std::endl ;
 
 //  if(singularities)
 //    Rcout <<"\nWarning: there were near singular covariance matrices during computation"<< std::endl ;

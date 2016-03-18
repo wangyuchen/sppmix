@@ -551,6 +551,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// PermuteZs_sppmix
+mat PermuteZs_sppmix(mat const& allgens_zs, mat const& bestperm);
+RcppExport SEXP sppmix_PermuteZs_sppmix(SEXP allgens_zsSEXP, SEXP bestpermSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< mat const& >::type allgens_zs(allgens_zsSEXP);
+    Rcpp::traits::input_parameter< mat const& >::type bestperm(bestpermSEXP);
+    __result = Rcpp::wrap(PermuteZs_sppmix(allgens_zs, bestperm));
+    return __result;
+END_RCPP
+}
 // ApproxBivNormProb_sppmix
 double ApproxBivNormProb_sppmix(vec const& xlims, vec const& ylims, vec const& mu, mat const& sigma, int type);
 RcppExport SEXP sppmix_ApproxBivNormProb_sppmix(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP typeSEXP) {

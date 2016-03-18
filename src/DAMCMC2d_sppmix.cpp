@@ -150,7 +150,7 @@ List DAMCMC2d_sppmix(mat const& points,
 //  int l=2;
 //  int countiter=0;
   //start MCMC
-  Rcout << "Preliminaries done. Starting MCMC" << std::endl ;
+  Rcout << "Preliminaries done. Starting MCMC..." << std::endl ;
   for(i=0;i<L-1;i++)
   {
     //sample ksi and kappa
@@ -413,8 +413,7 @@ List DAMCMC2d_sppmix(mat const& points,
         genz(i+1,dat)=0;
     }
   }
-  printf("\rDone                                                      \n");
-  printf("\rMH acceptance %3.1f%%",100.0*MHjump/L);
+  printf("\rDone. Metropolis-Hastings acceptance: %3.1f%%\n",100.0*MHjump/L);
 
   //create a list, with each element corresponding
   //to a single realization, which itself is a list

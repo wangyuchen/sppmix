@@ -212,6 +212,11 @@ PostGenGetBestPermIdenConstraint_sppmix <- function(allgens) {
 }
 
 #' @export
+PermuteZs_sppmix <- function(allgens_zs, bestperm) {
+    .Call('sppmix_PermuteZs_sppmix', PACKAGE = 'sppmix', allgens_zs, bestperm)
+}
+
+#' @export
 ApproxBivNormProb_sppmix <- function(xlims, ylims, mu, sigma, type) {
     .Call('sppmix_ApproxBivNormProb_sppmix', PACKAGE = 'sppmix', xlims, ylims, mu, sigma, type)
 }

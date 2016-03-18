@@ -444,12 +444,15 @@ List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
       //find distance from origin and get ordering
       mu1=cur_mus.row(j).t();
       cur_sig=trans(cur_sigmas.row(j));
-      dists(j)=cur_ps(j)*cur_ps(j)+
+      dists(j)=
+        cur_ps(j)*cur_ps(j)+
         mu1(0)*mu1(0)+mu1(1)*mu1(1)
-        +cur_sig(0)*cur_sig(0)
+        +cur_sig(0)*cur_sig(3)
+        -cur_sig(1)*cur_sig(2);
+/*        +cur_sig(0)*cur_sig(0)
         +cur_sig(1)*cur_sig(1)
         +cur_sig(2)*cur_sig(2)
-        +cur_sig(3)*cur_sig(3);
+        +cur_sig(3)*cur_sig(3);*/
     }
     uvec indices=sort_index(dists);// = sort_index(cur_ps);
     //    Rcout << "\nindices="<< indices.t()<<std::endl ;
@@ -457,6 +460,7 @@ List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
     {
       permind(j)=indices(j)+1;
     }
+
  //   Rcout << "passed"<<std::endl ;
     vec perm_ps=Permute_vec_sppmix(cur_ps,permind);
 //    Rcout << "\nperm_ps="<< perm_ps.t()<<std::endl ;
@@ -484,12 +488,64 @@ List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
     permuted_gens[i]=mix2;
     permgenps.row(i)=perm_ps.t();
     permgenmus.slice(i)=perm_mus;
+    for(k=0;k<n;k++)
+    {
+ //genz=zeros(L,n)
+ //zmultinomial(n,m)
+ //build the label matrix for this realization
+      vec permz(m),cur_z=zeros(m,1);
+      //put 1 at location genzs(i,dat)
+      cur_z(allgens_zs(i,k))=1;
+      permz=Permute_vec_sppmix(cur_z,permind);
+      for(j=0;j<m;j++)
+        if(permz(j)==1)
+        {
+          permgenzs(i,k)=j;
+          break;
+        }
+    }
   }
-  printf("\rDone                                                      \n");
+//  printf("\rDone applying identifiability constraint                      \n");
   return List::create(
-    Named("permuted_gens") = permuted_gens,
-    Named("permuted_ps") = permgenps,
-    Named("permuted_mus") = permgenmus,
-    Named("permuted_sigmas") = permgensigmas,
-    Named("permuted_zs") = permgenzs);
+    Named("allgens_List") = permuted_gens,
+    Named("genps") = permgenps,
+    Named("genmus") = permgenmus,
+    Named("gensigmas") = permgensigmas,
+    Named("genzs") = permgenzs,
+    Named("genlamdas") = allgens[5]);
+}
+
+//' @export
+// [[Rcpp::export]]
+mat PermuteZs_sppmix(mat const& allgens_zs,
+                     mat const& bestperm)
+{
+  //apply burnin before calling this function
+//genz=zeros(L,n)
+  int i,j,k,L=bestperm.n_rows,
+     m=bestperm.n_cols;
+  int n=allgens_zs.n_cols;
+  mat permgenzs=zeros(L,n);
+//    Rcout << "m="<<m<<std::endl ;
+//    Rcout << "L="<<L<<std::endl ;
+//    Rcout << "n="<<n<<std::endl ;
+  vec cur_sig(4),mu1(2);
+  for(i=0;i<L;i++)
+  {
+    for(k=0;k<n;k++)
+    {
+      vec permz(m),cur_z=zeros(m,1);
+      //put 1 at location genzs(i,dat)
+      cur_z(allgens_zs(i,k))=1;
+      permz=Permute_vec_sppmix(cur_z,
+          bestperm.row(i).t());
+      for(j=0;j<m;j++)
+        if(permz(j)==1)
+        {
+          permgenzs(i,k)=j;
+          break;
+        }
+    }
+  }
+  return permgenzs;
 }
