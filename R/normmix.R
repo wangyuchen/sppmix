@@ -144,8 +144,11 @@ summary.intensity_surface <- function(mix) {
 #' @return Object of class \code{normmix}.
 #' @export
 #' @examples
-#' mix1 <- rnormmix(3, .01, 5, square(5))
-#' mix2 <- rnormmix(8, .01, 10, rand_m = TRUE)
+#' mix1 <- rnormmix(m = 3, sig0 = .1, df = 5)
+#' summary(mix1)
+#'
+#' mix2 <- rnormmix(m = 5, sig0 = .1, df = 5, rand_m = TRUE, ylim = c(0, 5))
+#' summary(mix2)
 #'
 rnormmix <- function(m, sig0, df, rand_m = FALSE,
                      xlim = c(0, 1), ylim = c(0, 1)) {
@@ -169,10 +172,12 @@ rnormmix <- function(m, sig0, df, rand_m = FALSE,
 
   normmix(gen_ps, mus, sigmas)
 }
-#' Convert normmix object to intensity_surface object or change lambda or window
-#' for intensity_surface object
+#' Convert normal mixture to intensity surface
 #'
-#' @param mix object with class normmix or intensity_surface. See Detail and Example.
+#' This function can convert a normmix object into an intensity surface. It can
+#' also be used to change intensity or window of an intensity_surface object.
+#'
+#' @param mix object with class normmix or intensity_surface.
 #' @param lambda optional parameter of average intensity.
 #' @param win optional parameter of domain.
 #'
@@ -181,6 +186,23 @@ rnormmix <- function(m, sig0, df, rand_m = FALSE,
 #' intensity surface class. If the class of mix is intensity_surface, lambda
 #' and win are used to change the original setting of lambda and win.
 #'
+#' @examples
+#' mix1 <- normmix(ps = c(.3, .7),
+#'                 mus = list(c(0.2, 0.2), c(.8, .8)),
+#'                 sigmas = list(.01*diag(2), .01*diag(2)))
+#'
+#' intsurf1 <- normmix(ps = c(.3, .7),
+#'                     mus = list(c(0.2, 0.2), c(.8, .8)),
+#'                     sigmas = list(.01*diag(2), .01*diag(2)),
+#'                     lambda = 100,
+#'                     win = square(1))
+#'
+#' # from normmix
+#' to_int_surf(mix1, lambda = 100, win = square(1))
+#'
+#' # from intensity_surface
+#' to_int_surf(intsurf1, win = square(2))
+#' to_int_surf(intsurf1, lambda = 50)
 #' @export
 to_int_surf <- function(mix, lambda = NULL, win = NULL) {
   if (is.intensity_surface(mix)) {

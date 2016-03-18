@@ -2,7 +2,7 @@
 % Please edit documentation in R/normmix_plots.R
 \name{plot.intensity_surface}
 \alias{plot.intensity_surface}
-\title{Plot mixture density.}
+\title{Plot normal mixture density.}
 \usage{
 \method{plot}{intensity_surface}(intsurf, win = intsurf$window, L = 100,
   title1 = "Poisson Process Intensity", truncate = TRUE, zlims = c(0, 0),
@@ -29,12 +29,14 @@ additional limits on z axis.}
 in the 3-D plot.}
 }
 \description{
-Plot the density surface of a mixture.
+Plot the density surface of a normal mixture.
 }
 \examples{
-if (require(spatstat)) {
-  intsurf1 <- rnormmix(8, .01, 10, square(2), rand_m = TRUE)
-  plot(intsurf1)
-}
+intsurf1 <- normmix(ps = c(.3, .7),
+                    mus = list(c(0.2, 0.2), c(.8, .8)),
+                    sigmas = list(.01*diag(2), .01*diag(2)),
+                    lambda = 100,
+                    win = square(1))
+plot(intsurf1)
 }
 

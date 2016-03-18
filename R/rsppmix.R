@@ -23,16 +23,19 @@
 #' @return A point pattern of class \code{c("sppmix", "ppp")}.
 #' @export
 #' @examples
-#' # generate a intensity surface
-#' intsurf1 <- normmix(ps=c(.5, .5),
-#'                 mus=list(c(.2, .2), c(.7, .7)),
-#'                 sigmas=list(.01*diag(2), .02*diag(2)), 200, square(1))
-#' rsppmix(intsurf1)
+#' mix1 <- normmix(ps = c(.3, .7),
+#'                 mus = list(c(0.2, 0.2), c(.8, .8)),
+#'                 sigmas = list(.01*diag(2), .01*diag(2)))
 #'
-#' # If truncate = FALSE it will generate points outside the window
-#' rsppmix(intsurf1, truncate = FALSE)
-
-
+#' intsurf1 <- normmix(ps = c(.3, .7),
+#'                     mus = list(c(0.2, 0.2), c(.8, .8)),
+#'                     sigmas = list(.01*diag(2), .01*diag(2)),
+#'                     lambda = 100,
+#'                     win = square(1))
+#'
+#' pp1 <- rsppmix(intsurf = intsurf1)
+#' pp2 <- rsppmix(mix1, truncate = FALSE, lambda = 100, win = square(1))
+#'
 rsppmix <- function(intsurf, truncate = TRUE, lambda, win) {
 
   if (!is.intensity_surface(intsurf)) {

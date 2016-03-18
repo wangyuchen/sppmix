@@ -2,25 +2,42 @@
 % Please edit documentation in R/normmix.R
 \name{to_int_surf}
 \alias{to_int_surf}
-\title{Convert normmix object to intensity_surface object or change lambda or window
-for intensity_surface object}
+\title{Convert normal mixture to intensity surface}
 \usage{
 to_int_surf(mix, lambda = NULL, win = NULL)
 }
 \arguments{
-\item{mix}{object with class normmix or intensity_surface. See Detail and Example.}
+\item{mix}{object with class normmix or intensity_surface.}
 
 \item{lambda}{optional parameter of average intensity.}
 
 \item{win}{optional parameter of domain.}
 }
 \description{
-Convert normmix object to intensity_surface object or change lambda or window
-for intensity_surface object
+This function can convert a normmix object into an intensity surface. It can
+also be used to change intensity or window of an intensity_surface object.
 }
 \details{
 If the class of mix is normmix, lambda and win are used to convert mix to an
 intensity surface class. If the class of mix is intensity_surface, lambda
 and win are used to change the original setting of lambda and win.
+}
+\examples{
+mix1 <- normmix(ps = c(.3, .7),
+                mus = list(c(0.2, 0.2), c(.8, .8)),
+                sigmas = list(.01*diag(2), .01*diag(2)))
+
+intsurf1 <- normmix(ps = c(.3, .7),
+                    mus = list(c(0.2, 0.2), c(.8, .8)),
+                    sigmas = list(.01*diag(2), .01*diag(2)),
+                    lambda = 100,
+                    win = square(1))
+
+# from normmix
+to_int_surf(mix1, lambda = 100, win = square(1))
+
+# from intensity_surface
+to_int_surf(intsurf1, win = square(2))
+to_int_surf(intsurf1, lambda = 50)
 }
 

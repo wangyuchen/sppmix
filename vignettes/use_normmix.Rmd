@@ -37,7 +37,7 @@ In the first approach, you'll need to know to pass `ps`, `mus` and `sigmas` to `
 
 ```{r}
 ps <- c(.3, .7)
-mus <- list(c(0, 0), c(1, 1))
+mus <- list(c(0.2, 0.3), c(.8, .7))
 sigmas <- list(.01 * diag(2), .01 * diag(2))
 mix1 <- normmix(ps = ps, mus = mus, sigmas = sigmas)
 mix1
@@ -68,47 +68,64 @@ mix3 <- rnormmix(m = 5, sig0 = .1, df = 5, rand_m = TRUE, ylim = c(0, 5))
 summary(mix3)
 ```
 
+## Intensity Surface
 
-## Create Intensity Surface
-An intensity surface generated from the normal mixture is another data structure we used a lot in this package. The `intensity_surface` class inherits from the `normmix` class. Besides the parameters for normal mixture, it will need two more parameters, a region (or window), and an average number of points over that region.
+### Create Intensity Surface
+An intensity surface generated from the normal mixture is another data structure we used a lot in this package. The `intensity_surface` class inherits from the `normmix` class. Besides the parameters for normal mixture, it will need two more parameters, a region (window), and an average number of points over that region.
 
 There's also two ways to create an intensity surface. You can either specify the parameters directly or add those additional parameters to a existing `normmix` object.
 
-### Create Intensity Surface from Scratch
+#### Create Intensity Surface from Scratch
 
 To create an intensity surface from scratch, you'll call `normmix()` with two more additional parameters: the average number of points `lambda` and an window object of class `spatstat::owin`. 
 
 ```{r}
-# intsurf1 <- normmix(ps = c(.3, .7),
-#                     mus = list(c(0.2, 0.2), c(.8, .8)),
-#                     sigmas = list(.01*diag(2), .01*diag(2)),
-#                     lambda = 100,
-#                     win = square(1))
-# intsurf1
-
+intsurf1 <- normmix(ps = c(.3, .7),
+                    mus = list(c(0.2, 0.2), c(.8, .8)),
+                    sigmas = list(.01*diag(2), .01*diag(2)),
+                    lambda = 100,
+                    win = square(1))
+intsurf1
 ```
 
 
-
-
-
-## Generating Point Pattern from Normal Mixtures
-After you created a normal mixture, you may want to simulate a point pattern from it. You could do it with ```rsppmix```. 
+You may noticed that besides the information for normal mixture, it will print out `lambda` and `window`. You can also summary an `intensity_surface` object.
 
 ```{r}
-# pp1 <- rsppmix(mix1, lambda = 50, win = square(1))
-# pp1
+summary(intsurf1)
 ```
 
+#### Create Intensity Surface from Normal Mixture
+If you already have a `normmix`, for example a randomly generated `normmix` from `rnormmix()`, you may want to extend it to be an `intensity_surface`. Here you can use the `to_int_surf()` function to add those additional parameters to the `normmix` object.
 
-```pp1``` is a point pattern of class ``` c("sppmix", "ppp")```. It inherites the ```ppp``` class from ```spatstat```, but we also enhenced it with different methods only worked for ```sppmix```. For example, you could plot it in a different way than in ```spatstat```.
-
-```{r, fig.show='hold'}
-# plot(pp1)
-# plot.ppp(pp1)
+```{r}
+to_int_surf(mix1, lambda = 100, win = square(1))
 ```
 
+This function can also be used when you need to change `lambda` or `window` for an `intensity_surface` object. 
 
+```{r}
+to_int_surf(intsurf1, win = square(2))
+to_int_surf(intsurf1, lambda = 50)
+```
+
+## Generating Point Pattern from Normal Mixtures
+All the `normmix` objects above are used to represent theoretical models, now we try to simulate some data from those normal mixtures. The function `rsppmix()` can simulate a point pattern from a normal mixture.
+
+An intensity surface is the minimum requirement for generating a point pattern from normal mixture. It specifies the region and intensity, and it has the normal mixture density for us to sample from.
+
+`rsppmix()` will return a point pattern in the class of `c("sppmix", "ppp")`. You may recognize that `ppp` is the class for point pattern in the `spatstat` package. We extended it to `sppmix`, which is our own class for a point pattern generated from normal mixture.
+
+```{r}
+pp1 <- rsppmix(intsurf = intsurf1)
+pp1
+```
+
+You may also use a `normmix` object and supply the other information to sppmix. Truncation is another feature of `rsppmix()`. When `truncate` is true (default), the simulated points are guranteened to be within the window When it's false, a warning will be given when there are points outside window.
+
+```{r}
+rsppmix(mix1, truncate = FALSE, lambda = 100, win = square(1))
+```
 
 
 
