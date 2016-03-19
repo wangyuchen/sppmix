@@ -4,7 +4,7 @@
 \alias{to_int_surf}
 \title{Convert normal mixture to intensity surface}
 \usage{
-to_int_surf(mix, lambda = NULL, win = NULL)
+to_int_surf(mix, lambda = NULL, win = NULL, return_normmix = FALSE)
 }
 \arguments{
 \item{mix}{object with class normmix or intensity_surface.}
@@ -39,5 +39,8 @@ to_int_surf(mix1, lambda = 100, win = square(1))
 # from intensity_surface
 to_int_surf(intsurf1, win = square(2))
 to_int_surf(intsurf1, lambda = 50)
+
+# to return a normmix, win will be ignored
+to_int_surf(intsurf1, win = square(2), return_normmix = TRUE)
 }
 

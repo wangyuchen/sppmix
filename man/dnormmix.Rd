@@ -4,12 +4,16 @@
 \alias{dnormmix}
 \title{Calculate density of locations under a mixture.}
 \usage{
-dnormmix(mix, win, x, y, L = 128, truncate = TRUE)
+dnormmix(mix, xlim = c(0, 1), ylim = c(0, 1), L = 128, truncate = TRUE)
 }
 \arguments{
-\item{x, y}{Locations where the density function will be evaluated. It will
-automatically expand it into a grid. If missing, a regular grid over the
-window will be given.}
+\item{mix}{An object of class \code{\link{normmix}}}
+
+\item{xlim}{vector of length two. Mixture density are estimated within
+this range.}
+
+\item{ylim}{vector of length two. Mixture density are estimated within
+this range.}
 }
 \value{
 An object of class \code{\link[spatstat]{im}}. This is a pixel image
@@ -17,13 +21,6 @@ An object of class \code{\link[spatstat]{im}}. This is a pixel image
 }
 \description{
 Calculate the density values of a given mixture with normal components.
-}
-\examples{
-if (require(spatstat)) {
-  mix1 <- rnormmix(8, sig0 = .01, 10, square(2))
-  den <- dnormmix(mix1, square(2))
- plot(den)
-}
 }
 \seealso{
 \code{\link[spatstat]{summary.im}} and

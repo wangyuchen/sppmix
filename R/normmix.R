@@ -177,14 +177,13 @@ rnormmix <- function(m, sig0, df, rand_m = FALSE,
 #' This function can convert a normmix object into an intensity surface. It can
 #' also be used to change intensity or window of an intensity_surface object.
 #'
-#' @param mix object with class normmix or intensity_surface.
-#' @param lambda optional parameter of average intensity.
-#' @param win optional parameter of domain.
-#'
-#' @details
 #' If the class of mix is normmix, lambda and win are used to convert mix to an
 #' intensity surface class. If the class of mix is intensity_surface, lambda
 #' and win are used to change the original setting of lambda and win.
+#'
+#' @param mix object with class normmix or intensity_surface.
+#' @param lambda optional parameter of average intensity.
+#' @param win optional parameter of domain.
 #'
 #' @examples
 #' mix1 <- normmix(ps = c(.3, .7),
@@ -203,11 +202,16 @@ rnormmix <- function(m, sig0, df, rand_m = FALSE,
 #' # from intensity_surface
 #' to_int_surf(intsurf1, win = square(2))
 #' to_int_surf(intsurf1, lambda = 50)
+#'
+#' # to return a normmix, win will be ignored
+#' to_int_surf(intsurf1, win = square(2), return_normmix = TRUE)
 #' @export
-to_int_surf <- function(mix, lambda = NULL, win = NULL) {
+to_int_surf <- function(mix, lambda = NULL, win = NULL,
+                        return_normmix = FALSE) {
+  intsurf <- mix
+
   if (is.intensity_surface(mix)) {
     # input is intensity surface
-    intsurf <- mix
     if (!missing(lambda)) {
       stopifnot(lambda > 0)
       intsurf$intensity <- lambda
@@ -218,13 +222,20 @@ to_int_surf <- function(mix, lambda = NULL, win = NULL) {
     }
 
   } else if (is.normmix(mix)) {
-    # input is normmix, create intensity surface
-    stopifnot(!missing(lambda) & !missing(win))
-    intsurf <- normmix(mix$ps, mix$mus, mix$sigmas,
-                       lambda = lambda, win = win)
+    if (!return_normmix) {
+      # input is normmix, create intensity surface
+      stopifnot(!missing(lambda) & !missing(win))
+      intsurf <- normmix(mix$ps, mix$mus, mix$sigmas,
+                         lambda = lambda, win = win)
+    }
   } else {
     stop("mix must be of class normmix or intensity surface")
   }
+
+  if (return_normmix) {
+    intsurf <- normmix(intsurf$ps, intsurf$mus, intsurf$sigmas)
+  }
+
   intsurf
 }
 

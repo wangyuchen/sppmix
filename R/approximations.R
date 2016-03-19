@@ -43,10 +43,7 @@ approx_normmix <- function(mix, win) {
 #'
 #' Calculate the density values of a given mixture with normal components.
 #'
-#' @inheritParams plot.normmix
-#' @param x,y Locations where the density function will be evaluated. It will
-#'  automatically expand it into a grid. If missing, a regular grid over the
-#'  window will be given.
+#' @inheritParams approx_normmix
 #'
 #' @return An object of class \code{\link[spatstat]{im}}. This is a pixel image
 #'  on a grid with values corresponding to the density at that location.
@@ -54,18 +51,19 @@ approx_normmix <- function(mix, win) {
 #' @seealso \code{\link[spatstat]{summary.im}} and
 #'  \code{\link[spatstat]{plot.im}} for manipulating with pixel image object.
 #' @export
-#' @examples
-#' if (require(spatstat)) {
-#'   mix1 <- rnormmix(8, sig0 = .01, 10, square(2))
-#'   den <- dnormmix(mix1, square(2))
-#'  plot(den)
-#' }
-dnormmix <- function(mix, win, x, y, L = 128, truncate = TRUE) {
-  if (missing(x)) x <- seq(win$xrange[1], win$xrange[2], length.out = L)
-  if (missing(y)) y <- seq(win$yrange[1], win$yrange[2], length.out = L)
+dnormmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1), L = 128,
+                     truncate = TRUE) {
+
+  if (!is.normmix(mix)) {
+    stop("mix must be of class normmix or intensity surface")
+  }
+
+  x <- seq(xlim[1], xlim[2], length.out = L)
+  y <- seq(ylim[1], ylim[2], length.out = L)
+
+  if (truncate) approx <- approx_normmix(mix, xlim, ylim)
 
   locs <- expand.grid(x, y)
-  approx <- approx_normmix(mix, win)
   den <- matrix(NA_real_, nrow(locs), mix$m)
   for (k in 1:mix$m) {
     # every row of den is for a point
@@ -77,37 +75,12 @@ dnormmix <- function(mix, win, x, y, L = 128, truncate = TRUE) {
     }
   }
 
-  RVAL <- spatstat::im(matrix(rowSums(den), nrow = length(y),
-                              ncol = length(x), byrow = T), x, y)
-  return(RVAL)
-}
+  est <- matrix(rowSums(den), nrow = length(y), ncol = length(x), byrow = T)
 
-#' Calculate intensity of locations under a mixture.
-#'
-#' Calculate intensity values of a given mixture at given locations.
-#'
-#' @param lambda Mean intensity value
-#' @inheritParams dnormmix
-#'
-#' @return A pixel image of class \code{\link[spatstat]{im}} with the values
-#'  corresponding to the intensity at given locations.
-#' @export
-#' @examples
-#' if (require(spatstat)) {
-#'   mix1 <- rnormmix(8, sig0 = .01, 10, square(2))
-#'   int <- inormmix(100, mix1, square(2))
-#'  plot(int)
-#' }
-inormmix <- function(intsurf, x, y, L = 128, truncate = TRUE) {
-  win <- intsurf$window
-  if (missing(x)) x <- seq(win$xrange[1], win$xrange[2], length.out = L)
-  if (missing(y)) y <- seq(win$yrange[1], win$yrange[2], length.out = L)
-
-  intensity <- intsurf$lambda * dnormmix(intsurf, win, x, y,
-                                          truncate = truncate)$v
-
-  RVAL <- spatstat::im(matrix(intensity, nrow = length(y),
-                              ncol = length(x), byrow = T), x, y)
-  return(RVAL)
+  if (is.intensity_surface(mix)) {
+    spatstat::im(est * mix$intensity, x, y)
+  } else {
+    spatstat::im(est, x, y)
+  }
 }
 
