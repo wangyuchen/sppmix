@@ -137,9 +137,9 @@ summary.intensity_surface <- function(mix) {
 #' distribution.
 #' @param df Degree of freedom in generating random matrix from Wishart
 #' distribution.
-#' @param win An object of class \code{spatstat::owin} with default value
-#' \code{spatstat::square(1)}, The mean vectors are inside this window.
 #' @param rand_m Whether the number of components are random or fixed (default).
+#' @param xlim,ylim vector of length two, the limit are used to sample the mu's
+#' from a uniform distribution.
 #'
 #' @return Object of class \code{normmix}.
 #' @export

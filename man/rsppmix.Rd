@@ -4,7 +4,7 @@
 \alias{rsppmix}
 \title{Generate a spatial point pattern from normal mixture.}
 \usage{
-rsppmix(intsurf, truncate = TRUE, lambda, win)
+rsppmix(intsurf, truncate = TRUE, ...)
 }
 \arguments{
 \item{intsurf}{Object of class intensity_surface}
@@ -12,28 +12,29 @@ rsppmix(intsurf, truncate = TRUE, lambda, win)
 \item{truncate}{Whether to truncate the points outside the domain,
 default to TRUE.}
 
-\item{lambda}{Intensity of the spatial point pattern}
-
-\item{win}{Object of class spatstat::owin}
+\item{...}{Further parameters passed to \code{to_int_surf()}.}
 }
 \value{
 A point pattern of class \code{c("sppmix", "ppp")}.
 }
 \description{
-Generate a spatial point pattern from a given mixture with normal components.
+This function generates a point pattern from a given intensity surface.
 }
 \details{
-If \code{truncate = FALSE} is set, the returned point pattern will not check
-whether the points are inside the domain.
-
+This function generates a spatial point pattern from a intensity surface.
+Optionally, it can generate point pattern from a normal mixture if lambda
+and window are specified.
 The number of points \code{n} follows Poisson distribution with intensity
 lambda * area of window.
 
 When \code{truncate = TRUE}, a point pattern with \code{n} points will be
 generated from the mixture first. Then if not all the points are in the
 domain, it will generate another \code{n} points until there are more than
- \code{n} points in the domain. The first \code{n} points are returned as
-  the generated spatial point pattern.
+\code{n} points in the domain. The first \code{n} points are returned as
+the generated spatial point pattern.
+
+If \code{truncate = FALSE} is set, the returned point pattern will not check
+whether the points are inside the domain.
 }
 \examples{
 mix1 <- normmix(ps = c(.3, .7),
@@ -46,8 +47,17 @@ intsurf1 <- normmix(ps = c(.3, .7),
                     lambda = 100,
                     win = square(1))
 
-pp1 <- rsppmix(intsurf = intsurf1)
-pp2 <- rsppmix(mix1, truncate = FALSE, lambda = 100, win = square(1))
+rsppmix(intsurf = intsurf1)
+
+# overwrite lambda or win
+rsppmix(intsurf1, lambda = 200)
+rsppmix(intsurf1, win = square(2))
+
+# use normmix with additional parameters
+rsppmix(mix1, lambda = 100, win = square(1))
+
+# turn off truncation
+rsppmix(intsurf = intsurf1, truncation = FALSE)
 
 }
 

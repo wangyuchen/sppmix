@@ -4,34 +4,23 @@
 #' domain using multivariate normal density function.
 #'
 #' @param mix An object of class \code{\link{normmix}}
-#' @param win An object of class \code{\link[spatstat]{owin}}
+#' @param xlim,ylim vector of length two. Mixture density are estimated within
+#' this range.
 #'
 #' @return A numerical vector corresponding to the density of each component
 #'  within the window.
 #' @export
-#' @examples
-#' if (require("spatstat")) {
-#'   mix1 <- normmix(ps=c(.3, .7),
-#'                   mus=list(c(0, 0), c(1, 1)),
-#'                  sigmas=list(.01*diag(2), .01*diag(2)))
-#'   win1 <- spatstat::square(1)
-#'   plot(dnormmix(mix1, win1))
-#'   approx_normmix(mix1, win1)
-#' }
-approx_normmix <- function(mix, win) {
-  if (!is.normmix(mix)) {
-    stop("mix must be an object of class normmix.")
-  }
+approx_normmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1)) {
 
-  if (!spatstat::is.owin(win)) {
-    stop("win must be of class owin.")
+  if (!is.normmix(mix)) {
+    stop("mix must be of class normmix or intensity surface")
   }
 
   approx <- numeric(mix$m)
 
   for (k in 1:mix$m) {
-    approx[k] <- mvtnorm::pmvnorm(lower = c(win$xrange[1], win$yrange[1]),
-                                  upper = c(win$xrange[2], win$yrange[2]),
+    approx[k] <- mvtnorm::pmvnorm(lower = c(xlim[1], ylim[1]),
+                                  upper = c(xlim[2], ylim[2]),
                                   mean = mix$mus[[k]],
                                   sigma = mix$sigmas[[k]])
   }

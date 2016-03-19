@@ -19,8 +19,8 @@ distribution.}
 
 \item{rand_m}{Whether the number of components are random or fixed (default).}
 
-\item{win}{An object of class \code{spatstat::owin} with default value
-\code{spatstat::square(1)}, The mean vectors are inside this window.}
+\item{xlim, ylim}{vector of length two, the limit are used to sample the mu's
+from a uniform distribution.}
 }
 \value{
 Object of class \code{normmix}.

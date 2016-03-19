@@ -4,12 +4,14 @@
 \name{sppmix}
 \alias{sppmix}
 \alias{sppmix-package}
-\title{sppmix: A package for mixture models of spatial point patterns}
+\title{sppmix: Poisson point process modeling using mixture models for the intensity function}
 \description{
-This package implemented data structures and methods for modelling spatial
-point process data using mixtures of normal component.
+Modeling spatial point patterns using Poisson point processes with mixture intensity function
 }
 \details{
+This package implemented data structures and methods for modelling spatial
+point process data using mixtures of normal component.
+
 Based on \code{spatstat} package's \code{ppp} class for point pattern and
 \code{owin} class for window, we implemented a \code{normmix} class for
 dealing with 2D normal mixture.

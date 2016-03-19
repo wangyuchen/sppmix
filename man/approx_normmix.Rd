@@ -4,12 +4,13 @@
 \alias{approx_normmix}
 \title{Approximate density of a normal mixture over a 2d domain.}
 \usage{
-approx_normmix(mix, win)
+approx_normmix(mix, xlim = c(0, 1), ylim = c(0, 1))
 }
 \arguments{
 \item{mix}{An object of class \code{\link{normmix}}}
 
-\item{win}{An object of class \code{\link[spatstat]{owin}}}
+\item{xlim, ylim}{vector of length two. Mixture density are estimated within
+this range.}
 }
 \value{
 A numerical vector corresponding to the density of each component
@@ -18,15 +19,5 @@ A numerical vector corresponding to the density of each component
 \description{
 Approximate the density of each component in a normal mixture within the
 domain using multivariate normal density function.
-}
-\examples{
-if (require("spatstat")) {
-  mix1 <- normmix(ps=c(.3, .7),
-                  mus=list(c(0, 0), c(1, 1)),
-                 sigmas=list(.01*diag(2), .01*diag(2)))
-  win1 <- spatstat::square(1)
-  plot(dnormmix(mix1, win1))
-  approx_normmix(mix1, win1)
-}
 }
 
