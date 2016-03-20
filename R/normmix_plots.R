@@ -125,7 +125,7 @@ plot.sppmix <- function(pattern, intsurf, lambda,...) {
   }
 }
 
-#' 2D plot for intensity surface
+#' 2D contour plots for normal mixture and intensity surface
 #'
 #' Create a contour plot for the intensity surface with or without realizations
 #' on it.
@@ -133,72 +133,102 @@ plot.sppmix <- function(pattern, intsurf, lambda,...) {
 #' @inheritParams rsppmix
 #' @param pattern optional spatial point pattern to add to the plot. In the c
 #' class of \code{\link[spatstat]{ppp}}.
-#' @param filled Logical flag indicating whether plot filled contour plot.
-#' The default is TRUE.
+#' @param contour Logical flag indicating whether to plot countour only.
 #' @param L number of grids on each coordinate.
-#' @param density whether to plot mixture density instead of intensity.
-#' @param xlim,ylim omitted except when density = TRUE
+#' @param ... Further parameters to passed to \code{to_int_surf()}.
 #'
 #' @import ggplot2
 #' @examples
+#' # plot normmix density
+#' mix1 <- normmix(ps = c(.3, .7),
+#'                 mus = list(c(0.2, 0.2), c(.8, .8)),
+#'                 sigmas = list(.01*diag(2), .01*diag(2)))
+#' plot(mix1)
+#'
+#' # plot intensity surface
 #' intsurf1 <- normmix(ps = c(.3, .7),
 #'                     mus = list(c(0.2, 0.2), c(.8, .8)),
 #'                     sigmas = list(.01*diag(2), .01*diag(2)),
 #'                     lambda = 100,
 #'                     win = square(1))
-#' pp1 <- rsppmix(intsurf = intsurf1)
+#' plotmix_2d(intsurf1)
 #'
-#' # plot the theoretical intensity surface with a realization
-#' plotmix_2d(intsurf1, pp1)
+#' pp1 <- rsppmix(intsurf = intsurf1)
+#' plotmix_2d(intsurf1, pp1)  # with points
+#'
 #' @export
-plotmix_2d <- function(intsurf, pattern, filled = TRUE, truncate = TRUE,
-                       L = 256, density = FALSE, xlim, ylim, ...) {
+#' @rdname density_plots
+plotmix_2d <- function(intsurf, pattern, contour = FALSE, truncate = TRUE,
+                       L = 256, ...) {
+  intsurf <- to_int_surf(intsurf, ...)
+  win <- intsurf$window
+
+  est_intensity <- dnormmix(intsurf, xlim = win$xrange, ylim = win$yrange,
+                            L = L, truncate = truncate)
+
+  p <- plot_density(as.data.frame(est_intensity), contour = contour) +
+    labs(fill = "Intensity")
+  if (!missing(pattern)) {
+    p + geom_point(data=as.data.frame(pattern)) +
+      ggtitle(bquote(paste("Normal Mixture Intensity Surface with ",
+                           lambda == .(intsurf$intensity), ", ",
+                           n == .(pattern$n))))
+  } else {
+    p + ggtitle(bquote(paste("Normal Mixture Intensity Surface with ",
+                             lambda == .(intsurf$intensity))))
+  }
+}
+
+#' @param mix object of class \code{normmix}.
+#' @param win Plotting window for normmix density. When omitted, it will
+#' guess the range of the window by normal mixture parameters.
+#' @export
+#' @rdname density_plots
+plot.normmix <- function(mix, win, contour = FALSE, truncate = TRUE, L = 256) {
+
+  if (missing(win)) {
+    limits <- lapply(seq_len(mix$m), function(k) {
+      c(mvtnorm::qmvnorm(.01, mean = mix$mus[[k]],
+                         sigma = mix$sigmas[[k]])$quantile,
+        mvtnorm::qmvnorm(.99, mean = mix$mus[[k]],
+                         sigma = mix$sigmas[[k]])$quantile)
+    })
+
+    est_range <- range(unlist(limits))
+    win <- spatstat::owin(est_range, est_range)
+  } else {
+    stopifnot(is.normmix(mix) & spatstat::is.owin(win))
+  }
+
+  est_density <- dnormmix(mix, xlim = win$xrange, ylim = win$yrange,
+                          L = L, truncate = truncate)
+
+  plot_density(as.data.frame(est_density), contour = contour) +
+    labs(fill = "Density") +
+    ggtitle("Normal Mixture Density Plot")
+}
 
 
-  intsurf <- to_int_surf(intsurf, ..., return_normmix = density)
-
-  win <- if (density) list(xrange = xlim, yrange = ylim) else intsurf$window
-
-  est_den <- dnormmix(intsurf, xlim = win$xrange, ylim = win$yrange,
-                      L = L, truncate = truncate)
-
-  p <- ggplot(as.data.frame(est_den), aes(x, y)) +
-    coord_fixed(xlim = win$xrange, ylim = win$yrange, expand = FALSE) +
+plot_density <- function(density_df, contour = FALSE) {
+  p <- ggplot(density_df, aes(x, y)) + coord_fixed(expand = FALSE) +
     labs(x = "X", y = "Y")
 
-  if (filled) {
+  if (!contour) {
     color <- c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
                "#FF7F00", "red", "#7F0000")
 
-    p <- p + geom_raster(aes(fill = value)) +
+    p + geom_raster(aes(fill = value)) +
       scale_fill_gradientn(colors = color) +
       guides(fill = guide_colorbar(nbin = 100, barheight = 15))
-
-    common_title <- "Normal Mixture"
-
-    if (density) {
-      p <- p + ggtitle(paste(common_title, "Density Plot"))
-    } else {
-      p <- p + ggtitle(bquote(paste(.(common_title), "Intensity Surface with ",
-                                    lambda == .(intsurf$intensity))))
-    }
-
   } else {
-    common_title <- "Contour of Normal Mixture"
-    p <- p + stat_contour(aes(z = value))
-
-    if (density) {
-      p <- p + ggtitle(paste(common_title, "Density"))
-    } else {
-      p <- p + ggtitle(bquote(paste(.(common_title), "Intensity Surface with ",
-                                    lambda == .(intsurf$intensity))))
-    }
+    p + stat_contour(aes(z = value))
   }
-
-  if (!missing(pattern)) {
-    p <- p + geom_point(data=as.data.frame(pattern))
-  }
-
-  p
 }
+
+
+
+
+
+
+
 
