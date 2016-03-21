@@ -5,6 +5,8 @@
 #' @inheritParams plot_avgsurf
 #' @param xlab1 The label for x-axis
 #' @param ylab1 The label for y-axis
+#' @param approx Logical flag indicating whether use identifiability constraint
+#' to permute all realizations.
 #' @param plot_result Logical flag indicating whether plot the point pattern
 #' and intensity surface after permutation. The default is FALSE.
 #' @author Athanasios Christou Micheas, Jiaxun Chen, Yuchen Wang
@@ -23,30 +25,49 @@
 #' # Fix label switching
 #' post_fixed = FixLS_da(post, plot_result = TRUE)
 FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
-                 xlab1 = "x",ylab1 = "y", plot_result = FALSE)
+                 xlab1 = "x",ylab1 = "y", approx = FALSE, plot_result = FALSE)
 {
   win <- domain(fit$data)
   m <- dim(fit$genmus)[1]
   xlims1 <- c(win$xrange)
   ylims1 <- c(win$yrange)
   L <- dim(fit$genps)[1]
-   permgens <- PostGenGetBestPerm_sppmix(fit$allgens_List)
+  if (approx == TRUE) {
+    permgens <- PostGenGetBestPermIdenConstraint_sppmix(fit)
+    post_ps <- colMeans(permgens$genps[-(1:burnin), ])
+    mus <- apply(permgens$genmus[, , -(1:burnin)], 1:2, mean)
+
+    mean_mat <- function(mats) Reduce("+", mats) / length(mats)
+    sigmas <- apply(permgens$gensigmas[-(1:burnin), ], 2, mean_mat)
+
+    mean_lambda <- mean(permgens$genlamdas[(burnin + 1):L])
+
+    post_mus <- post_sigmas <- vector("list", m)
+    for (i in 1:m) {
+      post_mus[[i]] <- mus[i, ]
+      post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
+    }
+    post_normix = normmix(post_ps, post_mus, post_sigmas, lambda = mean_lambda,
+                          win = win)
+  } else {
+    permgens <- PostGenGetBestPerm_sppmix(fit$allgens_List)
+    post_ps <- colMeans(permgens$permuted_ps[-(1:burnin), ])
+    mus <- apply(permgens$permuted_mus[, , -(1:burnin)], 1:2, mean)
+
+    mean_mat <- function(mats) Reduce("+", mats) / length(mats)
+    sigmas <- apply(permgens$permuted_sigmas[-(1:burnin), ], 2, mean_mat)
+
+    mean_lambda <- mean(fit$genlamdas[(burnin + 1):L])
+
+    post_mus <- post_sigmas <- vector("list", m)
+    for (i in 1:m) {
+      post_mus[[i]] <- mus[i, ]
+      post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
+    }
+    post_normix = normmix(post_ps, post_mus, post_sigmas, lambda = mean_lambda,
+                          win = win)
+  }
    if (plot_result == TRUE) {
-   post_ps <- colMeans(permgens$permuted_ps[-(1:burnin), ])
-   mus <- apply(permgens$permuted_mus[, , -(1:burnin)], 1:2, mean)
-
-   mean_mat <- function(mats) Reduce("+", mats) / length(mats)
-   sigmas <- apply(permgens$permuted_sigmas[-(1:burnin), ], 2, mean_mat)
-
-   mean_lambda <- mean(gens$genlamdas[(burnin + 1):L])
-
-   post_mus <- post_sigmas <- vector("list", m)
-   for (i in 1:m) {
-     post_mus[[i]] <- mus[i, ]
-     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
-   }
-   post_normix = normmix(post_ps, post_mus, post_sigmas)
-
    n = fit$data$n
     par(mfrow=c(1,1))
 
@@ -69,10 +90,9 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
      center = c(post_normix$mus[[i]])
      points(center[1], center[2] ,pch=20,col="red")
    }
-
-   plot.normmix(post_normix, mean_lambda, win = win,
+   plot.intensity_surface(post_normix,
                 title1 = "Posterior mean intensity surface (permutated labels)")
-
+}
 #   if(!is.null(truemix))
 #     ShowStats(permgens$permuted_ps,permgens$permuted_mus,truemix)
 #   ShowChains(permgens$permuted_ps,permgens$permuted_mus)
@@ -82,14 +102,24 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
 #   if(Get_User_Input_sppmix(
 #     "Show average of intensity surfaces \n(slow operation, permuted realizations)?"))
 #     plot_avgsurf(fit, win, burnin = burnin)
-   }
-   perum_fit <- list(allgens_List = permgens$permuted_gens,
-                     genps = permgens$permuted_ps,
-                     genmus = permgens$permuted_mus,
-                     gensigmas = permgens$permuted_sigmas,
-                     genlamdas = fit$genlamdas,
-                     data = fit$data
-                      )
+  if (approx == TRUE) {
+    perum_fit <- list(allgens_List = permgens$allgens_List,
+                      genps = permgens$genps,
+                      genmus = permgens$genmus,
+                      gensigmas = permgens$gensigmas,
+                      genzs = permgens$genzs,
+                      genlamdas = permgens$genlamdas,
+                      data = fit$data
+    )
+  } else {
+    perum_fit <- list(allgens_List = permgens$permuted_gens,
+                      genps = permgens$permuted_ps,
+                      genmus = permgens$permuted_mus,
+                      gensigmas = permgens$permuted_sigmas,
+                      genlamdas = fit$genlamdas,
+                      data = fit$data
+    )
+  }
    class(perum_fit) <- "damcmc_res"
    return(invisible(perum_fit))
 }
