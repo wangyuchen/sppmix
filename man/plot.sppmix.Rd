@@ -4,12 +4,11 @@
 \alias{plot.sppmix}
 \title{Plot spatial point pattern generated from mixture.}
 \usage{
-\method{plot}{sppmix}(pattern, intsurf, lambda, ...)
+\method{plot}{sppmix}(pattern, mus, lambda, ...)
 }
 \arguments{
-\item{pattern}{A point pattern of class sppmix or \code{\link[spatstat]{ppp}}.}
-
-\item{intsurf}{Object of class \code{\link{intensity_surface}}.}
+\item{pattern}{A point pattern of class sppmix or
+\code{\link[spatstat]{ppp}}.}
 
 \item{...}{Parameters passed to \code{\link[ggplot2]{ggplot}}.}
 }

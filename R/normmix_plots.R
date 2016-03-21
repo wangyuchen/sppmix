@@ -23,7 +23,8 @@
 #'                     win = square(1))
 #' plot(intsurf1)
 plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
-                                   title1="Poisson Process Intensity", truncate = TRUE,
+                                   title1="Poisson Process Intensity",
+                                   truncate = TRUE,
                                    zlims = c(0, 0),
                                    pos=c(0,0,0), grayscale = FALSE, ...) {
   xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
@@ -32,15 +33,18 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
   xlims <- c(win$xrange)
   ylims <- c(win$yrange)
 
-  z <- intsurf$intensity*dnormmix(intsurf, win = win, xcoord, ycoord, truncate = truncate)$v
+  z <- intsurf$intensity*dnormmix(intsurf, xlim = win$xrange, ylim = win$yrange,
+                                  L = L, truncate = truncate)$v
 
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
   if (grayscale == TRUE) {
-    col <- gray.colors(100)[findInterval(t(z), seq(min(z), max(z), length = 100))]
+    col <- gray.colors(100)[findInterval(t(z), seq(min(z),
+                                                   max(z), length = 100))]
   } else {
-    col <- jet.colors(100)[findInterval(t(z), seq(min(z), max(z), length = 100))]
+    col <- jet.colors(100)[findInterval(t(z), seq(min(z),
+                                                  max(z), length = 100))]
   }
 
   if (zlims[1] == 0 && zlims[2] == 0) {
@@ -87,7 +91,8 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
 #' Plot funciton for spatial point pattern generated from mixture. It's an
 #' alternative to spatstat's plotting functions.
 #'
-#' @param pattern A point pattern of class sppmix or \code{\link[spatstat]{ppp}}.
+#' @param pattern A point pattern of class sppmix or
+#' \code{\link[spatstat]{ppp}}.
 #' @param ... Parameters passed to \code{\link[ggplot2]{ggplot}}.
 #' @inheritParams plot_contour
 #' @export
@@ -102,28 +107,29 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
 #' plot(spp)
 #' plot(spp, intsurf1)
 #'
-plot.sppmix <- function(pattern, intsurf, lambda,...) {
-  n <- pattern$n
-  if(!missing(intsurf)){
-    if(is.intensity_surface(intsurf)) {
-      lambda <- intsurf$intensity
-      m <- intsurf$m
-      title <- list(
-        bquote(paste(lambda,"=",.(intsurf$intensity),",",.(n)," points, ", .(m),
-                     " component(s)")), "Spatial Point Pattern with")
-    }
-  } else {
-    title <- list(paste("Spatial Point Pattern with", n, "points"), NULL)
-  }
+plot.sppmix <- function(pattern, mus, lambda,...) {
+  n <- spatstat::npoints(pattern)
 
-  plot(pattern$x,pattern$y, xlab = "X", ylab = "Y", pch=16,main = "",...)
-  mtext(do.call(expression, title),side=3,line=0:1)
-  if (!missing(intsurf)) {
-    center <- as.data.frame(matrix(unlist(intsurf$mus),ncol=2, byrow = T))
-    colnames(center) <- c("x", "y")
-    points(center$x, center$y, col = "red", pch=19)
+  p <- ggplot(as.data.frame(pattern), aes(x, y), ...) + geom_point() +
+    labs(x = "X", y = "Y") +
+    coord_fixed(xlim = spp$window$xrange, ylim = spp$window$yrange) +
+    theme_light()
+
+  if (missing(mus)) {
+    p + ggtitle(paste("Spatial Point Pattern with", n, "points"))
+  } else {
+    stopifnot(is.intensity_surface(intsurf))
+    mean_df <- data.frame(do.call(rbind, intsurf1$mus))
+    names(mean_df) <- c("x", "y")
+    p <- p + geom_point(data = mean_df, color = "red", size = 2.5) +
+      ggtitle(paste("Spatial Point Pattern with", n, "points"))
   }
+  p
 }
+
+
+
+
 
 #' 2D contour plots for normal mixture and intensity surface
 #'
@@ -180,13 +186,14 @@ plotmix_2d <- function(intsurf, pattern, contour = FALSE, truncate = TRUE,
 }
 
 #' @param mix object of class \code{normmix}.
-#' @param win Plotting window for normmix density. When omitted, it will
-#' guess the range of the window by normal mixture parameters.
 #' @export
 #' @rdname density_plots
-plot.normmix <- function(mix, win, contour = FALSE, truncate = TRUE, L = 256) {
+plot.normmix <- function(mix, xlim, ylim, contour = FALSE,
+                         truncate = FALSE, L = 256) {
 
-  if (missing(win)) {
+  stopifnot(is.normmix(mix))
+
+  if (missing(xlim) | missing(ylim)) {
     limits <- lapply(seq_len(mix$m), function(k) {
       c(mvtnorm::qmvnorm(.01, mean = mix$mus[[k]],
                          sigma = mix$sigmas[[k]])$quantile,
@@ -194,14 +201,15 @@ plot.normmix <- function(mix, win, contour = FALSE, truncate = TRUE, L = 256) {
                          sigma = mix$sigmas[[k]])$quantile)
     })
 
+    if (truncate) warning("Using truncation without specifying a window.")
     est_range <- range(unlist(limits))
-    win <- spatstat::owin(est_range, est_range)
-  } else {
-    stopifnot(is.normmix(mix) & spatstat::is.owin(win))
+    if (missing(xlim)) xlim <- est_range
+    if (missing(ylim)) ylim <- est_range
   }
 
-  est_density <- dnormmix(mix, xlim = win$xrange, ylim = win$yrange,
+  est_density <- dnormmix(mix, xlim = xlim, ylim = ylim,
                           L = L, truncate = truncate)
+
 
   plot_density(as.data.frame(est_density), contour = contour) +
     labs(fill = "Density") +
@@ -213,15 +221,18 @@ plot_density <- function(density_df, contour = FALSE) {
   p <- ggplot(density_df, aes(x, y)) + coord_fixed(expand = FALSE) +
     labs(x = "X", y = "Y")
 
-  if (!contour) {
-    color <- c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
-               "#FF7F00", "red", "#7F0000")
+  color <- c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
+             "#FF7F00", "red", "#7F0000")
 
+  if (!contour) {
     p + geom_raster(aes(fill = value)) +
       scale_fill_gradientn(colors = color) +
       guides(fill = guide_colorbar(nbin = 100, barheight = 15))
   } else {
-    p + stat_contour(aes(z = value))
+    p + stat_contour(aes(z = value, color = ..level..)) +
+      scale_color_gradientn(colors = color) +
+      guides(color = guide_colorbar(nbin = 100, barheight = 15)) +
+      theme_light()
   }
 }
 

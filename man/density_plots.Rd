@@ -8,7 +8,7 @@
 plotmix_2d(intsurf, pattern, contour = FALSE, truncate = TRUE, L = 256,
   ...)
 
-\method{plot}{normmix}(mix, win, contour = FALSE, truncate = TRUE,
+\method{plot}{normmix}(mix, xlim, ylim, contour = FALSE, truncate = FALSE,
   L = 256)
 }
 \arguments{
@@ -27,9 +27,6 @@ default to TRUE.}
 \item{...}{Further parameters to passed to \code{to_int_surf()}.}
 
 \item{mix}{object of class \code{normmix}.}
-
-\item{win}{Plotting window for normmix density. When omitted, it will
-guess the range of the window by normal mixture parameters.}
 }
 \description{
 Create a contour plot for the intensity surface with or without realizations

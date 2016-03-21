@@ -59,9 +59,10 @@ dnormmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1), L = 128,
     # every col of den is for a component
     den[, k] <- mvtnorm::dmvnorm(locs, mix$mus[[k]], mix$sigmas[[k]])
     den[, k] <- den[, k] * mix$ps[k]
-    if (truncate) {
-      den[, k] <- den[, k] / approx[k]
-    }
+
+  }
+  if (truncate) {
+      den <- scale(den, center = FALSE, scale = approx)
   }
 
   est <- matrix(rowSums(den), nrow = length(y), ncol = length(x), byrow = T)
