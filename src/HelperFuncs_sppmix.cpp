@@ -35,7 +35,8 @@ mat invmat2d_sppmix(mat const& A){
 
 //' @export
 // [[Rcpp::export]]
-double densNormMixatx_sppmix(vec const& atx,List const& mix)
+double densNormMixatx_sppmix(vec const& atx,List const& mix
+   ,vec const& approxcomp)
 {
   //  densNormMix_sppmix(c(0,0),truemix)
   int j,m=mix.size();
@@ -59,7 +60,7 @@ double densNormMixatx_sppmix(vec const& atx,List const& mix)
     //    Rcout << "passed"<< std::endl ;
     invsigk=invmat2d_sppmix(sigmak);
     c1=1.0/sqrt(det(2*datum::pi*sigmak));
-    val=val+psj*c1*
+    val=val+psj/approxcomp(j)*c1*
       exp(-.5*Quad_sppmix(mu1,invsigk));
   }
   return val;
@@ -68,20 +69,20 @@ double densNormMixatx_sppmix(vec const& atx,List const& mix)
 //' @export
 // [[Rcpp::export]]
 vec densNormMix_atxy_sppmix(mat const& atxy,
-                               List const& mix)
+  List const& mix,vec const& approxcomp)
 {
 //atxy is an nx2 matrix
   int i,n=atxy.n_rows;
   vec val=zeros(n);
   for(i=0;i<n;i++)
-    val(i)=densNormMixatx_sppmix(trans(atxy.row(i)),mix);
+    val(i)=densNormMixatx_sppmix(trans(atxy.row(i)),mix,approxcomp);
   return val;
 }
 
 //' @export
 // [[Rcpp::export]]
 mat dNormMix_sppmix(List const& mix, vec const& x,
-                    vec const& y)
+    vec const& y,vec const& approxcomp)
 {
   int xnum=x.size(),ynum=y.size();
   //  int m = mix.size();
@@ -94,7 +95,7 @@ mat dNormMix_sppmix(List const& mix, vec const& x,
     {
       atxy(0)=x(i);
       atxy(1)=y(j);
-      z(i,j)=densNormMixatx_sppmix(atxy,mix);
+      z(i,j)=densNormMixatx_sppmix(atxy,mix,approxcomp);
     }
     return z;
 }
@@ -276,7 +277,8 @@ vec SubVec_sppmix(vec const& v,int const& start,
 double GetMixtureMaxz_sppmix(List const& genmix,
                              int const& len,
                              vec const& xlims,
-                             vec const& ylims)
+                             vec const& ylims,
+                             vec const& approxcomp)
 {
 //assumes no truncation, do grid search
   int i,j;
@@ -295,7 +297,7 @@ double GetMixtureMaxz_sppmix(List const& genmix,
     {
       atxy(0)=ticsx(i);
       atxy(1)=ticsy(j);
-      zval=densNormMixatx_sppmix(atxy,genmix);
+      zval=densNormMixatx_sppmix(atxy,genmix,approxcomp);
       if(zval>zmax)
         zmax=zval;
     }

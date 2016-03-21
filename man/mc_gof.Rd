@@ -4,7 +4,7 @@
 \alias{mc_gof}
 \title{Monte Carlo goodness of fit test for normal mixture model}
 \usage{
-mc_gof(pp, intsurf, alpha, L = 5000, burnin = L/10, truncate = TRUE)
+mc_gof(pp, intsurf, alpha, L = 5000, burnin = L/10, truncate = FALSE)
 }
 \arguments{
 \item{pp}{point pattern object of class \code{ppp}.}
@@ -24,6 +24,12 @@ default to TRUE.}
 Performs a test of goodness-of-fit for a given IPPP with mixture intensity
 surface. Monte Carlo method is used to compare an observed point pattern with
 a proposed normal mixture model.
+}
+\details{
+The test statistic is the average distance between the given point patten
+and each component mean. MCMC realizations are used to simulate the distribution
+of the test statistic. To conduct the test, need to compare the test statistic
+with the percentile of the simulated distribution.
 }
 \examples{
 # Generate intensity surface

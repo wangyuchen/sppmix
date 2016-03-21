@@ -21,7 +21,7 @@ List DAMCMC2dExtras_sppmix(mat const& points,
   //all elements in the field are 2x2 matrices
   field<mat> gensigmas(L,m),geninvsigmas(L,m);
   mat genz=zeros(L,n),genps=zeros(L,m);
-  mat consts=zeros(L,m);
+  mat consts=zeros(L,m),approxmass=ones(L,m);
 
   vec meanps=zeros(m);
   mat meanmus=zeros(m,2);
@@ -115,7 +115,7 @@ List DAMCMC2dExtras_sppmix(mat const& points,
     consts(0,i)=1.0/sqrt(det(2*datum::pi*gensigmas(0,i)));
   }
   mat prevz,sumz(n,m),zmultinomial(n,m);
-  mat zhats(n,m),zhatsprev(n,m);
+  mat zhats(n,m),zhatsprev=ones(n,m);
   sumz=zeros<mat>(n,m);
 //     Rcout <<"passed"<< std::endl ;
   if(m==1)
@@ -510,7 +510,18 @@ List DAMCMC2dExtras_sppmix(mat const& points,
         marginal+=density_at_pp_prev;
       density_at_pp_prev=density_at_pp;
     }
-  //get all means
+    //approximate all component masses
+    //if truncate is on
+    if(truncate)
+      for(j=0;j<m;j++)
+      {
+        mu1(0)=genmus(j,0,i+1);
+        mu1(1)=genmus(j,1,i+1);
+        approxmass(i,j)=
+          ApproxBivNormProb_sppmix(xlims,
+          ylims,mu1,gensigmas(i+1,j),2);
+      }
+//get all means
   /*    if(i>burnin)
     {
       numiters++;
@@ -674,5 +685,6 @@ List DAMCMC2dExtras_sppmix(mat const& points,
     Named("genlamdas") = lamdas,
     Named("Marginal") = marginal,
     Named("LogLikelihood") = loglikelihood,
-    Named("Entropy") = entropy);
+    Named("Entropy") = entropy,
+    Named("ApproxCompMass")=approxmass);
 }

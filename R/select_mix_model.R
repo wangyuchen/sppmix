@@ -10,7 +10,6 @@
 #' The entertained model is based on the posterior means
 #' of MCMC runs, for several numbers of components
 #' defined in the vector Ms.
-#' @inheritParams
 #' @param runallperms Set to 0 to use an approximation to the
 #' Likelihood and Entropy within the MCMC (not affected by label switching).
 #' Set to 1 to use an identifiability constraint
@@ -36,9 +35,10 @@
 #' @examples
 #' # create the true mixture
 #' truemix <- normmix(ps=c(.2, .6,.2), mus=list(c(0.3, 0.3), c(0.7, 0.7), c(0.5, 0.5)),
-#' sigmas = list(.005*diag(2), .001*diag(2), .001*diag(2)))
+#' sigmas = list(.005*diag(2), .001*diag(2), .001*diag(2)),
+#' lambda=100,win=square(1))
 #' # generate the point pattern
-#' genPPP <- rsppmix(100,truemix,square(1))
+#' genPPP <- rsppmix(truemix)
 #' plot(genPPP)
 #' # compute model selection criteria
 #' ModelSel=selectMix(genPPP,1:5,runallperms=0)
@@ -157,8 +157,8 @@ selectMix <- function(pp, Ms, L = 10000, burnin = 1000,
                BayesFactor = bayes_factor,
                Marginal=marginal,
                LogLikelihood=loglikelihood)
-  cat(paste("AIC minimum for",which.min(AIC),"components"))
-  cat(paste("\nBIC minimum for",which.min(BIC),"components"))
-  cat(paste("\nICLC minimum for",which.min(ICLC),"components"))
+  cat(paste("AIC minimum for",Ms[which.min(AIC)],"components"))
+  cat(paste("\nBIC minimum for",Ms[which.min(BIC)],"components"))
+  cat(paste("\nICLC minimum for",Ms[which.min(ICLC)],"components"))
   return(RVAL)
 }

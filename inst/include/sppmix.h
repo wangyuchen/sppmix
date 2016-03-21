@@ -66,8 +66,9 @@ vec rPerm_sppmix(int const& n);
 //file: ApproxFuncs_sppmix.cpp
 mat ApproxAvgPostIntensity(List const& genmix,
     vec const& lamdas,int const& LL,int const& burnin,
-    vec const& xlims,vec const& ylims);
+    vec const& xlims,vec const& ylims,mat const& approxcomp);
 double ApproxCompMass_sppmix(vec const& xlims,vec const& ylims,vec const& mu,mat const& sigma);
+vec ApproxAllCompMass_sppmix(vec const& xlims,vec const& ylims,List const& mix,bool const& truncated);
 double ApproxMHRatiomu_sppmix(vec const& xlims,
     vec const& ylims,vec const& curmu,
     vec const& propmu,mat const& sigma,
@@ -80,7 +81,8 @@ mat ApproxBayesianModelAvgIntensity_sppmix(
     List const& genBDmix,vec const& lamdas,
     vec const& numcomp,vec const& distr_numcomp,
     int const& mincomp,int const& maxcomp,
-    int const& LL,vec const& xlims,vec const& ylims);
+    int const& LL,vec const& xlims,vec const& ylims
+  ,mat const& approxcomp);
 double ApproxNormCdf2d_sppmix(vec const& uplim,
   vec const& mu,mat const& sigma);
 
@@ -100,13 +102,19 @@ List GetBDCompRealiz_sppmix(List const& genBDmix,vec const& genlamdas,vec const&
 mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat const& genzs,int const& m);
 bool Check4LabelSwitching_sppmix(vec const& chain);
 List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens);
+mat PermuteZs_sppmix(mat const& allgens_zs,
+                     mat const& bestperm);
+mat FisherInfoMat_sppmix(mat const& data,
+ vec const& map_ps,mat const& map_mus,
+ List const& map_sigmas,mat const& map_zs);
+
 //Helper functions
 //file: HelperFuncs_sppmix.cpp
 double Factorial_sppmix(int x);
 mat invmat2d_sppmix(mat const& A);
-double densNormMixatx_sppmix(vec const& atx,List const& mix);
-vec densNormMix_atxy_sppmix(mat const& atxy,List const& mix);
-mat dNormMix_sppmix(List const& mix, vec const& x,vec const& y);
+double densNormMixatx_sppmix(vec const& atx,List const& mix,vec const& approxcomp);
+vec densNormMix_atxy_sppmix(mat const& atxy,List const& mix,vec const& approxcomp);
+mat dNormMix_sppmix(List const& mix, vec const& x,vec const& y,vec const& approxcomp);
 vec Permute_vec_sppmix(vec const& oldvec,vec const& perm);
 mat Permute_mat_sppmix(mat const& oldmat,vec const& perm);
 mat GetAllPermutations_sppmix(int const& m);
@@ -119,7 +127,8 @@ double GammaFunc_sppmix(double const& x);
 double SumVec_sppmix(vec const& v,int const& start,int const& end);
 vec SubstituteVec_sppmix(vec v,vec const& subv,int const& start);
 vec SubVec_sppmix(vec const& v,int const& start,int const& end);
-double GetMixtureMaxz_sppmix(List const& genmix,int const& len,vec const& xlims,vec const& ylims);
+double GetMixtureMaxz_sppmix(List const& genmix,int const& len,vec const& xlims,vec const& ylims,
+                             vec const& approxcomp);
 List MakeMixtureList_sppmix(List const& gens_list,int const& burnin);
 List CheckInWindow_sppmix(mat const& points,vec const& xlims,vec const& ylims,bool const& truncate);
 List GetMax_sppmix(vec const& v);

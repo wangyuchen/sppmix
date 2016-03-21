@@ -5,7 +5,7 @@
 \title{Fix label switching}
 \usage{
 FixLS_da(fit, burnin = length(fit$allgens_List)/10, xlab1 = "x",
-  ylab1 = "y", plot_result = FALSE)
+  ylab1 = "y", approx = FALSE, plot_result = FALSE)
 }
 \arguments{
 \item{fit}{An object contains all posterior realizations from
@@ -17,6 +17,9 @@ iteration.}
 \item{xlab1}{The label for x-axis}
 
 \item{ylab1}{The label for y-axis}
+
+\item{approx}{Logical flag indicating whether use identifiability constraint
+to permute all realizations.}
 
 \item{plot_result}{Logical flag indicating whether plot the point pattern
 and intensity surface after permutation. The default is FALSE.}

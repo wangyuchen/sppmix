@@ -35,7 +35,7 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
     geninvsigmas(L,maxnumcomp);
   //  gensigmas(0,1), first realization for second comp
   mat genps=zeros(L,maxnumcomp),
-    consts=zeros(L,maxnumcomp);
+    consts=zeros(L,maxnumcomp),approxmass=ones(L,maxnumcomp);
   vec meanps=zeros(maxnumcomp),
       propp=zeros(maxnumcomp);
   mat meanmus=zeros(maxnumcomp,2),
@@ -439,6 +439,15 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
       genps(i+1,0)=1;
 //    Rcout << "passed ps" << std::endl ;
 //    Rcout << gensigmas(i+1,0) << std::endl ;
+    if(truncate)
+      for(j=0;j<numcomp(i+1);j++)
+      {
+        mu1(0)=genmus(j,0,i+1);
+        mu1(1)=genmus(j,1,i+1);
+        approxmass(i,j)=
+          ApproxBivNormProb_sppmix(xlims,
+                                   ylims,mu1,gensigmas(i+1,j),2);
+      }
   }
   printf("\rDone                                                      \n");
 //  printf("\rMH acceptance %3.1f%%",100.0*MHjump/L);
@@ -475,5 +484,6 @@ List BDMCMC2d_sppmix(int const& maxnumcomp,
     Named("genzs") = genz,
     Named("genlamdas") = lamdas,
     Named("numcomp") = numcomp,
-    Named("maxnumcomp") = maxnumcomp);
+    Named("maxnumcomp") = maxnumcomp,
+    Named("ApproxCompMass")=approxmass);
 }

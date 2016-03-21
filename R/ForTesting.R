@@ -24,11 +24,11 @@ GenNormalMixture<- function(lamda=50,m=1,
   }
   #  data
   #  data=rnorm2_sppmix(n,mu,sig)
-  mix1<-mix
-  genmix<<-rNormMix_sppmix(lamda,mix1)
-  gendata<<-genmix[[1]];
+  mix1=mix
+  genmix=rNormMix_sppmix(lamda,mix1)
+  gendata=genmix$data;
   n<<-nrow(gendata);
-  truecomps<<-genmix[[2]];
+  truecomps=genmix$comp;
   print(table(truecomps))
 #  opar <- par()      # make a copy of current settings
   par(mfrow=c(1,1))
@@ -83,7 +83,7 @@ if(0)
     points(mix1[[i]]$mu[1],mix1[[i]]$mu[2],pch=20,col="red")
   }
 #  par(opar)
-  return(mix1)
+  return(list(mix1,genmix))
 }
 
 #' @export
@@ -109,7 +109,7 @@ PlotNormalMixture<- function(mix1,data1,
     title1
   )
   #  Now output each line The text in the list is converted to expressions do.call
-
+  windows(width=400, height=300,xpos=10, ypos=10)
   plot(data1,pch=20,
        xlab=xlab1,#xlab="longitude",
        ylab=ylab1,#ylab="latitude",
@@ -121,7 +121,7 @@ PlotNormalMixture<- function(mix1,data1,
 
   for(i in 1:m1)
   {
-    points(mix1[[i]]$mu[1],mix1[[i]]$mu[2],pch=20,col="red")
+    points(mix1[[i]]$mu[1],mix1[[i]]$mu[2],cex=1.5,pch="x",col="red")
   }
 
 #  plot(data,pch=20,xlab="longitude",
@@ -129,31 +129,34 @@ PlotNormalMixture<- function(mix1,data1,
 #       main=paste("Mixture with",m,"components",
  #                 "\n",n,"points"));
 
-  Plot2d_sppmix(data1,mix1,lamda1,xlims1,ylims1,
-                title1,xlab1,ylab1,100)
+#  cat("passed")
+#  windows(width=800, height=600)
+#  Plot2d_sppmix(data1,mix1,lamda1,xlims1,ylims1,
+#                title1,xlab1,ylab1,100)
+#  cat("passed1")
+  #2d Intensity plot
+  mix2<-MakeNormMixFromMixtureList(mix1)
+  surf<-to_int_surf(mix2,lambda = lamda1,
+                    win = as.owin(c(xlims1,ylims1)))
+  windows(width=400, height=300,xpos=10, ypos=10)
+  PPP<-spatstat::ppp(data1[,1],
+                     data1[,2],xlims1,ylims1,
+                     check=FALSE)
+  plot_contour(surf,
+               PPP,as.owin(c(xlims1,ylims1)),
+               xlab=xlab1,ylab=ylab1)
 
   xcoord <- seq(xlims1[1], xlims1[2], length.out = L1);
   ycoord <- seq(ylims1[1], ylims1[2], length.out = L1);
-  if(0==1)
-  {#use the package routine
-    normmix1=MakeNormMixFromMixtureList(mix1);
-    plot(normmix1, lamda1,
-        win=spatstat::owin(xlims1, ylims1),
-        L = 100,
-      title1="Poisson Process Intensity", truncate = TRUE)
-  }
-  else
-  {#use the Plot3d_sppmix routine
-    print(mix1)
-    zcoord <- lamda1*dNormMix_sppmix(mix1, xcoord, ycoord);
+#use the Plot3d_sppmix routine
+    #print(mix1)
+  normmixmix1=MakeNormMixFromMixtureList(mix1)
+  approxcomp=approx_normmix(normmixmix1,as.owin(c(xlims1,ylims1)))
+    zcoord <- lamda1*dNormMix_sppmix(mix1, xcoord, ycoord,approxcomp);
     Plot3d_sppmix(xcoord,ycoord,zcoord,
                   title1=title3d,
                   xlims1,ylims1,zlims1)
-  }
-  #,pos1=c(xlims[1],ylims[2],0))
-  #              paste("Mixture with",
-   #            m,"components,",n,"points"))
-#  return(zcoord)
+
 }
 
 
@@ -183,10 +186,26 @@ Plot2d_sppmix<- function(data1,mix1,lamda1=100,
 #       xlim=xlims1, ylim=ylims1,main="")
 #  mtext(do.call(expression, titleLines),side=3,line=0:1)
 
+ #   cat("passed")
   #2d Intensity plot
+  mix2<-MakeNormMixFromMixtureList(mix1)
+  surf<-to_int_surf(mix2,lambda = lamda1,
+          win = as.owin(c(xlims1,ylims1)))
+  windows(width=400, height=300,xpos=10, ypos=10)
+  PPP<-spatstat::ppp(data1[,1],
+                     data1[,2],xlims1,ylims1,
+                    check=FALSE)
+  plot_contour(surf,
+               PPP,as.owin(c(xlims1,ylims1)),
+               xlab=xlab1,ylab=ylab1)
+#  cat("passed1")
+  if(0)
+ {
   xcoord <- seq(xlims1[1], xlims1[2], length.out = L1);
   ycoord <- seq(ylims1[1], ylims1[2], length.out = L1);
-  zcoord <- lamda1*dNormMix_sppmix(mix1, xcoord, ycoord);
+  normmixmix1=MakeNormMixFromMixtureList(mix1)
+  approxcomp=approx_normmix(normmixmix1,as.owin(c(xlims1,ylims1)))
+  zcoord <- lamda1*dNormMix_sppmix(mix1, xcoord, ycoord,approxcomp);
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
                                    "#7F0000"))
@@ -196,19 +215,34 @@ Plot2d_sppmix<- function(data1,mix1,lamda1=100,
 #        cex=0.8, ylab=ylab1,axes = TRUE,
 #        main="",col= cols)
 #  library("grDevices")
-  filled.contour(x=xcoord,y=ycoord, z=zcoord,
+ filled.contour(x=xcoord,y=ycoord, z=zcoord,
                  color = jet.colors,
                  plot.axes = { axis(1);
                    axis(2);
                    points(data1[,1], data1[,2], col="Black",pch = 20,cex=0.8)},
                  frame.plot = FALSE, asp = 1,
-                 nlevels =50,axes = TRUE)
+                 nlevels =50,axes = TRUE,
+                 xlab=xlab1,ylab=ylab1)
 #  points(data1,pch=20,cex=0.1)
   mtext(do.call(expression, titleLines),
         #adj = 0,
         side=3,line=0:1)
 #  par(mai=c(1, 1, 1, 1))
 
+    library(fields)
+    title1 <- list(
+      bquote(paste(lambda,"=",.(lamda1),", n=",.(n))), title)
+    obj <- list(x = xcoord, y= ycoord, z=zcoord)
+    fields::plot.surface(obj, type = "I", col=jet.colors(150), main = "")
+    points(data1[,1],data1[,2], pch=16, cex=0.5)
+    mtext(do.call(expression, title1), side = 3, line = 0:1, at = 0.5)
+
+
+  }
+#  cat("passed")
+
+#  plot_contour(mix1,lamda1,data1)
+#  cat("passed1")
 
 }
 
@@ -407,6 +441,10 @@ Go<- function()
 #  truncated<<-FALSE
   LL<<-50
   maxnumcomp<<-10
+#  if(Get_User_Input_sppmix("Apply truncation?"))
+#    truncated<<-TRUE
+#  else
+    truncated<<-FALSE
 
   ps=c(.4, .2, .4)
   mus=list(c(0.2, 0.2), c(0.2, 0.8), c(0.8, 0.8))
@@ -414,8 +452,8 @@ Go<- function()
   ps=c(.2, .8)
   mus=list(c(0.2, 0.2), c(0.8, 0.8))
   sigmas=list(.02*diag(2), .01*diag(2))
-  mix2 <- normmix(ps, mus,sigmas)
-  pp2 <<- rsppmix(lamda, mix2, square(1))
+  mix2 <- normmix(ps, mus,sigmas,lamda,square(1))
+  pp2 <<- rsppmix(mix2,truncated)
   truemix=vector("list", m)
   for(i in 1:m)
   {
@@ -426,36 +464,55 @@ Go<- function()
   }
   gendata<<-cbind(pp2$x,pp2$y)
   n<<-nrow(gendata)
-  if(Get_User_Input_sppmix("Apply truncation?"))
-    truncated<<-TRUE
-  else
-    truncated<<-FALSE
 
   gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,truncated,c(3,.3,1))
+#  gens <<- est_mix_damcmc(pp2, m)
+  mix_of_postmeans<<-
+    MakeMixtureList(gens$allgens_List,burnin)
 
+  post_means<<-GetAllMeans_sppmix(gens$allgens_List,burnin);
+  post_meanzs<<-GetAvgLabelsDiscrete2Multinomial_sppmix(
+    gens$genzs,m)
+  #convert the array into a list
+  meansigmasList=vector("list", m);
+  for(i in 1:m)
+  {
+    meansigmasList[[i]]=list(sigma=post_means$meansigmas[,,i])
+  }
+  FisherMat<<-FisherInfoMat_sppmix(
+    as.matrix(gendata),post_means$meanps,
+    post_means$meanmus,meansigmasList,
+    post_meanzs)
+
+  cat(paste("sqrt(det(Fisher))=",sqrt(det(FisherMat))))
 #  if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
   if(1){
- #   if (m>1)
-    plot_ind(gens)
-#    print(summary(truemix))
+    if (m>1)
+    print(plot_ind(gens))
+#        cat("passed")
+    #    print(summary(truemix))
+    normmixtruemix=MakeNormMixFromMixtureList(truemix)
+    approxcomp=approx_normmix(normmixtruemix,as.owin(c(xlims,ylims)))
     zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
-                                             100,xlims,ylims);
+       100,xlims,ylims,approxcomp);
 #    cat("passed")
-    mix_of_postmeans<<-#MakeMixtureList_sppmix(
-      MakeMixtureList(gens$allgens_List,burnin)
     mean_lambda<<-mean(gens$genlamdas[burnin:L]);
+    normmixmix_of_postmeans=MakeNormMixFromMixtureList(mix_of_postmeans)
+    approxcomp=approx_normmix(normmixmix_of_postmeans,as.owin(c(xlims,ylims)))
     zmax_genmeanmix=mean_lambda *
       GetMixtureMaxz_sppmix(mix_of_postmeans,
-                            100,xlims,ylims);
+        100,xlims,ylims,approxcomp);
 #    cat("passed1")
     #find the highest z
     maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
     #do all the plotting with a common maximum z value
+#    cat("passed")
     PlotNormalMixture(mix1=truemix,data1=gendata,
                       m1=m,lamda1=lamda,xlims1=xlims,
                       ylims1=ylims,L1=100,
                       title1="True mixture",zlims1=c(0,1.1*maxz_height),
                       title3d=paste("True mixture intensity surface,",m,"components,",n,"points"))
+ #   cat("passed1")
 
     PlotNormalMixture(mix1=mix_of_postmeans,
                       data1=gendata,
@@ -477,12 +534,12 @@ Go<- function()
     CheckLabels(gens$genmus[,,burnin:L])
 
   if(Get_User_Input_sppmix("Show average of intensity surfaces (slow operation)?"))
-    Show3dAvgofsurfaces(gens,LL,burnin,xlims,ylims,zlims=c(0,1.1*maxz_height))
+    Show3dAvgofsurfaces(gens,LL,burnin,xlims,ylims,zlims=c(0,1.1*maxz_height),truncated=truncated)
 
   if(Get_User_Input_sppmix("Apply relabeling algorithm?"))
   {
     FixLabels(gens,data1=gendata,truemix,1.1*maxz_height,
-              m1=m,xlims1=xlims,ylims1=ylims)
+              m1=m,xlims1=xlims,ylims1=ylims,truncated=truncated)
   }
   #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,FALSE,1,20,c(15,.01,3,2,1,1))
 
@@ -490,7 +547,7 @@ Go<- function()
   {
     gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,FALSE,1,10,c(5,.01,3,2,1,1))
     if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
-      PostGenBDMCMC_sppmix(gensBD,maxz_height)
+      PostGenBDMCMC_sppmix(gensBD,gendata,xlims,ylims,maxz_height=maxz_height)
   }
 
 }
@@ -513,7 +570,7 @@ Demo_sppmix<- function()
   {
     xlims<<-c(0,10)
     ylims<<-c(0,10)
-    L<<-10000
+    L<<-1500
     m<<-5
     burnin<<-1000
     lamda<<-100
@@ -553,7 +610,16 @@ Demo_sppmix<- function()
     truncated<<-FALSE
 
   if(Get_User_Input_sppmix("Generate the true mixture?"))
-    truemix<<-GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
+  {
+    genmix=GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
+    truemix=genmix[[1]]
+    allgendata=genmix[[2]]
+ #   print(summary(allgendata))
+    gendata<<-allgendata$data
+    truecomps<<-allgendata$comp
+  }
+  if(is.null(gendata))
+    stop("No data! Generate some.")
 
   genPPP<<-spatstat::ppp(gendata[,1],gendata[,2],
                          xlims,ylims,check=FALSE)
@@ -562,20 +628,23 @@ Demo_sppmix<- function()
     gens<<-DAMCMC2d_sppmix(gendata,xlims,ylims,m,L,truncated,c(3,1,1))
 
 #  class(gens) <<- "damcmc_res"
- #   cat("passed")
   if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
   {
     if (m>1)
       print(plot_ind(gens))
+    normmixtruemix=MakeNormMixFromMixtureList(truemix)
+    approxcomp=approx_normmix(normmixtruemix,as.owin(c(xlims,ylims)))
     zmax_truemix=lamda*GetMixtureMaxz_sppmix(truemix,
-        100,xlims,ylims);
+        100,xlims,ylims,approxcomp);
     mix_of_postmeans<<-#MakeMixtureList_sppmix(
          MakeMixtureList(gens$allgens_List,burnin)
     mean_lambda<<-mean(gens$genlamdas[burnin:L]);
+    normmixmix_of_postmeans=MakeNormMixFromMixtureList(mix_of_postmeans)
+    approxcomp=approx_normmix(normmixmix_of_postmeans,as.owin(c(xlims,ylims)))
     zmax_genmeanmix=mean_lambda *
       GetMixtureMaxz_sppmix(mix_of_postmeans,
-                            100,xlims,ylims);
-  #find the highest z
+            100,xlims,ylims,approxcomp);
+    #find the highest z
     maxz_height<<-max(c(zmax_truemix,zmax_genmeanmix))
   #do all the plotting with a common maximum z value
     PlotNormalMixture(mix1=truemix,data1=gendata,
@@ -604,12 +673,12 @@ Demo_sppmix<- function()
     CheckLabels(gens$genmus[,,burnin:L])
 
   if(Get_User_Input_sppmix("Show average of intensity surfaces (slow operation)?"))
-    Show3dAvgofsurfaces(gens,LL,burnin,xlims,ylims,zlims=c(0,1.1*maxz_height))
+    Show3dAvgofsurfaces(gens,LL,burnin,xlims,ylims,zlims=c(0,1.1*maxz_height),truncated=truncated)
 
   if(Get_User_Input_sppmix("Apply relabeling algorithm?"))
   {
     FixLabels(gens,data1=gendata,truemix,1.1*maxz_height,
-              m1=m,xlims1=xlims,ylims1=ylims)
+              m1=m,xlims1=xlims,ylims1=ylims,truncated=truncated)
   }
   #BDMCMC2d_sppmix(20,gendata,xlims,ylims,L,FALSE,1,20,c(15,.01,3,2,1,1))
 
@@ -617,14 +686,14 @@ Demo_sppmix<- function()
   {
     gensBD<<-BDMCMC2d_sppmix(maxnumcomp,gendata,xlims,ylims,L,FALSE,1,10,c(5,.01,3,2,1,1))
     if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?"))
-      PostGenBDMCMC_sppmix(gensBD,maxz_height)
+      PostGenBDMCMC_sppmix(gensBD,gendata,xlims,ylims,maxz_height=maxz_height)
   }
 
 }
 
 
 #' @export
-PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
+PostGenBDMCMC_sppmix<- function(gensBD,gendata,xlims,ylims,LL=51,maxz_height,truncated=FALSE)
 {#processes output from a Birth-Death fit
   cat("Frequency table for the number of components")
   print(table(gensBD$numcomp))
@@ -647,7 +716,7 @@ PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
 
   #  windows()
   plot(gensBD$numcomp,xlab="Iteration",ylab="Number of components",type="l",main="Generated chain for the number of components")
-  distr_numcomp<<-GetCompDistr_sppmix(gensBD$numcomp[burnin:L],maxnumcomp)
+  distr_numcomp<<-GetCompDistr_sppmix(gensBD$numcomp[burnin:L],gensBD$maxnumcomp)
 
   MAPcompList=GetMax_sppmix(tab)
   MAPcomp=MAPcompList$pos+1;
@@ -683,8 +752,6 @@ PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
       zlims1=c(0,1.1*maxz_height),
       title3d = "Posterior mean intensity surface (permutated labels)")
   }
-  if(1)
-  {
 
   if(Get_User_Input_sppmix("Compute Bayesian model average (slow operation)?"))
   {
@@ -693,7 +760,8 @@ PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
       gensBD$allgens_List[burnin:L],
       gensBD$genlamdas[burnin:L],
       gensBD$numcomp[burnin:L],
-      distr_numcomp,1,maxnumcomp,LL,xlims,ylims)
+      distr_numcomp,1,gensBD$maxnumcomp,LL,xlims,ylims,
+      gensBD$ApproxCompMass[burnin:L,])
     gridvals=GetGrid_sppmix(LL,xlims,ylims);
     ticsx<<-as.vector(gridvals[[1]]);
     ticsy<<-as.vector(gridvals[[2]]);
@@ -702,11 +770,11 @@ PostGenBDMCMC_sppmix<- function(gensBD,maxz_height)
                 title1=paste("Bayesian model average of",L-burnin,"posterior realizations")
                 ,xlims,ylims,zlims=c(0,1.1*maxz_height))
   }
-}
+
 }
 
 #' @export
-Show3dAvgofsurfaces<- function(gens,LL=30,burnin=1000,xlims=c(0,10),ylims=c(0,10),zlims=c(0,1))
+Show3dAvgofsurfaces<- function(gens,LL=30,burnin=1000,xlims=c(0,10),ylims=c(0,10),zlims=c(0,1),truncated=FALSE)
 {
   L=dim(gens$genps)[1]
   #library(graphics)
@@ -724,12 +792,9 @@ Show3dAvgofsurfaces<- function(gens,LL=30,burnin=1000,xlims=c(0,10),ylims=c(0,10
   gridvals=GetGrid_sppmix(LL,xlims,ylims);
   ticsx=gridvals[[1]];
   ticsy=gridvals[[2]];
-#  ApproxAvgPostIntensityz<<-ApproxAvgPostIntensity(
-#    gens$allgens,gens$genlamdas,LL,burnin,
-#    as.vector(gens$ticsx),as.vector(gens$ticsy))
   ApproxAvgPostIntensityz<<-ApproxAvgPostIntensity(
     gens$allgens,gens$genlamdas,LL,burnin,
-    xlims,ylims);
+    xlims,ylims,gens$ApproxCompMass);
 
   Plot3d_sppmix(xcoord = as.vector(ticsx),
                 ycoord = as.vector(ticsy),
@@ -782,7 +847,7 @@ ShowChains<- function(genps,genmus,m=5)
 }
 
 #' @export
-FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims1=c(0,10),burnin=1000)
+FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims1=c(0,10),burnin=1000,truncated=truncated)
 {
 #  z=sppmix::FixLabels(gens,truemix)
   permgensIC<<-PostGenGetBestPermIdenConstraint_sppmix(allgens);
@@ -810,11 +875,11 @@ FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims
              permgens$permuted_mus,
              permgens$permuted_sigmas,truemix)
   ShowChains(permgens$permuted_ps,permgens$permuted_mus,m=m)
-  allpermgens=list(genps = permgens$permuted_ps,
-       genlamdas=allgens$genlamdas ,
-       allgens = permgens$permuted_gens)
-  if(Get_User_Input_sppmix("Show average of intensity surfaces \n(slow operation, permuted realizations)?"))
-    Show3dAvgofsurfaces(allpermgens,LL,burnin,xlims1,ylims1,zlims=c(0,maxz))
+#  allpermgens=list(genps = permgens$permuted_ps,
+#       genlamdas=allgens$genlamdas ,
+#       allgens = permgens$permuted_gens)
+#  if(Get_User_Input_sppmix("Show average of (permuted) intensity surfaces \n(slow operation, permuted realizations)?"))
+#    Show3dAvgofsurfaces(allpermgens,LL,burnin,xlims1,ylims1,zlims=c(0,maxz),truncated=truncated)
 
   return(permgens)
 }
@@ -842,7 +907,7 @@ CheckLabels<- function(genmus)
 }
 
 #' @export
-ShowStats<- function(genps,genmus,gensigmas,truemix=NULL)
+ShowStats<- function(genps,genmus,gensigmas,truemix)
 {
   m=ncol(genps)
   #sppmix::ShowStats(genps,genmus,truemix)
@@ -863,21 +928,21 @@ for (i in 1:m)
   #true value and credible sets
   poststats=GetStats_sppmix(genps[,i],alpha=0.05)
   cat("\n----------------Component ",i,"------------\n")
-  if(!is.null(truemix))
+  if(!missing(truemix))
     cat(paste("Probability: true =",truemix[[i]]$p))
   cat(paste("\nProbability: posterior mean =",poststats$Mean,"\n"))
   cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
             ",",poststats$CredibleSet[2],"]" ))
-  poststas=GetStats_sppmix(genmus[i,1,],alpha=0.05)
-  if(!is.null(truemix))
+  poststats=GetStats_sppmix(genmus[i,1,],alpha=0.05)
+  if(!missing(truemix))
     cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[1]))
   cat(paste("\nMean vector, x-coord: post mean =",poststats$Mean,"\n"))
   cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
             ",",poststats$CredibleSet[2],"]" ))
   poststats=GetStats_sppmix(genmus[i,2,],alpha=0.05)
-  if(!is.null(truemix))
-    cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[2]))
-  cat(paste("\nMean vector, x-coord: post mean =",poststats$Mean,"\n"))
+  if(!missing(truemix))
+    cat(paste("\nMean vector, y-coord: true =",truemix[[i]]$mu[2]))
+  cat(paste("\nMean vector, y-coord: post mean =",poststats$Mean,"\n"))
   cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
             ",",poststats$CredibleSet[2],"]" ))
   sigs=gensigmas[,i];
@@ -892,19 +957,19 @@ for (i in 1:m)
     sigs22[j]=sigs[[j]][2,2]
   }
   poststats=GetStats_sppmix(sigs11,alpha=0.05)
-  if(!is.null(truemix))
+  if(!missing(truemix))
     cat(paste("\nCovariance, (1,1): true =",truemix[[i]]$sigma[1,1]))
   cat(paste("\nCovariance, (1,1): post mean =",poststats$Mean,"\n"))
   cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
             ",",poststats$CredibleSet[2],"]" ))
   poststats=GetStats_sppmix(sigs12,alpha=0.05)
-  if(!is.null(truemix))
+  if(!missing(truemix))
     cat(paste("\nCovariance, (1,2) and (2,1): true =",truemix[[i]]$sigma[1,2]))
   cat(paste("\nCovariance, (1,2) and (2,1): post mean =",poststats$Mean,"\n"))
   cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
             ",",poststats$CredibleSet[2],"]" ))
   poststats=GetStats_sppmix(sigs22,alpha=0.05)
-  if(!is.null(truemix))
+  if(!missing(truemix))
     cat(paste("\nCovariance, (2,2): true =",truemix[[i]]$sigma[2,2]))
   cat(paste("\nCovariance, (2,2): post mean =",poststats$Mean,"\n"))
   cat(paste(poststats$CredibleSetConfidence, "% Credible Set:\n[",poststats$CredibleSet[1],
@@ -921,7 +986,7 @@ MakeNormMixFromMixtureList<- function(mix)
   #takes a mixture list and returns
   #a normmix object
   m=length(mix);
-  ps=vector("numeric", m);
+  ps=vector("double", m);
   mus=vector("list", m);
   sigmas=vector("list", m);
   for(i in 1:m)
@@ -930,6 +995,7 @@ MakeNormMixFromMixtureList<- function(mix)
     mus[[i]]=as.vector(mix[[i]]$mu)
     sigmas[[i]]=as.matrix(mix[[i]]$sigma)
   }
+#  cat(sum(ps))
   norm_mix=normmix(ps, mus, sigmas);
   return (norm_mix)
 }

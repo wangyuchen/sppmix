@@ -8,15 +8,13 @@
 //' @export
 //[[Rcpp::export]]
 mat ApproxAvgPostIntensity(List const& genmix,
-                           vec const& lamdas,
-                           int const& LL,
-                           int const& burnin,
-                           vec const& xlims,
-                           vec const& ylims)
+  vec const& lamdas,int const& LL,
+  int const& burnin,vec const& xlims,
+vec const& ylims,mat const& approxcomp)
 {
   //compute the average of the posterior surfaces
   //needs to be multiplied by the lamdas
-  int countiter=0,i,L  = genmix.size();
+  int countiter=0,i,L =genmix.size();
   mat AvgPostIntensity = zeros(LL,LL);
   //,PostIntensityAvg = zeros(LL,LL);
   vec xy(2);
@@ -28,8 +26,8 @@ mat ApproxAvgPostIntensity(List const& genmix,
   }
 
   //  Rcout << muk<< std::endl ;
-  //  List tmix=genmix[0];
-  //  int m=tmix.size();
+//List tmix=genmix[0];
+ // int m=tmix.size();
   //  Rcout <<m<< std::endl ;
   //  List mixcomp(m);//list containing mixture ps,mus,sigs
   //  List mixcomp;//list containing mixture ps,mus,sigs
@@ -47,7 +45,8 @@ mat ApproxAvgPostIntensity(List const& genmix,
       {
         //        mixcomp=genmix[i];
         //        intensityatxy=densNormMixatx_sppmix(xy,mixcomp);
-        intensityatxy=lamdas(i)*densNormMixatx_sppmix(xy,genmix[i]);
+//        vec approxcomp=ApproxAllCompMass_sppmix(xlims,ylims,genmix[i],truncated);
+        intensityatxy=lamdas(i)*densNormMixatx_sppmix(xy,genmix[i],approxcomp.row(i).t());
         AvgPostIntensity(x1,y1)=AvgPostIntensity(x1,y1)+intensityatxy/(L-burnin);
       }
       countiter++;
@@ -129,6 +128,24 @@ double ApproxCompMass_sppmix(vec const& xlims,
       ylims,mu,sigma,2);
 }
 
+//' @export
+// [[Rcpp::export]]
+vec ApproxAllCompMass_sppmix(vec const& xlims,
+  vec const& ylims,List const& mix,bool const& truncated)
+{
+  int j,m=mix.length();
+  vec approxcomp=ones(m);
+  if(truncated)
+    for(j=0;j<m;j++)
+    {
+      List mth_comp = mix[j];
+      vec muk = as<vec>(mth_comp["mu"]);
+      mat sigmak = as<mat>(mth_comp["sigma"]);
+      approxcomp(j)=ApproxBivNormProb_sppmix(xlims,
+                 ylims,muk,sigmak,2);
+    }
+  return approxcomp;
+}
 //' @export
 // [[Rcpp::export]]
 double ApproxMHRatiomu_sppmix(
@@ -250,14 +267,15 @@ mat ApproxBayesianModelAvgIntensity_sppmix(
     List const& genBDmix,vec const& lamdas,
     vec const& numcomp,vec const& distr_numcomp,
     int const& mincomp,int const& maxcomp,
-    int const& LL,vec const& xlims,vec const& ylims)
+    int const& LL,vec const& xlims,vec const& ylims
+  ,mat const& approxcomp)
 {
   //apply burnin before calling this function
   //compute the average of the posterior surfaces
   //needs to be multiplied by the lamdas
   //and weighted by the comp number relative frequency
   //mincomp, maxcomp are 1,2,3,...,maxnumcomp, integers
-  int countiter=0,i;
+  int countiter=0,i,j;
   mat AvgPostIntensity = zeros(LL,LL);
   vec ticsx=zeros(LL),ticsy=zeros(LL);
   for (i=0;i<LL;i++)
@@ -277,8 +295,14 @@ mat ApproxBayesianModelAvgIntensity_sppmix(
     int nn1=indi.size();
     vec newlamdas=lamdas(indi);
     List newgenmix(nn1);
+    mat newapproxcomp(nn1,kval);
     for(i=0;i<nn1;i++)
+    {
       newgenmix[i]=genBDmix[indi(i)];
+      for(j=0;j<kval;j++)
+        newapproxcomp(i,j)=
+          approxcomp(indi(i),j);
+    }
     for(int x1=0;x1<LL;x1++)
     {
       for(int y1=0;y1<LL;y1++)
@@ -291,7 +315,8 @@ mat ApproxBayesianModelAvgIntensity_sppmix(
         //surface at the point xy
         for(i=0;i<nn1;i++)
         {
-          intensityatxy=newlamdas(i)*densNormMixatx_sppmix(xy,newgenmix[i]);
+//          vec approxcomp=ApproxAllCompMass_sppmix(xlims,ylims,newgenmix[i],truncated);
+          intensityatxy=newlamdas(i)*densNormMixatx_sppmix(xy,newgenmix[i],newapproxcomp.row(i).t());
           PostIntensity(x1,y1)=PostIntensity(x1,y1)+intensityatxy/nn1;
         }
         countiter++;

@@ -20,7 +20,7 @@ List DAMCMC2d_sppmix(mat const& points,
   //all elements in the field are 2x2 matrices
   field<mat> gensigmas(L,m),geninvsigmas(L,m);
   mat genz=zeros(L,n),genps=zeros(L,m);
-  mat consts=zeros(L,m);
+  mat consts=zeros(L,m),approxmass=ones(L,m);
   vec meanps=zeros(m);
   mat meanmus=zeros(m,2);
   cube meansigmas=zeros(2,2,m);
@@ -412,6 +412,17 @@ List DAMCMC2d_sppmix(mat const& points,
       else
         genz(i+1,dat)=0;
     }
+    //approximate all component masses
+    //if truncate is on
+    if(truncate)
+      for(j=0;j<m;j++)
+      {
+        mu1(0)=genmus(j,0,i+1);
+        mu1(1)=genmus(j,1,i+1);
+        approxmass(i,j)=
+          ApproxBivNormProb_sppmix(xlims,
+            ylims,mu1,gensigmas(i+1,j),2);
+      }
   }
   printf("\rDone. Metropolis-Hastings acceptance: %3.1f%%\n",100.0*MHjump/L);
 
@@ -448,5 +459,6 @@ List DAMCMC2d_sppmix(mat const& points,
     Named("genmus") = genmus,
     Named("gensigmas") = gensigmas,
     Named("genzs") = genz,
-    Named("genlamdas") = lamdas);
+    Named("genlamdas") = lamdas,
+    Named("ApproxCompMass")=approxmass);
 }

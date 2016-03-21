@@ -549,3 +549,77 @@ mat PermuteZs_sppmix(mat const& allgens_zs,
   }
   return permgenzs;
 }
+
+//' @export
+// [[Rcpp::export]]
+mat FisherInfoMat_sppmix(mat const& data,
+  vec const& map_ps,mat const& map_mus,
+  List const& map_sigmas,mat const& map_zs)
+{
+  //mus is a mx2 matrix
+  //sigmas is a List with m elements
+  //each being a 2x2 matrix
+  //zs is an nxm matrix
+  //apply burnin before calling this function
+  int i,j,n=map_zs.n_rows,m=map_zs.n_cols;
+  mat Fisher=zeros(6*m-1,6*m-1);
+  cube sigma_inv(2,2,m);
+  cube sigmas(2,2,m);
+  //  Rcout << "m="<<m<<std::endl ;
+  mat sig(2,2),invsig(2,2);
+  List mixcomp;
+  for(j=0;j<m;j++)
+  {
+    mixcomp=map_sigmas[j];
+    sig = as<mat>(mixcomp["sigma"]);
+    sigmas.slice(j)=sig;
+//    Rcout << "map_sigmas="<<sig<<std::endl ;
+    sigma_inv.slice(j)=invmat2d_sppmix(sig);
+  }
+//  Rcout << "n="<<n<<std::endl ;
+  vec mu1(2),mu2(2);
+  for(i=0;i<n;i++)
+  {
+    vec scorevec(6*m-1);
+    int curdim=0;
+    for(j=0;j<m-1;j++)
+    {
+      scorevec(curdim)=map_zs(i,j)/map_ps(j)-map_zs(i,m-1)/map_ps(m-1);
+      curdim++;
+    }
+    for(j=0;j<m;j++)
+    {
+      mu1(0)=data(i,0)-map_mus(j,0);
+      mu1(1)=data(i,1)-map_mus(j,1);
+      invsig=sigma_inv.slice(j);
+      mu2=-map_zs(i,j)*invsig*mu1;
+      scorevec(curdim)=mu2(0);
+      curdim++;
+      scorevec(curdim)=mu2(1);
+      curdim++;
+    }
+    for(j=0;j<m;j++)
+    {
+      mu1(0)=data(i,0)-map_mus(j,0);
+      mu1(1)=data(i,1)-map_mus(j,1);
+      sig=sigmas.slice(j);
+      invsig=sigma_inv.slice(j);
+      double qcol1=mu1(0)*sig(0,0)
+        +mu1(1)*sig(1,0);
+      double qcol2=mu1(0)*sig(0,1)
+        +mu1(1)*sig(1,1);
+      scorevec(curdim)=0.5*map_zs(i,j)*
+        (-invsig(0,0)+qcol1*qcol1);
+      curdim++;
+      scorevec(curdim)=map_zs(i,j)*
+        (-invsig(0,1)+qcol1*qcol2);
+      curdim++;
+      scorevec(curdim)=0.5*map_zs(i,j)*
+        (-invsig(1,1)+qcol2*qcol2);
+      curdim++;
+    }
+    Fisher+=scorevec*scorevec.t();
+  }
+  return Fisher;
+}
+
