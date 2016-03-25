@@ -105,26 +105,25 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
 #'
 #' spp <- rsppmix(intsurf1)
 #' plot(spp)
-#' plot(spp, intsurf1)
+#' plot(spp, lambda = 100)
 #'
-plot.sppmix <- function(pattern, mus, lambda,...) {
+plot.sppmix <- function(pattern, mus, ...) {
   n <- spatstat::npoints(pattern)
 
-  p <- ggplot(as.data.frame(pattern), aes(x, y), ...) + geom_point() +
+  p <- ggplot(as.data.frame(pattern), aes(x, y)) + geom_point() +
     labs(x = "X", y = "Y") +
-    coord_fixed(xlim = spp$window$xrange, ylim = spp$window$yrange) +
+    coord_fixed(xlim = pattern$window$xrange, ylim = pattern$window$yrange) +
     theme_light()
 
-  if (missing(mus)) {
-    p + ggtitle(paste("Spatial Point Pattern with", n, "points"))
-  } else {
+  if (!missing(mus)) {
     stopifnot(is.intensity_surface(intsurf))
     mean_df <- data.frame(do.call(rbind, intsurf1$mus))
     names(mean_df) <- c("x", "y")
-    p <- p + geom_point(data = mean_df, color = "red", size = 2.5) +
-      ggtitle(paste("Spatial Point Pattern with", n, "points"))
+    p <- p + geom_point(data = mean_df, color = "red", size = 2.5)
   }
-  p
+
+  p +  add_title("Spatial Point Pattern from Normal Mixture",
+                 n = pattern$n, ...)
 }
 
 
@@ -176,12 +175,11 @@ plotmix_2d <- function(intsurf, pattern, contour = FALSE, truncate = TRUE,
     labs(fill = "Intensity")
   if (!missing(pattern)) {
     p + geom_point(data=as.data.frame(pattern)) +
-      ggtitle(bquote(paste("Normal Mixture Intensity Surface with ",
-                           lambda == .(intsurf$intensity), ", ",
-                           n == .(pattern$n))))
+      add_title("Normal Mixture Intensity Surface",
+                lambda = intsurf$intensity, m = intsurf$m, n = pattern$n)
   } else {
-    p + ggtitle(bquote(paste("Normal Mixture Intensity Surface with ",
-                             lambda == .(intsurf$intensity))))
+    p + add_title("Normal Mixture Intensity Surface",
+                  lambda = intsurf$intensity, m = intsurf$m)
   }
 }
 
@@ -213,7 +211,7 @@ plot.normmix <- function(mix, xlim, ylim, contour = FALSE,
 
   plot_density(as.data.frame(est_density), contour = contour) +
     labs(fill = "Density") +
-    ggtitle("Normal Mixture Density Plot")
+    add_title("Normal Mixture Density Plot", m = mix$m)
 }
 
 
@@ -236,6 +234,14 @@ plot_density <- function(density_df, contour = FALSE) {
   }
 }
 
+
+add_title <- function(title, lambda = "", m = "", n = "") {
+  if (!missing(lambda)) lambda <- bquote(paste(" with ", lambda == .(lambda)))
+  if (!missing(n)) n <- bquote(paste(", ", n == .(n)))
+  if (!missing(m)) m <- bquote(paste(", ", m == .(m)))
+
+  ggtitle(substitute(paste(title, lambda, m, n)))
+}
 
 
 

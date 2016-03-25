@@ -4,7 +4,7 @@
 \alias{plot.sppmix}
 \title{Plot spatial point pattern generated from mixture.}
 \usage{
-\method{plot}{sppmix}(pattern, mus, lambda, ...)
+\method{plot}{sppmix}(pattern, mus, ...)
 }
 \arguments{
 \item{pattern}{A point pattern of class sppmix or
@@ -25,7 +25,7 @@ intsurf1 <- normmix(ps = c(.3, .7),
 
 spp <- rsppmix(intsurf1)
 plot(spp)
-plot(spp, intsurf1)
+plot(spp, lambda = 100)
 
 }
 
