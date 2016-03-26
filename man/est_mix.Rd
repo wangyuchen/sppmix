@@ -8,7 +8,7 @@
 est_mix_damcmc(pp, m, truncate = FALSE, L = 5000, hyper_da = c(3, 1, 1))
 
 est_mix_bdmcmc(pp, m, truncate = FALSE, lambda1 = 1, lambda2 = 10,
-  hyper = c(5, 0.01, 3, 2, 1, 1), L = 5000, LL = 100)
+  hyper = c(5, 0.01, 3, 2, 1, 1), L = 5000)
 }
 \arguments{
 \item{pp}{point pattern object of class \code{ppp}.}

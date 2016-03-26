@@ -18,7 +18,7 @@ Plot membership indicator
 }
 \examples{
 fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-                              L = 50000, LL = 100)
+                              L = 50000)
 plot_ind(fit)
 }
 \author{

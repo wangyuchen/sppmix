@@ -57,11 +57,12 @@ plot_chains <- function(fit, burnin = length(fit$allgens_List) / 10) {
 #' @export
 #' @examples
 #' fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-#'                               L = 50000, LL = 100)
+#'                               L = 50000)
 #' plot_ind(fit)
 
 plot_ind <- function(fit, burnin = length(fit$allgens_List) / 10) {
   m <- dim(fit$genmus)[1]
+  labs <- 1:m
   L <- length(fit$allgens_List)
   zs <- GetAvgLabelsDiscrete2Multinomial_sppmix(fit$genzs[(burnin + 1):L, ], m)
   plot_df <- tidyr::gather(data.frame(zs, point = 1:nrow(zs)),
@@ -77,7 +78,9 @@ plot_ind <- function(fit, burnin = length(fit$allgens_List) / 10) {
     ggplot2::theme_classic() +
     ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, size = 1)) +
     ggplot2::labs(x = "Point", y = "Component",
-                  colour = "Probability", title = "Membership indicators")
+                  colour = "Probability", title = "Membership indicators") +
+    ggplot2::scale_y_discrete(breaks = labs)
+
 }
 
 
@@ -101,13 +104,13 @@ plot_ind <- function(fit, burnin = length(fit$allgens_List) / 10) {
 #' @examples
 #' # generate data
 #' mix2 <- normmix(ps=c(.4, .6), mus=list(c(0.1, 0.1), c(0.8, 0.8)),
-#' sigmas=list(.02*diag(2), .01*diag(2)))
-#' pp2 <- rsppmix(100,mix2,square(1))
+#' sigmas=list(.02*diag(2), .01*diag(2)), 100, square(1))
+#' pp2 <- rsppmix(mix2)
 #' # Run Data augmentation MCMC and get posterior realizations
 #' post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 #' # Plot the average of realized surfaces
 #' plot_avgsurf(fit = post, win = square(1), LL = 30, burnin = 1000)
-plot_avgsurf <- function(fit, win, LL = 30,
+plot_avgsurf <- function(fit, win = fit$data$window, LL = 100,
                          burnin = length(fit$allgens_List) / 10,
                          zlims = c(0, 0)) {
 
@@ -119,7 +122,8 @@ plot_avgsurf <- function(fit, win, LL = 30,
   mix_of_postmeans <- MakeMixtureList(fit$allgens_List,burnin)
   mean_lambda <- mean(fit$genlamdas[burnin:L])
   zmax_genmeanmix <- mean_lambda * GetMixtureMaxz_sppmix(mix_of_postmeans,
-                                                         LL,xlims,ylims)
+                                                         LL,xlims,ylims,
+                                                         fit$ApproxCompMass)
   #find the highest z
   maxz_height <- max(zmax_genmeanmix)
   if (zlims[1] == 0 && zlims[2] == 0) {
@@ -130,7 +134,7 @@ plot_avgsurf <- function(fit, win, LL = 30,
   ycoord <- as.vector(gridvals[[2]])
   zcoord <- ApproxAvgPostIntensity(
     fit$allgens_List, fit$genlamdas, LL, burnin,
-    xlims, ylims)
+    xlims, ylims, fit$ApproxCompMass)
   title1 = paste("Average of",L-burnin,
                  "posterior realizations of the intensity function")
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
@@ -147,7 +151,7 @@ plot_avgsurf <- function(fit, win, LL = 30,
   #     width=as.numeric(scr_width[length(scr_width)-1])
   #   }
 
-  #  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+   rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
   rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
 
   U=rgl::par3d("userMatrix")
@@ -168,7 +172,7 @@ plot_avgsurf <- function(fit, win, LL = 30,
               ,texts= title1)
   rgl::bgplot3d(suppressWarnings(
     fields::image.plot(legend.only = TRUE,
-                       smallplot= c(.8,.82,0.05,.7),
+                       # smallplot= c(.8,.82,0.05,.7),
                        zlim = zlims,
                        col = jet.colors(100))))
 }
@@ -200,7 +204,70 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
   return(invisible())
 }
 
+#' @export
+plot.bdmcmc_res <- function(fit, win = fit$data$window, burnin = length(fit$allgens)/10,
+                            LL = 100, zlims = c(0, 0)) {
+  L <- length(fit$genlamdas)
+  xlims <- win$xrange
+  ylims <- win$yrange
 
+
+  distr_numcomp <- GetCompDistr_sppmix(fit$numcomp[-(1:burnin)],fit$maxnumcomp)
+  zcoord <- ApproxBayesianModelAvgIntensity_sppmix(
+      fit$allgens_List[-(1:burnin)],
+      fit$genlamdas[-(1:burnin)],
+      fit$numcomp[-(1:burnin)],
+      distr_numcomp,1,fit$maxnumcomp,LL, xlims, ylims,
+      fit$ApproxCompMass[-(1:burnin),])
+  #find the highest z
+  maxz_height <- max(zcoord)
+  if (zlims[1] == 0 && zlims[2] == 0) {
+    zlims <- c(0, 1.1*maxz_height)
+  }
+
+  gridvals <- GetGrid_sppmix(LL, xlims, ylims)
+  xcoord <- as.vector(gridvals[[1]])
+  ycoord <- as.vector(gridvals[[2]])
+  title1 = paste("Bayesian model average of",L-burnin,"posterior realizations")
+  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                                   "#7FFF7F", "yellow", "#FF7F00", "red",
+                                   "#7F0000"))
+  col <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord),
+                                                  length = 100))]
+
+  #   if(.Platform$OS.type=='windows')
+  #   {
+  #     scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
+  #     scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
+  #     height=as.numeric(scr_height[length(scr_height)-1])
+  #     width=as.numeric(scr_width[length(scr_width)-1])
+  #   }
+
+   rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
+
+  U=rgl::par3d("userMatrix")
+  rgl::par3d(userMatrix=
+               rgl::rotate3d(U,pi/4,0,0,1))
+  zmax=max(zcoord)
+  Rangez=zmax-min(zcoord);
+  rgl::persp3d(x = xcoord, y = ycoord, z = zcoord,
+               color = col, xlab="x",ylab="y",zlab="",
+               zlim=c(zlims[1]-0.01,zlims[2]),
+               box = FALSE, axes = FALSE)
+  rgl::axis3d('x')
+  rgl::axis3d('y')
+  rgl::axis3d('z-+', pos = c(xlims[1], ylims[2], 0))
+  rgl::title3d(main=NULL)
+  rgl::text3d(xlims[2],ylims[2],
+              zlims[2]
+              ,texts= title1)
+  rgl::bgplot3d(suppressWarnings(
+    fields::image.plot(legend.only = TRUE,
+                       # smallplot= c(.8,.82,0.05,.7),
+                       zlim = zlims,
+                       col = jet.colors(100))))
+}
 #' @export
 Plots_off<- function()
 {

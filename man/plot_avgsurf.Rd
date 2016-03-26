@@ -4,8 +4,8 @@
 \alias{plot_avgsurf}
 \title{Plot the average intensity surface}
 \usage{
-plot_avgsurf(fit, win, LL = 30, burnin = length(fit$allgens_List)/10,
-  zlims = c(0, 0))
+plot_avgsurf(fit, win = fit$data$window, LL = 100,
+  burnin = length(fit$allgens_List)/10, zlims = c(0, 0))
 }
 \arguments{
 \item{fit}{An object contains all posterior realizations from
@@ -27,8 +27,8 @@ Plot the average of the posterior realizations for the intensity surface
 \examples{
 # generate data
 mix2 <- normmix(ps=c(.4, .6), mus=list(c(0.1, 0.1), c(0.8, 0.8)),
-sigmas=list(.02*diag(2), .01*diag(2)))
-pp2 <- rsppmix(100,mix2,square(1))
+sigmas=list(.02*diag(2), .01*diag(2)), 100, square(1))
+pp2 <- rsppmix(mix2)
 # Run Data augmentation MCMC and get posterior realizations
 post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 # Plot the average of realized surfaces

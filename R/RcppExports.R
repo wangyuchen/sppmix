@@ -2,8 +2,8 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
-ApproxAvgPostIntensity <- function(genmix, lamdas, LL, burnin, xlims, ylims) {
-    .Call('sppmix_ApproxAvgPostIntensity', PACKAGE = 'sppmix', genmix, lamdas, LL, burnin, xlims, ylims)
+ApproxAvgPostIntensity <- function(genmix, lamdas, LL, burnin, xlims, ylims, approxcomp) {
+    .Call('sppmix_ApproxAvgPostIntensity', PACKAGE = 'sppmix', genmix, lamdas, LL, burnin, xlims, ylims, approxcomp)
 }
 
 #' @export
@@ -17,8 +17,8 @@ ApproxMHRatiosig_sppmix <- function(xlims, ylims, mu, cursigma, propsigma, num) 
 }
 
 #' @export
-ApproxBayesianModelAvgIntensity_sppmix <- function(genBDmix, lamdas, numcomp, distr_numcomp, mincomp, maxcomp, LL, xlims, ylims) {
-    .Call('sppmix_ApproxBayesianModelAvgIntensity_sppmix', PACKAGE = 'sppmix', genBDmix, lamdas, numcomp, distr_numcomp, mincomp, maxcomp, LL, xlims, ylims)
+ApproxBayesianModelAvgIntensity_sppmix <- function(genBDmix, lamdas, numcomp, distr_numcomp, mincomp, maxcomp, LL, xlims, ylims, approxcomp) {
+    .Call('sppmix_ApproxBayesianModelAvgIntensity_sppmix', PACKAGE = 'sppmix', genBDmix, lamdas, numcomp, distr_numcomp, mincomp, maxcomp, LL, xlims, ylims, approxcomp)
 }
 
 #' @export
@@ -27,13 +27,13 @@ BDMCMC2d_sppmix <- function(maxnumcomp, data, xlims, ylims, L, truncate, lamda, 
 }
 
 #' @export
-DAMCMC2dExtras_sppmix <- function(points, xlims, ylims, m, L, burnin, truncate, hyperparams) {
-    .Call('sppmix_DAMCMC2dExtras_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, burnin, truncate, hyperparams)
+DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, truncate, hyperparams) {
+    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, truncate, hyperparams)
 }
 
 #' @export
-DAMCMC2d_sppmix <- function(points, xlims, ylims, m, L, truncate, hyperparams) {
-    .Call('sppmix_DAMCMC2d_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, truncate, hyperparams)
+DAMCMC2dExtras_sppmix <- function(points, xlims, ylims, m, L, burnin, truncate, hyperparams) {
+    .Call('sppmix_DAMCMC2dExtras_sppmix', PACKAGE = 'sppmix', points, xlims, ylims, m, L, burnin, truncate, hyperparams)
 }
 
 #' @export
@@ -52,18 +52,18 @@ invmat2d_sppmix <- function(A) {
 }
 
 #' @export
-densNormMixatx_sppmix <- function(atx, mix) {
-    .Call('sppmix_densNormMixatx_sppmix', PACKAGE = 'sppmix', atx, mix)
+densNormMixatx_sppmix <- function(atx, mix, approxcomp) {
+    .Call('sppmix_densNormMixatx_sppmix', PACKAGE = 'sppmix', atx, mix, approxcomp)
 }
 
 #' @export
-densNormMix_atxy_sppmix <- function(atxy, mix) {
-    .Call('sppmix_densNormMix_atxy_sppmix', PACKAGE = 'sppmix', atxy, mix)
+densNormMix_atxy_sppmix <- function(atxy, mix, approxcomp) {
+    .Call('sppmix_densNormMix_atxy_sppmix', PACKAGE = 'sppmix', atxy, mix, approxcomp)
 }
 
 #' @export
-dNormMix_sppmix <- function(mix, x, y) {
-    .Call('sppmix_dNormMix_sppmix', PACKAGE = 'sppmix', mix, x, y)
+dNormMix_sppmix <- function(mix, x, y, approxcomp) {
+    .Call('sppmix_dNormMix_sppmix', PACKAGE = 'sppmix', mix, x, y, approxcomp)
 }
 
 #' @export
@@ -127,8 +127,8 @@ SubVec_sppmix <- function(v, start, end) {
 }
 
 #' @export
-GetMixtureMaxz_sppmix <- function(genmix, len, xlims, ylims) {
-    .Call('sppmix_GetMixtureMaxz_sppmix', PACKAGE = 'sppmix', genmix, len, xlims, ylims)
+GetMixtureMaxz_sppmix <- function(genmix, len, xlims, ylims, approxcomp) {
+    .Call('sppmix_GetMixtureMaxz_sppmix', PACKAGE = 'sppmix', genmix, len, xlims, ylims, approxcomp)
 }
 
 #' @export
@@ -214,6 +214,11 @@ PostGenGetBestPermIdenConstraint_sppmix <- function(allgens) {
 #' @export
 PermuteZs_sppmix <- function(allgens_zs, bestperm) {
     .Call('sppmix_PermuteZs_sppmix', PACKAGE = 'sppmix', allgens_zs, bestperm)
+}
+
+#' @export
+FisherInfoMat_sppmix <- function(data, map_ps, map_mus, map_sigmas, map_zs) {
+    .Call('sppmix_FisherInfoMat_sppmix', PACKAGE = 'sppmix', data, map_ps, map_mus, map_sigmas, map_zs)
 }
 
 #' @export

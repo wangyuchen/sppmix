@@ -94,7 +94,6 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
 #' @param pattern A point pattern of class sppmix or
 #' \code{\link[spatstat]{ppp}}.
 #' @param ... Parameters passed to \code{\link[ggplot2]{ggplot}}.
-#' @inheritParams plot_contour
 #' @export
 #' @examples
 #' intsurf1 <- normmix(ps = c(.3, .7),
@@ -116,8 +115,7 @@ plot.sppmix <- function(pattern, mus, ...) {
     theme_light()
 
   if (!missing(mus)) {
-    stopifnot(is.intensity_surface(intsurf))
-    mean_df <- data.frame(do.call(rbind, intsurf1$mus))
+    mean_df <- data.frame(do.call(rbind, mus))
     names(mean_df) <- c("x", "y")
     p <- p + geom_point(data = mean_df, color = "red", size = 2.5)
   }
