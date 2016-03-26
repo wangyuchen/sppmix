@@ -105,6 +105,7 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
 #'
 #' spp <- rsppmix(intsurf1)
 #' plot(spp)
+#' plot(spp, mus = intsurf1$mus)
 #' plot(spp, lambda = 100)
 #'
 plot.sppmix <- function(pattern, mus, ...) {
@@ -113,17 +114,19 @@ plot.sppmix <- function(pattern, mus, ...) {
   p <- ggplot(as.data.frame(pattern), aes(x, y)) + geom_point() +
     labs(x = "X", y = "Y") +
     coord_fixed(xlim = pattern$window$xrange, ylim = pattern$window$yrange) +
-    theme_light()
+    theme_light() +
+    add_title("Spatial Point Pattern from Normal Mixture", n = pattern$n, ...)
+
 
   if (!missing(mus)) {
-    stopifnot(is.intensity_surface(intsurf))
-    mean_df <- data.frame(do.call(rbind, intsurf1$mus))
+    mean_df <- data.frame(do.call(rbind, mus))
     names(mean_df) <- c("x", "y")
-    p <- p + geom_point(data = mean_df, color = "red", size = 2.5)
+    p <- p + geom_point(data = mean_df, color = "red", size = 2.5) +
+      add_title("Spatial Point Pattern from Normal Mixture", n = pattern$n,
+                m = nrow(mean_df), ...)
   }
 
-  p +  add_title("Spatial Point Pattern from Normal Mixture",
-                 n = pattern$n, ...)
+  p
 }
 
 
@@ -235,12 +238,17 @@ plot_density <- function(density_df, contour = FALSE) {
 }
 
 
-add_title <- function(title, lambda = "", m = "", n = "") {
-  if (!missing(lambda)) lambda <- bquote(paste(" with ", lambda == .(lambda)))
-  if (!missing(n)) n <- bquote(paste(", ", n == .(n)))
-  if (!missing(m)) m <- bquote(paste(", ", m == .(m)))
+add_title <- function(title, lambda = "", m = "", n = "", ...) {
+  if (!missing(lambda)) lambda <- bquote(paste(lambda == .(lambda)))
+  if (!missing(m)) m <- bquote(paste(m == .(m), " components"))
+  if (!missing(n)) n <- bquote(paste(n == .(n), " points"))
 
-  ggtitle(substitute(paste(title, lambda, m, n)))
+  all_char <- list(lambda = lambda, m = m, n = n)
+  non_empty_char <- all_char[nchar(all_char) > 0]
+
+  cal <- do.call(function(...) substitute(list(...)), non_empty_char)
+
+  ggtitle(substitute(atop(title, cal)))
 }
 
 
