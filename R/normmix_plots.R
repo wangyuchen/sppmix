@@ -15,6 +15,7 @@
 #' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
 #'
 #' @export
+#' @import rgl
 #' @examples
 #' intsurf1 <- normmix(ps = c(.3, .7),
 #'                     mus = list(c(0.2, 0.2), c(.8, .8)),
@@ -22,19 +23,22 @@
 #'                     lambda = 100,
 #'                     win = square(1))
 #' plot(intsurf1)
-plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
-                                   title1="Poisson Process Intensity",
-                                   truncate = TRUE,
-                                   zlims = c(0, 0),
-                                   pos=c(0,0,0), grayscale = FALSE, ...) {
-  xcoord <- seq(win$xrange[1], win$xrange[2], length.out = L)
-  ycoord <- seq(win$yrange[1], win$yrange[2], length.out = L)
+plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
+                                   zlims = c(0, 0), pos=c(0, 0, 0),
+                                   grayscale = FALSE, ...) {
 
-  xlims <- c(win$xrange)
-  ylims <- c(win$yrange)
+  intsurf <- to_int_surf(intsurf, ...)
+  win <- intsurf$window
 
-  z <- intsurf$intensity*dnormmix(intsurf, xlim = win$xrange, ylim = win$yrange,
-                                  L = L, truncate = truncate)$v
+  xlims <- win$xrange
+  ylims <- win$yrange
+
+  est_intensity <- dnormmix(intsurf, xlim = xlims, ylim = ylims,
+                            L = L, truncate = truncate)
+
+  x <- est_intensity$xcol
+  y <- est_intensity$yrow
+  z <- as.matrix(est_intensity)
 
   jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
                                    "#7FFF7F", "yellow", "#FF7F00", "red",
@@ -59,7 +63,7 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
   rgl::par3d(userMatrix=
                rgl::rotate3d(U,pi/4,0,0,1))
 
-  rgl::persp3d(x = xcoord, y = ycoord, z = t(z),
+  rgl::persp3d(x = x, y = y, z = t(z),
                color = col, xlab="x",ylab="y",zlab="",
                zlim=c(zlims[1]-0.01,zlims[2]),
                box = FALSE, axes = FALSE)
@@ -67,7 +71,8 @@ plot.intensity_surface <- function(intsurf, win = intsurf$window, L = 100,
   rgl::axis3d('y')
   rgl::axis3d('z-+', pos = c(xlims[1], ylims[2], 0))
   rgl::title3d(main = NULL)
-  rgl::text3d(xlims[2], ylims[2], zlims[2], texts = title1)
+  rgl::text3d(xlims[2], ylims[2], zlims[2],
+              texts = "Intensity Surface of Normal Mixture")
 
   if (grayscale == TRUE) {
     rgl::bgplot3d(suppressWarnings(
@@ -128,9 +133,6 @@ plot.sppmix <- function(pattern, mus, ...) {
 
   p
 }
-
-
-
 
 
 #' 2D contour plots for normal mixture and intensity surface
@@ -238,7 +240,7 @@ plot_density <- function(density_df, contour = FALSE) {
 }
 
 
-add_title <- function(title, lambda = "", m = "", n = "", ...) {
+add_title <- function(title, lambda = "", m = "", n = "") {
   if (!missing(lambda)) lambda <- bquote(paste(lambda == .(lambda)))
   if (!missing(m)) m <- bquote(paste(m == .(m), " components"))
   if (!missing(n)) n <- bquote(paste(n == .(n), " points"))
@@ -248,7 +250,7 @@ add_title <- function(title, lambda = "", m = "", n = "", ...) {
 
   cal <- do.call(function(...) substitute(list(...)), non_empty_char)
 
-  ggtitle(substitute(atop(title, cal)))
+  ggtitle(substitute(atop(displaystyle(title), textstyle(cal))))
 }
 
 
