@@ -20,7 +20,7 @@ double rUnifab_sppmix(double const& a,
 }
 */
 
-//' @export
+
 // [[Rcpp::export]]
 mat rnorm2_sppmix(int const& n,vec const& mu,
                   mat const& sigma) {
@@ -40,14 +40,14 @@ mat rnorm2_sppmix(int const& n,vec const& mu,
 }
 
 
-//' @export
+
 // [[Rcpp::export]]
 mat rWishart_sppmix(int const& df, mat const& A){
   mat Gens=rnorm2_sppmix(df, zeros(2),A);
   return Gens.t()*Gens;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 int rDiscrete_sppmix(int const& start,vec const& probs)
 {
@@ -101,7 +101,7 @@ double rExp_sppmix(double const& a)
   return -log(Rcpp::runif(1)[0])/a;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec rDirichlet_sppmix(vec const& d){
   int k = d.size();
@@ -123,7 +123,7 @@ vec rDirichlet_sppmix(vec const& d){
   return gens/sumd;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec rMultinomial_sppmix(int const& n,vec const& ps){
   int j,i,k=ps.size();
@@ -150,7 +150,7 @@ vec rMultinomial_sppmix(int const& n,vec const& ps){
   return gen;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List rNormMix_sppmix(int const& lamda,
                        List const& mix)
@@ -197,7 +197,7 @@ List rNormMix_sppmix(int const& lamda,
     Named("comp") = comps);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec rPerm_sppmix(int const& n)
 {

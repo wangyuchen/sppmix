@@ -5,7 +5,7 @@
 //used by cpp and R functions
 //visible in the package only
 
-//' @export
+
 //[[Rcpp::export]]
 mat ApproxAvgPostIntensity(List const& genmix,
   vec const& lamdas,int const& LL,
@@ -55,7 +55,7 @@ vec const& ylims,mat const& approxcomp)
   return AvgPostIntensity;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double ApproxCompMass_sppmix(vec const& xlims,
   vec const& ylims,vec const& mu,mat const& sigma)
@@ -128,7 +128,7 @@ double ApproxCompMass_sppmix(vec const& xlims,
       ylims,mu,sigma,2);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec ApproxAllCompMass_sppmix(vec const& xlims,
   vec const& ylims,List const& mix,bool const& truncated)
@@ -146,7 +146,7 @@ vec ApproxAllCompMass_sppmix(vec const& xlims,
     }
   return approxcomp;
 }
-//' @export
+
 // [[Rcpp::export]]
 double ApproxMHRatiomu_sppmix(
   vec const& xlims,vec const& ylims,
@@ -202,7 +202,7 @@ return pow(ApproxCompMass_sppmix(xlims,
    ylims,propmu,sigma),num);*/
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double ApproxMHRatiosig_sppmix(
     vec const& xlims,vec const& ylims,
@@ -261,7 +261,7 @@ double ApproxMHRatiosig_sppmix(
 }
 
 
-//' @export
+
 //[[Rcpp::export]]
 mat ApproxBayesianModelAvgIntensity_sppmix(
     List const& genBDmix,vec const& lamdas,

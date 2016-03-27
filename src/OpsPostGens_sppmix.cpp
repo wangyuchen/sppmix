@@ -4,7 +4,7 @@
 //used by cpp and R functions
 //visible in the package only
 
-//' @export
+
 // [[Rcpp::export]]
 List GetStats_sppmix(vec const& gens,
                      double const& alpha)
@@ -25,7 +25,7 @@ List GetStats_sppmix(vec const& gens,
     Named("CredibleSetConfidence") = 100*(1-alpha));
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec GetRealiz_ps_sppmix(List const& allgens,
                         int const& realiz)
@@ -47,7 +47,7 @@ vec GetRealiz_ps_sppmix(List const& allgens,
   return ps;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat GetRealiz_mus_sppmix(List const& allgens,
                          int const& realiz)
@@ -69,7 +69,7 @@ mat GetRealiz_mus_sppmix(List const& allgens,
   return mus;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat GetRealiz_sigmas_sppmix(List const& allgens,
                             int const& realiz)
@@ -97,7 +97,7 @@ mat GetRealiz_sigmas_sppmix(List const& allgens,
   return sigmas;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List PostGenGetBestPerm_sppmix(List const& allgens)
 {
@@ -268,7 +268,7 @@ List PostGenGetBestPerm_sppmix(List const& allgens)
 //  return found;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List GetAllMeans_sppmix(List const& allgens,
                         int const& burnin)
@@ -306,7 +306,7 @@ List GetAllMeans_sppmix(List const& allgens,
     Named("meansigmas") = meansigmas);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec GetCompDistr_sppmix(vec const& numcomp,
     int const& maxnumcomp)
@@ -326,7 +326,7 @@ vec GetCompDistr_sppmix(vec const& numcomp,
   return distr_numcomp;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List GetBDCompRealiz_sppmix(List const& genBDmix,
     vec const& genlamdas,vec const& numcomp,
@@ -351,7 +351,7 @@ List GetBDCompRealiz_sppmix(List const& genBDmix,
     //,Named("newnumcomp") = newnumcomp);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat
       const& genzs,int const& m)
@@ -376,7 +376,7 @@ mat GetAvgLabelsDiscrete2Multinomial_sppmix(mat
   return zmultinomial/iters;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 bool Check4LabelSwitching_sppmix(vec const& chain)
 {
@@ -409,7 +409,7 @@ bool Check4LabelSwitching_sppmix(vec const& chain)
   return LabelSwitchingPresent;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
 {
@@ -515,7 +515,7 @@ List PostGenGetBestPermIdenConstraint_sppmix(List const& allgens)
     Named("genlamdas") = allgens[5]);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat PermuteZs_sppmix(mat const& allgens_zs,
                      mat const& bestperm)
@@ -550,7 +550,7 @@ mat PermuteZs_sppmix(mat const& allgens_zs,
   return permgenzs;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat FisherInfoMat_sppmix(mat const& data,
   vec const& map_ps,mat const& map_mus,

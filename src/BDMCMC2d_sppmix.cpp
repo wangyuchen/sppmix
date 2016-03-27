@@ -8,7 +8,7 @@
 //1,20,[15,.01,3,2,1,1],1);
 
 //just get realizations no plotting here
-//' @export
+
 //[[Rcpp::export]]
 List BDMCMC2d_sppmix(int const& maxnumcomp,
                      mat const& data,

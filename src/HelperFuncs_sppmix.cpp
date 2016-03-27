@@ -3,7 +3,7 @@
 //helper functions only, used by cpp and R functions
 //visible in the package only
 
-//' @export
+
 // [[Rcpp::export]]
 double Quad_sppmix(vec const& v,mat const& m)
 {
@@ -11,7 +11,7 @@ double Quad_sppmix(vec const& v,mat const& m)
   +m(0,1)*v(0)*v(1)+m(1,0)*v(1)*v(0);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double Factorial_sppmix(int x)
 {
@@ -20,7 +20,7 @@ double Factorial_sppmix(int x)
   return num;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat invmat2d_sppmix(mat const& A){
   mat B=zeros(2,2);
@@ -33,7 +33,7 @@ mat invmat2d_sppmix(mat const& A){
   return B;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double densNormMixatx_sppmix(vec const& atx,List const& mix
    ,vec const& approxcomp)
@@ -66,7 +66,7 @@ double densNormMixatx_sppmix(vec const& atx,List const& mix
   return val;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec densNormMix_atxy_sppmix(mat const& atxy,
   List const& mix,vec const& approxcomp)
@@ -79,7 +79,7 @@ vec densNormMix_atxy_sppmix(mat const& atxy,
   return val;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat dNormMix_sppmix(List const& mix, vec const& x,
     vec const& y,vec const& approxcomp)
@@ -100,7 +100,7 @@ mat dNormMix_sppmix(List const& mix, vec const& x,
     return z;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec Permute_vec_sppmix(vec const& oldvec,
                        vec const& perm)
@@ -113,7 +113,7 @@ vec Permute_vec_sppmix(vec const& oldvec,
 }
 
 
-//' @export
+
 // [[Rcpp::export]]
 mat Permute_mat_sppmix(mat const& oldmat,
                        vec const& perm)
@@ -131,7 +131,7 @@ mat Permute_mat_sppmix(mat const& oldmat,
   return newmat;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 mat GetAllPermutations_sppmix(int const& m)
 {
@@ -149,7 +149,7 @@ mat GetAllPermutations_sppmix(int const& m)
   return allperms;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec GetAPermutation_sppmix(int const& m,int const& which)
 {
@@ -171,7 +171,7 @@ vec GetAPermutation_sppmix(int const& m,int const& which)
   return aperm;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List GetGrid_sppmix(int const& len,
             vec const& xlims,vec const& ylims)
@@ -195,7 +195,7 @@ return List::create(
   Named("areas") = areas);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 bool EqVec_sppmix(vec const& v1,vec const& v2,
                   double const& tol)
@@ -209,7 +209,7 @@ bool EqVec_sppmix(vec const& v1,vec const& v2,
   return true;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double logGammaFunc_sppmix(double const& x)
 {
@@ -218,14 +218,14 @@ double logGammaFunc_sppmix(double const& x)
   +1/(12*x)+1/(360*x*x*x)+1/(1260*x*x*x*x*x);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double GammaFunc_sppmix(double const& x)
 {
   return exp(logGammaFunc_sppmix(x));
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double dDirichlet_sppmix(vec const& ps,vec const& ds)
 {
@@ -237,7 +237,7 @@ double dDirichlet_sppmix(vec const& ps,vec const& ds)
   return val;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double SumVec_sppmix(vec const& v,int const& start
                        ,int const& end)
@@ -248,7 +248,7 @@ double SumVec_sppmix(vec const& v,int const& start
   return val;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec SubstituteVec_sppmix(vec v,vec const& subv,
                    int const& start)
@@ -260,7 +260,7 @@ vec SubstituteVec_sppmix(vec v,vec const& subv,
   return newvec;
 }
 
-//' @export
+
 // [[Rcpp::export]]
 vec SubVec_sppmix(vec const& v,int const& start,
                   int const& end)
@@ -272,7 +272,7 @@ vec SubVec_sppmix(vec const& v,int const& start,
   return v.subvec(start,end);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double GetMixtureMaxz_sppmix(List const& genmix,
                              int const& len,
@@ -318,7 +318,7 @@ double GetMixtureMaxz_sppmix(List const& genmix,
 //  return dens.max();
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List MakeMixtureList_sppmix(List const& gens_list,
                              int const& burnin)
@@ -364,7 +364,7 @@ List MakeMixtureList_sppmix(List const& gens_list,
 }
 
 
-//' @export
+
 // [[Rcpp::export]]
 List CheckInWindow_sppmix(mat const& points,
     vec const& xlims,vec const& ylims,
@@ -406,7 +406,7 @@ List CheckInWindow_sppmix(mat const& points,
     Named("data_inW") = data);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List GetMax_sppmix(vec const& v)
 {
@@ -426,7 +426,7 @@ List GetMax_sppmix(vec const& v)
     Named("pos") = pos);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double dNormal1d_sppmix(double const& atx,
                         double const& mu,double const& sigsq)
@@ -434,7 +434,7 @@ double dNormal1d_sppmix(double const& atx,
   return exp(-.5*(atx-mu)*(atx-mu)/sigsq)/sqrt(2*3.141593*sigsq);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 double dNormal_sppmix(vec const& atx,vec const& mu,
                       mat const& sig)

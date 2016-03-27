@@ -5,7 +5,7 @@
 
 using namespace Rcpp;
 
-//' @export
+
 // [[Rcpp::export]]
 double ApproxBivNormProb_sppmix(vec const& xlims,
                                 vec const& ylims,vec const& mu,

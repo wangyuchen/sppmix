@@ -17,7 +17,6 @@
 #' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
 #'
 #' @export
-#' @import rgl
 #' @examples
 #' intsurf1 <- normmix(ps = c(.3, .7),
 #'                     mus = list(c(0.2, 0.2), c(.8, .8)),

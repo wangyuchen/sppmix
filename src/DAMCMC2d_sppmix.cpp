@@ -3,7 +3,7 @@
 //data, x-y limits, m=num of comps to fit
 //L=num iter, burnin
 //just get realizations no plotting here
-//' @export
+
 //[[Rcpp::export]]
 List DAMCMC2d_sppmix(mat const& points,
                      vec const& xlims,
