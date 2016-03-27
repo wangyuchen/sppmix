@@ -22,6 +22,9 @@ An object of class \code{\link[spatstat]{im}}. This is a pixel image
 \description{
 Calculate the density values of a given mixture with normal components.
 }
+\examples{
+est_density <- dnormmix(demo_mix)
+}
 \seealso{
 \code{\link[spatstat]{summary.im}} and
  \code{\link[spatstat]{plot.im}} for manipulating with pixel image object.

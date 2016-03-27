@@ -23,24 +23,12 @@ intensity surface class. If the class of mix is intensity_surface, lambda
 and win are used to change the original setting of lambda and win.
 }
 \examples{
-mix1 <- normmix(ps = c(.3, .7),
-                mus = list(c(0.2, 0.2), c(.8, .8)),
-                sigmas = list(.01*diag(2), .01*diag(2)))
-
-intsurf1 <- normmix(ps = c(.3, .7),
-                    mus = list(c(0.2, 0.2), c(.8, .8)),
-                    sigmas = list(.01*diag(2), .01*diag(2)),
-                    lambda = 100,
-                    win = square(1))
-
 # from normmix
-to_int_surf(mix1, lambda = 100, win = square(1))
+to_int_surf(demo_mix, lambda = 100, win = square(1))
 
 # from intensity_surface
-to_int_surf(intsurf1, win = square(2))
-to_int_surf(intsurf1, lambda = 50)
+to_int_surf(demo_intsurf, win = square(2))
+to_int_surf(demo_intsurf, lambda = 50)
 
-# to return a normmix, win will be ignored
-to_int_surf(intsurf1, win = square(2), return_normmix = TRUE)
 }
 

@@ -1,4 +1,3 @@
-#' @export
 Get_User_Input_sppmix<- function(prompt_string="",modeYN=1)
 {
   options(warn=-1)

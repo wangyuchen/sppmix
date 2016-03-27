@@ -34,10 +34,6 @@ in the 3-D plot.}
 Plot the density surface of a normal mixture.
 }
 \examples{
-intsurf1 <- normmix(ps = c(.3, .7),
-                    mus = list(c(0.2, 0.2), c(.8, .8)),
-                    sigmas = list(.01*diag(2), .01*diag(2)),
-                    lambda = 100, win = square(1))
-plot(intsurf1)
+plot(demo_intsurf)
 }
 

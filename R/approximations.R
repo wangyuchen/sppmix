@@ -39,12 +39,20 @@ approx_normmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1)) {
 #'
 #' @seealso \code{\link[spatstat]{summary.im}} and
 #'  \code{\link[spatstat]{plot.im}} for manipulating with pixel image object.
+#'
+#' @examples
+#' est_density <- dnormmix(demo_mix)
 #' @export
 dnormmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1), L = 128,
                      truncate = TRUE) {
 
   if (!is.normmix(mix)) {
     stop("mix must be of class normmix or intensity surface")
+  }
+
+  if (is.intensity_surface(mix)) {
+    xlim <- mix$window$xrange
+    ylim <- mix$window$yrange
   }
 
   x <- seq(xlim[1], xlim[2], length.out = L)

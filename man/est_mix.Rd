@@ -39,7 +39,7 @@ mixture.}
 \item{gensigmas}{Matrix of covariance matrices of components in the normal
  mixture.}
 \item{genzs}{Matrix of component indicators of points.}
-\item{genlambdas}{Matrix of lambda(average intensity).}
+\item{genlambdas}{Matrix of lambda (average intensity).}
 \item{data}{The original point pattern.}
 }
 \description{
@@ -47,16 +47,21 @@ These functions fits a mixture model to spatial point pattern data using
 DAMCMC or BDMCMC.
 }
 \details{
-Birth-Death MCMC uses the same notations as the paper from Stephens, M.(2000).
-The definition of hyperparameters can be found in Stephens's paper formula (21)-(24).
+Birth-death MCMC uses the same notations as the paper from Stephens,
+M.(2000). The definition of hyperparameters can be found in Stephens's paper
+formula (21)-(24).
 }
 \examples{
-# see vignett "Work with 2D Normal Mixtures" for details.
+fit <- est_mix_damcmc(redwood, m = 3)
+fit
+
+# see vignett "Work with 2D Normal Mixtures" for more details.
+vignette("mcmc", package = "sppmix")
 
 }
 \references{
 Stephens, M. "Bayesian analysis of mixture models with an unknown
-number of components—an alternative to reversible jump methods", The Annals of Statistics 2000,
-Vol. 28, No. 1, 40–74
+number of components—an alternative to reversible jump methods",
+The Annals of Statistics 2000, Vol. 28, No. 1, 40–74
 }
 

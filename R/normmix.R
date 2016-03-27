@@ -85,7 +85,7 @@ print.normmix <- function(mix) {
 
 #' @export
 print.intensity_surface <- function(mix) {
-  pre <- ifelse(mix$estimated, "Estimated", "Theoretical")
+  pre <- ifelse(mix$estimated, "Estimated average", "Expected")
   cat(pre, "number of points over window:", mix$intensity, "\n")
   print(mix$window)
   NextMethod()
@@ -188,25 +188,13 @@ rnormmix <- function(m, sig0, df, rand_m = FALSE,
 #' @param win optional parameter of domain.
 #'
 #' @examples
-#' mix1 <- normmix(ps = c(.3, .7),
-#'                 mus = list(c(0.2, 0.2), c(.8, .8)),
-#'                 sigmas = list(.01*diag(2), .01*diag(2)))
-#'
-#' intsurf1 <- normmix(ps = c(.3, .7),
-#'                     mus = list(c(0.2, 0.2), c(.8, .8)),
-#'                     sigmas = list(.01*diag(2), .01*diag(2)),
-#'                     lambda = 100,
-#'                     win = square(1))
-#'
 #' # from normmix
-#' to_int_surf(mix1, lambda = 100, win = square(1))
+#' to_int_surf(demo_mix, lambda = 100, win = square(1))
 #'
 #' # from intensity_surface
-#' to_int_surf(intsurf1, win = square(2))
-#' to_int_surf(intsurf1, lambda = 50)
+#' to_int_surf(demo_intsurf, win = square(2))
+#' to_int_surf(demo_intsurf, lambda = 50)
 #'
-#' # to return a normmix, win will be ignored
-#' to_int_surf(intsurf1, win = square(2), return_normmix = TRUE)
 #' @export
 to_int_surf <- function(mix, lambda = NULL, win = NULL,
                         return_normmix = FALSE) {

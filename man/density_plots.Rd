@@ -34,21 +34,13 @@ on it.
 }
 \examples{
 # plot normmix density
-mix1 <- normmix(ps = c(.3, .7),
-                mus = list(c(0.2, 0.2), c(.8, .8)),
-                sigmas = list(.01*diag(2), .01*diag(2)))
-plot(mix1)
+plot(demo_mix)
 
 # plot intensity surface
-intsurf1 <- normmix(ps = c(.3, .7),
-                    mus = list(c(0.2, 0.2), c(.8, .8)),
-                    sigmas = list(.01*diag(2), .01*diag(2)),
-                    lambda = 100,
-                    win = square(1))
-plotmix_2d(intsurf1)
+plotmix_2d(demo_intsurf)
 
-pp1 <- rsppmix(intsurf = intsurf1)
-plotmix_2d(intsurf1, pp1)  # with points
+pp1 <- rsppmix(intsurf = demo_intsurf)
+plotmix_2d(demo_intsurf, pp1)  # with points
 
 }
 

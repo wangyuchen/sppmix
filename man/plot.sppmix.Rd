@@ -19,16 +19,10 @@ Plot funciton for spatial point pattern generated from mixture. It's an
 alternative to spatstat's plotting functions.
 }
 \examples{
-intsurf1 <- normmix(ps = c(.3, .7),
-                    mus = list(c(0.2, 0.2), c(.8, .8)),
-                    sigmas = list(.01*diag(2), .01*diag(2)),
-                    lambda = 100,
-                    win = square(1))
-
-spp <- rsppmix(intsurf1)
+spp <- rsppmix(demo_intsurf)
 plot(spp)
 plot(spp, mus = intsurf1$mus)
-plot(spp, lambda = 100)
+plot(spp, mus = intsurf1$mus, lambda = 100)
 
 }
 
