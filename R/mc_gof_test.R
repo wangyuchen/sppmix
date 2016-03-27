@@ -53,7 +53,7 @@ mc_gof <- function(pp, intsurf, alpha, L = 10000, burnin = L/10,
   zeronj <- 0
   win <- intsurf$window
   # get posterior realizations
-  post <- sppmix::est_mix_damcmc(pp = pp, m = m, truncate = truncate, L = L)
+  post <- est_mix_damcmc(pp = pp, m = m, truncate = truncate, L = L)
   # post_mix <- get_post(post)
   T_mean <- rep(0, (L - burnin))
   # get posterior predictive sample
@@ -87,7 +87,7 @@ mc_gof <- function(pp, intsurf, alpha, L = 10000, burnin = L/10,
   sortT_mean <- sort(T_mean)
   # compute test statistcs for the given pattern
   summean <- 0
-  probz <- sppmix::GetAvgLabelsDiscrete2Multinomial_sppmix(
+  probz <- GetAvgLabelsDiscrete2Multinomial_sppmix(
     post$genzs[(burnin + 1):L, ], m)
     for (j in 1:m) {
     distj <- probz[, j]*sqrt(rowSums((sweep(cbind(pp$x, pp$y), 2, intsurf$mus[[j]]))^2))

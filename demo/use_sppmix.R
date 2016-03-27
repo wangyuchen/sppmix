@@ -65,11 +65,11 @@ if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
 
   plot(mix = demo_surf,
        zlims = c(0, 1.1*zmax), truncate = truncated,
-       title1 = paste("Intensity surface of the true model with,",m,
+       main = paste("Intensity surface of the true model with,",m,
                       "components,",truemix$n,"points"))
   plot(post_demo,
        zlims = c(0, 1.1*zmax), truncate = truncated,
-       title1 = paste("Intensity surface of posterior means,",m,
+       main = paste("Intensity surface of posterior means,",m,
                       "components,",truemix$n,"points"))
 #   PlotNormalMixture(mix1=mix_of_postmeans,
 #                     data1=gendata,
@@ -115,7 +115,7 @@ if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?")) {
          type="l", main="Generated chain for the number of components")
     postBD <- get_post(gensBD, comp =which.max(tab), burnin = burnin)
     plot(postBD, zlims = c(0, 1.1*zmax), truncate = truncated,
-         title1 = paste("Intensity surface of posterior means, MAP m = ",
+         main = paste("Intensity surface of posterior means, MAP m = ",
                         which.max(tab),
                         "components,",truemix$n,"points"))
 }

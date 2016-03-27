@@ -227,7 +227,7 @@ add_title <- function(title, lambda = "", m = "", n = "", L = "") {
 
   cal <- do.call(function(...) substitute(list(...)), non_empty_char)
 
-  ggtitle(substitute(atop(displaystyle(title), textstyle(cal))))
+  ggtitle(substitute(atop(title, cal)))
 }
 
 
