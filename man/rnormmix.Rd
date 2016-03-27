@@ -7,9 +7,7 @@
 rnormmix(m, sig0, df, rand_m = FALSE, xlim = c(0, 1), ylim = c(0, 1))
 }
 \arguments{
-\item{m}{Number of component if \code{rand_m = FALSE}. When
-\code{rand_m = TRUE}, number of component is random and this is the maximum
-number of components.}
+\item{m}{Number of components in normal mixture.}
 
 \item{sig0}{Tunning parameter in generating random matrix from Wishart
 distribution.}
@@ -17,9 +15,11 @@ distribution.}
 \item{df}{Degree of freedom in generating random matrix from Wishart
 distribution.}
 
-\item{rand_m}{Whether the number of components are random or fixed (default).}
+\item{rand_m}{whether number of components is random. When
+\code{rand_m = FALSE}, it will randomly choose number of components from
+\code{1:m}.}
 
-\item{xlim, ylim}{vector of length two, the limit are used to sample the mu's
+\item{xlim, ylim}{Vector of length two, the limit are used to sample the mu's
 from a uniform distribution.}
 }
 \value{

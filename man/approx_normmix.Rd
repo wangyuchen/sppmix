@@ -7,9 +7,9 @@
 approx_normmix(mix, xlim = c(0, 1), ylim = c(0, 1))
 }
 \arguments{
-\item{mix}{An object of class \code{\link{normmix}}}
+\item{mix}{An object of class \code{normmix}}
 
-\item{xlim, ylim}{vector of length two. Mixture density are estimated within
+\item{xlim, ylim}{Vector of length two. Mixture density are estimated within
 this range.}
 }
 \value{

@@ -5,30 +5,29 @@
 \title{Plot normal mixture density.}
 \usage{
 \method{plot}{intensity_surface}(intsurf, truncate = TRUE, L = 256,
-  zlims = c(0, 0), pos = c(0, 0, 0), grayscale = FALSE, ...)
+  zlims = c(0, 0), pos = c(0, 0, 0),
+  main = "Intensity Surface of Normal Mixture", grayscale = FALSE, ...)
 }
 \arguments{
-\item{intsurf}{An object of class \code{\link{intensity_surface}}.}
+\item{intsurf}{Object of class \code{intensity_surface} or \code{normmix}.}
 
-\item{truncate}{Whether the density is truncated in the window (truncate)
-or not.}
+\item{truncate}{Whether to truncate the points outside the domain,
+default to TRUE.}
 
 \item{L}{Number of grid on x and y axes.}
 
-\item{zlims}{The limits of z axis. The default does not has
-additional limits on z axis.}
+\item{zlims}{The limits of z axis. The default does not has additional limits
+on z axis.}
+
+\item{pos}{The point coodinates for the title. The default is the top middle
+in the 3-D plot.}
+
+\item{main}{Title for the density plot.}
 
 \item{grayscale}{Logical flag indicate if using gray scale as the color
 of the 3-D plot.}
 
-\item{...}{Further arguments passed to \code{\link[rgl]{persp3d}}.}
-
-\item{win}{An object of class \code{\link[spatstat]{owin}}.}
-
-\item{title1}{The title (on top) for the density plot.}
-
-\item{poc}{The point coodinates for the title. The default is the top middle
-in the 3-D plot.}
+\item{...}{Further parameters passed to \code{to_int_surf()}.}
 }
 \description{
 Plot the density surface of a normal mixture.

@@ -3,8 +3,8 @@
 #' These functions fits a mixture model to spatial point pattern data using
 #' DAMCMC or BDMCMC.
 #'
-#' @param pp point pattern object of class \code{ppp}.
-#' @param m either number of components to fit in data augmentation MCMC or
+#' @param pp Point pattern object of class \code{ppp}.
+#' @param m Either number of components to fit in data augmentation MCMC or
 #' maximum number of component in Birth Death MCMC.
 #' @param truncate logical, indicating whether truncation is used, where the
 #' component density are restricted within the domain of the point pattern.

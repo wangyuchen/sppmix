@@ -12,7 +12,7 @@ plotmix_2d(intsurf, pattern, contour = FALSE, truncate = TRUE, L = 256,
   L = 256)
 }
 \arguments{
-\item{intsurf}{Object of class intensity_surface}
+\item{intsurf}{Object of class \code{intensity_surface} or \code{normmix}.}
 
 \item{pattern}{optional spatial point pattern to add to the plot. In the c
 class of \code{\link[spatstat]{ppp}}.}
@@ -24,7 +24,7 @@ default to TRUE.}
 
 \item{L}{number of grids on each coordinate.}
 
-\item{...}{Further parameters to passed to \code{to_int_surf()}.}
+\item{...}{Further parameters passed to \code{to_int_surf()}.}
 
 \item{mix}{object of class \code{normmix}.}
 }

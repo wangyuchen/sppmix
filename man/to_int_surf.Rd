@@ -2,16 +2,19 @@
 % Please edit documentation in R/normmix.R
 \name{to_int_surf}
 \alias{to_int_surf}
-\title{Convert normal mixture to intensity surface}
+\title{Convert normal mixture to intensity surface.}
 \usage{
 to_int_surf(mix, lambda = NULL, win = NULL, return_normmix = FALSE)
 }
 \arguments{
-\item{mix}{object with class normmix or intensity_surface.}
+\item{mix}{Object with class normmix or intensity_surface.}
 
-\item{lambda}{optional parameter of average intensity.}
+\item{lambda}{Optional parameter of average intensity.}
 
-\item{win}{optional parameter of domain.}
+\item{win}{Optional parameter of domain.}
+
+\item{return_normmix}{Whether to return a normal mixture. (disgard lambda
+and win).}
 }
 \description{
 This function can convert a normmix object into an intensity surface. It can

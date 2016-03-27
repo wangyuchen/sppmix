@@ -4,7 +4,7 @@
 \alias{normmix}
 \alias{summary.intensity_surface}
 \alias{summary.normmix}
-\title{Mixture in 2d with normal components.}
+\title{Two-dimensional mixture with normal components.}
 \usage{
 normmix(ps, mus, sigmas, lambda = NULL, win = NULL, estimated = FALSE)
 
@@ -21,11 +21,14 @@ center of each component.}
 \item{sigmas}{A list where every element is a 2 by 2 covariance matrix,
 defining the covariance for each component.}
 
-\item{lambda}{optional parameter of theoretical average number of points.
-If set, the returned object will be an intensity surface.}
+\item{lambda}{Optional parameter of average number of points. If set with
+window, the returned object will be an intensity surface.}
 
-\item{win}{optional parameter of domain. Must be set with intensity value to
+\item{win}{Optional parameter of window. Must be set with intensity value to
 create an intensity surface.}
+
+\item{estimated}{Whether it's an estimated mixture. By default it's set to
+FALSE. When using an estimated mixture, it should be set to TRUE.}
 
 \item{mix}{An object of class \code{normmix}}
 }
@@ -35,12 +38,15 @@ An object of class "normmix" containing the following components:
  \item{ps}{Vector of component probabilities.}
  \item{mus}{List of mean vectors of components.}
  \item{sigmas}{List of covariance matrix of components.}
- \item{intensity}{optional intensity value if lambda is provided when calling
+ \item{intensity}{Optional intensity value if lambda is provided when calling
  \code{normmix}.}
- \item{window}{optional window object of class \code{\link{spatstat::owin}}.}
+ \item{window}{Optional window object of class \code{\link[spatstat]{owin}}.}
+ \item{estimated}{Whether the normal mixture is estimated.}
 }
 \description{
-Class of mixture in 2d with bivariate normal components.
+Constructor function of \code{normmix} class. Create a mixture in
+two-dimensional with bivariate normal components. If additional parameters
+lambda and window are set, it will create an intensity surface.
 }
 \examples{
 mix1 <- normmix(ps = c(.3, .7),

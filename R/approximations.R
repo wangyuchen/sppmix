@@ -3,8 +3,8 @@
 #' Approximate the density of each component in a normal mixture within the
 #' domain using multivariate normal density function.
 #'
-#' @param mix An object of class \code{\link{normmix}}
-#' @param xlim,ylim vector of length two. Mixture density are estimated within
+#' @param mix An object of class \code{normmix}
+#' @param xlim,ylim Vector of length two. Mixture density are estimated within
 #' this range.
 #'
 #' @return A numerical vector corresponding to the density of each component
@@ -28,20 +28,29 @@ approx_normmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1)) {
   return(approx)
 }
 
-#' Calculate density of locations under a mixture.
+#' Calculate density of normal mixture.
 #'
-#' Calculate the density values of a given mixture with normal components.
+#' When a \code{normmix} object is given, this function estimates density values
+#' within the domain. When a \code{intensity_surface} is given, it multiplies
+#' the estimated density values with intensity and returns the estimated
+#' intensity.
 #'
-#' @inheritParams approx_normmix
+#' @param mix An object of class \code{normmix} or \code{intensity_surface}.
+#' When an intensity surface is given, it estimates the intensity instead of
+#' density within the domain.
+#' @param xlim,ylim The range within which the density or intensity is
+#' calculated.
+#' @param L Length of grid on each axis. The density is calculated on a L * L
+#' grid.
+#' @param truncate Whether to truncate the density to be within the domain.
 #'
 #' @return An object of class \code{\link[spatstat]{im}}. This is a pixel image
 #'  on a grid with values corresponding to the density at that location.
 #'
-#' @seealso \code{\link[spatstat]{summary.im}} and
-#'  \code{\link[spatstat]{plot.im}} for manipulating with pixel image object.
 #'
 #' @examples
 #' est_density <- dnormmix(demo_mix)
+#' est_density <- dnormmix(demo_intsurf)
 #' @export
 dnormmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1), L = 128,
                      truncate = TRUE) {

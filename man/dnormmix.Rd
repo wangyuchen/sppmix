@@ -2,31 +2,35 @@
 % Please edit documentation in R/approximations.R
 \name{dnormmix}
 \alias{dnormmix}
-\title{Calculate density of locations under a mixture.}
+\title{Calculate density of normal mixture.}
 \usage{
 dnormmix(mix, xlim = c(0, 1), ylim = c(0, 1), L = 128, truncate = TRUE)
 }
 \arguments{
-\item{mix}{An object of class \code{\link{normmix}}}
+\item{mix}{An object of class \code{normmix} or \code{intensity_surface}.
+When an intensity surface is given, it estimates the intensity instead of
+density within the domain.}
 
-\item{xlim}{vector of length two. Mixture density are estimated within
-this range.}
+\item{xlim, ylim}{The range within which the density or intensity is
+calculated.}
 
-\item{ylim}{vector of length two. Mixture density are estimated within
-this range.}
+\item{L}{Length of grid on each axis. The density is calculated on a L * L
+grid.}
+
+\item{truncate}{Whether to truncate the density to be within the domain.}
 }
 \value{
 An object of class \code{\link[spatstat]{im}}. This is a pixel image
  on a grid with values corresponding to the density at that location.
 }
 \description{
-Calculate the density values of a given mixture with normal components.
+When a \code{normmix} object is given, this function estimates density values
+within the domain. When a \code{intensity_surface} is given, it multiplies
+the estimated density values with intensity and returns the estimated
+intensity.
 }
 \examples{
 est_density <- dnormmix(demo_mix)
-}
-\seealso{
-\code{\link[spatstat]{summary.im}} and
- \code{\link[spatstat]{plot.im}} for manipulating with pixel image object.
+est_density <- dnormmix(demo_intsurf)
 }
 

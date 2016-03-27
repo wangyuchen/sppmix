@@ -11,9 +11,9 @@ est_mix_bdmcmc(pp, m, truncate = FALSE, lambda1 = 1, lambda2 = 10,
   hyper = c(5, 0.01, 3, 2, 1, 1), L = 5000)
 }
 \arguments{
-\item{pp}{point pattern object of class \code{ppp}.}
+\item{pp}{Point pattern object of class \code{ppp}.}
 
-\item{m}{either number of components to fit in data augmentation MCMC or
+\item{m}{Either number of components to fit in data augmentation MCMC or
 maximum number of component in Birth Death MCMC.}
 
 \item{truncate}{logical, indicating whether truncation is used, where the

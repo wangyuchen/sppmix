@@ -12,7 +12,7 @@
 
 \item{mus}{An optioanl list of theoretical mean for each component.}
 
-\item{...}{Additional parameters to \code{add_title} to be plot on title}
+\item{...}{Additional parameters to \code{add_title} to be plot on title.}
 }
 \description{
 Plot funciton for spatial point pattern generated from mixture. It's an

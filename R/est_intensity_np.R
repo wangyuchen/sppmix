@@ -2,10 +2,10 @@
 #'
 #' Using Epanechnikov kernel to estimate intensity surface.
 #'
-#' @param pattern An object of class \code{\link[spatstat]{ppp}}. It should be a
-#'  2 dimesional spatial point pattern.
+#' @param pattern A two-dimesional spatial point pattern with class
+#' \code{\link[spatstat]{ppp}}.
 #' @param win Object of class \code{\link[spatstat]{owin}}.
-#' @param h Kernel bandwith.  \code{h} should be a postive number.
+#' @param h Kernel bandwith. \code{h} should be a postive number.
 #' @param L Number of grid for x and y axis.
 #' @param kernel Kernel used to estimate intensity surface.  Currently, only
 #'  support Epanechnikov kernel.
@@ -17,17 +17,13 @@
 #' @return An object of class \code{\link[spatstat]{im}}.
 #' @export
 #' @examples
-# generate a point pattern
-#' if (require(spatstat)){
-#'   mix1 <- rnormmix(3, .01, 5, square(5))
-#'   pattern1 <- rsppmix(30, mix1, square(5))
-#' }
+#' mix1 <- rnormmix(3, .01, 5, square(5))
+#' pattern1 <- rsppmix(30, mix1, square(5))
 #'
 #' # estimate and plot the estimated intensity surface
-#' if (require(spatstat)){
-#'   surf1 <- est_intensity_np(pattern1, win=square(5), h=0.05, L=100)
-#'   plot(surf1)
-#' }
+#' surf1 <- est_intensity_np(pattern1, win=square(5), h=0.05, L=100)
+#' plot(surf1)
+#'
 est_intensity_np <- function(pattern, win, h, L=10, kernel=c("Epanechnikov"),
                              edgecorrect=TRUE, truncate=TRUE){
   kernel <- match.arg(kernel)

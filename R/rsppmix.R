@@ -1,24 +1,25 @@
 #' Generate a spatial point pattern from normal mixture.
 #'
-#' This function generates a point pattern from a given intensity surface.
+#' This function generates a point pattern from a given normal mixture or
+#' intensity surface.
 #'
+#' If an intensity surface is passed to \code{intsurf}, it will generate mixture
+#' directly. If you don't have an intensity surface beforehand, you can pass a
+#' normal mixture of class \code{normmix} and specify lambda and window as
+#' additianl parameters. Even if you have an intensity surface and passed it to
+#' \code{rsppmix()}, you can still overwrite it's intensity and window with
+#' additional parameters. See examples for details.
 #'
-#' This function generates a spatial point pattern from a intensity surface.
-#' Optionally, it can generate point pattern from a normal mixture if lambda
-#' and window are specified.
 #' The number of points \code{n} follows Poisson distribution with intensity
 #' lambda * area of window.
 #'
 #' When \code{truncate = TRUE}, a point pattern with \code{n} points will be
 #' generated from the mixture first. Then if not all the points are in the
-#' domain, it will generate another \code{n} points until there are more than
-#' \code{n} points in the domain. The first \code{n} points are returned as
-#' the generated spatial point pattern.
+#' domain, it will generate more points until there are exactly \code{n} points
+#' in the domain. If \code{truncate = FALSE} is set, the returned point pattern
+#' will not check whether the points are inside the domain.
 #'
-#' If \code{truncate = FALSE} is set, the returned point pattern will not check
-#' whether the points are inside the domain.
-#'
-#' @param intsurf Object of class intensity_surface
+#' @param intsurf Object of class \code{intensity_surface} or \code{normmix}.
 #' @param truncate Whether to truncate the points outside the domain,
 #' default to TRUE.
 #' @param ... Further parameters passed to \code{to_int_surf()}.
@@ -26,27 +27,17 @@
 #' @return A point pattern of class \code{c("sppmix", "ppp")}.
 #' @export
 #' @examples
-#' mix1 <- normmix(ps = c(.3, .7),
-#'                 mus = list(c(0.2, 0.2), c(.8, .8)),
-#'                 sigmas = list(.01*diag(2), .01*diag(2)))
-#'
-#' intsurf1 <- normmix(ps = c(.3, .7),
-#'                     mus = list(c(0.2, 0.2), c(.8, .8)),
-#'                     sigmas = list(.01*diag(2), .01*diag(2)),
-#'                     lambda = 100,
-#'                     win = square(1))
-#'
-#' rsppmix(intsurf = intsurf1)
+#' rsppmix(intsurf = demo_intsurf)
 #'
 #' # overwrite lambda or win
-#' rsppmix(intsurf1, lambda = 200)
-#' rsppmix(intsurf1, win = square(2))
+#' rsppmix(demo_intsurf, lambda = 200)
+#' rsppmix(demo_intsurf, win = square(2))
 #'
 #' # use normmix with additional parameters
-#' rsppmix(mix1, lambda = 100, win = square(1))
+#' rsppmix(demo_mix, lambda = 100, win = square(1))
 #'
 #' # turn off truncation
-#' rsppmix(intsurf = intsurf1, truncation = FALSE)
+#' rsppmix(intsurf = demo_intsurf, truncate = FALSE)
 #'
 rsppmix <- function(intsurf, truncate = TRUE, ...) {
 

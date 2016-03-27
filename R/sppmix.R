@@ -1,25 +1,26 @@
-#' sppmix: Poisson point process modeling using mixture models for the intensity function
+#' sppmix: Poisson point process modeling using normal mixture models
 #'
-#' Modeling spatial point patterns using Poisson point processes with mixture intensity function
+#' Modeling spatial point patterns using Poisson point processes with normal
+#' mixtures.
 #'
-#' This package implemented data structures and methods for modelling spatial
+#' This package implemented classes and methods for modeling spatial
 #' point process data using mixtures of normal component.
 #'
 #' Based on \code{spatstat} package's \code{ppp} class for point pattern and
-#' \code{owin} class for window, we implemented a \code{normmix} class for
+#' \code{owin} class for window, we implemented \code{normmix} class for
 #' dealing with 2D normal mixture.
 #'
 #' Data augmentation MCMC (DAMCMC) and birth-death MCMC (BDMCMC) are the two
 #' main methods we have for estimating normal mixture to point pattern data.
 #'
 #' The MCMC algorithms are implemented in C++ using \code{Rcpp} and
-#' \code{RcppArmadillo}, and it's significantly faster than some other R
+#' \code{RcppArmadillo}, and it's significantly faster than some other
 #' implementations.
 #'
-#' We used \code{rgl} to create a 3D normal mixture intensity plot for
-#' \code{normmix}.
+#' \code{rgl} package is used to create 3D intensity plots for intensity surface
+#' from normal mixture.
 #'
-#' To learn more about \code{sppmix}, start with the vignettes:
+#' To learn more about \code{sppmix}, start with those vignettes:
 #' browseVignettes(package = "sppmix")
 #'
 #' @docType package
@@ -28,6 +29,12 @@
 #' @importFrom Rcpp sourceCpp
 NULL
 
-.onUnload <- function (libpath) {
+.onAttach <- function(libname, pkgname) {
+  packageStartupMessage("To start with sppmix, type ?sppmix", " or ",
+                        "browseVignettes(package = 'sppmix')")
+}
+
+
+.onUnload <- function(libpath) {
   library.dynam.unload("sppmix", libpath)
 }

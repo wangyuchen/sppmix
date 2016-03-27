@@ -2,30 +2,27 @@
 #'
 #' Plot the density surface of a normal mixture.
 #'
-#' @param intsurf An object of class \code{\link{intensity_surface}}.
-#' @param win An object of class \code{\link[spatstat]{owin}}.
+#' @inheritParams rsppmix
 #' @param L Number of grid on x and y axes.
-#' @param truncate Whether the density is truncated in the window (truncate)
-#'  or not.
-#' @param title1 The title (on top) for the density plot.
-#' @param zlims The limits of z axis. The default does not has
-#' additional limits on z axis.
-#' @param poc The point coodinates for the title. The default is the top middle
+#' @param main Title for the density plot.
+#' @param zlims The limits of z axis. The default does not has additional limits
+#' on z axis.
+#' @param pos The point coodinates for the title. The default is the top middle
 #' in the 3-D plot.
 #' @param grayscale Logical flag indicate if using gray scale as the color
 #' of the 3-D plot.
-#' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
 #'
 #' @export
 #' @examples
 #' plot(demo_intsurf)
 plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
                                    zlims = c(0, 0), pos=c(0, 0, 0),
+                                   main = "Intensity Surface of Normal Mixture",
                                    grayscale = FALSE, ...) {
 
   intsurf <- to_int_surf(intsurf, ...)
-  win <- intsurf$window
 
+  win <- intsurf$window
   xlims <- win$xrange
   ylims <- win$yrange
 
@@ -68,7 +65,7 @@ plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
   rgl::axis3d('z-+', pos = c(xlims[1], ylims[2], 0))
   rgl::title3d(main = NULL)
   rgl::text3d(xlims[2], ylims[2], zlims[2],
-              texts = "Intensity Surface of Normal Mixture")
+              texts = main)
 
   if (grayscale == TRUE) {
     rgl::bgplot3d(suppressWarnings(
@@ -93,7 +90,7 @@ plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
 #' @param pattern A point pattern of class sppmix or
 #' \code{\link[spatstat]{ppp}}.
 #' @param mus An optioanl list of theoretical mean for each component.
-#' @param ... Additional parameters to \code{add_title} to be plot on title
+#' @param ... Additional parameters to \code{add_title} to be plot on title.
 #' @examples
 #' spp <- rsppmix(demo_intsurf)
 #' plot(spp)
@@ -133,7 +130,6 @@ plot.sppmix <- function(pattern, mus, ...) {
 #' class of \code{\link[spatstat]{ppp}}.
 #' @param contour Logical flag indicating whether to plot countour only.
 #' @param L number of grids on each coordinate.
-#' @param ... Further parameters to passed to \code{to_int_surf()}.
 #'
 #' @import ggplot2
 #' @examples

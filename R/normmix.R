@@ -1,25 +1,30 @@
-#' Mixture in 2d with normal components.
+#' Two-dimensional mixture with normal components.
 #'
-#' Class of mixture in 2d with bivariate normal components.
+#' Constructor function of \code{normmix} class. Create a mixture in
+#' two-dimensional with bivariate normal components. If additional parameters
+#' lambda and window are set, it will create an intensity surface.
 #'
 #' @param ps Vector of component probabilities.
 #' @param mus A list where every element is a vector of length 2, defining the
-#'  center of each component.
+#' center of each component.
 #' @param sigmas A list where every element is a 2 by 2 covariance matrix,
 #' defining the covariance for each component.
-#' @param lambda optional parameter of theoretical average number of points.
-#' If set, the returned object will be an intensity surface.
-#' @param win optional parameter of domain. Must be set with intensity value to
+#' @param lambda Optional parameter of average number of points. If set with
+#' window, the returned object will be an intensity surface.
+#' @param win Optional parameter of window. Must be set with intensity value to
 #' create an intensity surface.
+#' @param estimated Whether it's an estimated mixture. By default it's set to
+#' FALSE. When using an estimated mixture, it should be set to TRUE.
 #'
 #' @return An object of class "normmix" containing the following components:
 #'  \item{m}{Number of components.}
 #'  \item{ps}{Vector of component probabilities.}
 #'  \item{mus}{List of mean vectors of components.}
 #'  \item{sigmas}{List of covariance matrix of components.}
-#'  \item{intensity}{optional intensity value if lambda is provided when calling
+#'  \item{intensity}{Optional intensity value if lambda is provided when calling
 #'  \code{normmix}.}
-#'  \item{window}{optional window object of class \code{\link{spatstat::owin}}.}
+#'  \item{window}{Optional window object of class \code{\link[spatstat]{owin}}.}
+#'  \item{estimated}{Whether the normal mixture is estimated.}
 #'
 #' @seealso \code{\link{rnormmix}} for generating random mixture.
 #' @export
@@ -132,15 +137,15 @@ summary.intensity_surface <- function(mix) {
 #' Generate a mixture on a 2d window where the mean and variance of the
 #' components are random. The number of component can either be fixed or random.
 #'
-#' @param m Number of component if \code{rand_m = FALSE}. When
-#' \code{rand_m = TRUE}, number of component is random and this is the maximum
-#' number of components.
+#' @param m Number of components in normal mixture.
 #' @param sig0 Tunning parameter in generating random matrix from Wishart
 #' distribution.
 #' @param df Degree of freedom in generating random matrix from Wishart
 #' distribution.
-#' @param rand_m Whether the number of components are random or fixed (default).
-#' @param xlim,ylim vector of length two, the limit are used to sample the mu's
+#' @param rand_m whether number of components is random. When
+#' \code{rand_m = FALSE}, it will randomly choose number of components from
+#' \code{1:m}.
+#' @param xlim,ylim Vector of length two, the limit are used to sample the mu's
 #' from a uniform distribution.
 #'
 #' @return Object of class \code{normmix}.
@@ -174,7 +179,10 @@ rnormmix <- function(m, sig0, df, rand_m = FALSE,
 
   normmix(gen_ps, mus, sigmas)
 }
-#' Convert normal mixture to intensity surface
+
+
+
+#' Convert normal mixture to intensity surface.
 #'
 #' This function can convert a normmix object into an intensity surface. It can
 #' also be used to change intensity or window of an intensity_surface object.
@@ -183,9 +191,11 @@ rnormmix <- function(m, sig0, df, rand_m = FALSE,
 #' intensity surface class. If the class of mix is intensity_surface, lambda
 #' and win are used to change the original setting of lambda and win.
 #'
-#' @param mix object with class normmix or intensity_surface.
-#' @param lambda optional parameter of average intensity.
-#' @param win optional parameter of domain.
+#' @param mix Object with class normmix or intensity_surface.
+#' @param lambda Optional parameter of average intensity.
+#' @param win Optional parameter of domain.
+#' @param return_normmix Whether to return a normal mixture. (disgard lambda
+#' and win).
 #'
 #' @examples
 #' # from normmix
@@ -216,16 +226,38 @@ to_int_surf <- function(mix, lambda = NULL, win = NULL,
       # input is normmix, create intensity surface
       stopifnot(!missing(lambda) & !missing(win))
       intsurf <- normmix(mix$ps, mix$mus, mix$sigmas,
-                         lambda = lambda, win = win)
+                         lambda = lambda, win = win, estimated = mix$estimated)
     }
   } else {
     stop("mix must be of class normmix or intensity surface")
   }
 
   if (return_normmix) {
-    intsurf <- normmix(intsurf$ps, intsurf$mus, intsurf$sigmas)
+    intsurf <- normmix(intsurf$ps, intsurf$mus, intsurf$sigmas,
+                       estimated = intsurf$estimated)
   }
 
   intsurf
 }
+
+
+#' Demo objects
+#'
+#' Demo objects from the classes provided by this package.
+#'
+#' @examples
+#' demo_mix <- normmix(ps = c(.3, .7), mus = list(c(0.2, 0.2), c(.8, .8)),
+#'                     sigmas = list(.01*diag(2), .01*diag(2)))
+"demo_mix"
+
+#' @rdname demo_mix
+#' @examples
+#' demo_intsurf <- normmix(ps = c(.3, .7), mus = list(c(0.2, 0.2), c(.8, .8)),
+#'                         sigmas = list(.01*diag(2), .01*diag(2)),
+#'                         lambda = 100, win = square(1))
+"demo_intsurf"
+
+
+
+
 
