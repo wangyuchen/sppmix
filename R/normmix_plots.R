@@ -216,12 +216,13 @@ plot_density <- function(density_df, contour = FALSE) {
 }
 
 
-add_title <- function(title, lambda = "", m = "", n = "") {
+add_title <- function(title, lambda = "", m = "", n = "", L = "") {
   if (!missing(lambda)) lambda <- bquote(paste(lambda == .(lambda)))
   if (!missing(m)) m <- bquote(paste(m == .(m), " components"))
   if (!missing(n)) n <- bquote(paste(n == .(n), " points"))
+  if (!missing(L)) L <- bquote(paste(L == .(L), " iterations"))
 
-  all_char <- list(lambda = lambda, m = m, n = n)
+  all_char <- list(lambda = lambda, m = m, n = n, L = L)
   non_empty_char <- all_char[nchar(all_char) > 0]
 
   cal <- do.call(function(...) substitute(list(...)), non_empty_char)

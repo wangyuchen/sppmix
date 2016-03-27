@@ -13,39 +13,44 @@
 #' post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 #' # plot MCMC chains for parameter mus and ps
 #' plot_chains(post)
+plot_chains <- function(fit, burnin = fit$L / 10, chain = c("p", "x", "y"),
+                        ncol = fit$m %% 4 + 1) {
+  fit <- drop_realization(fit, burnin)
+  chain <- match.arg(chain, c("p", "x", "y"), several.ok = TRUE)
 
-plot_chains <- function(fit, burnin = length(fit$allgens_List) / 10) {
-  L=length(fit$allgens_List)
-  genps = fit$genps[(burnin + 1):L, ]
-  genmus = fit$genmus[, , (burnin + 1):L]
-  m = dim(fit$genmus)[1]
-  plot(genps[,1], xlab = "Iteration", ylab = "p",
-       type = "l",main =
-         "Generated mixture probabilities\nComponent 1")
-  for (i in 2:m) {
-    plot(genps[,i], xlab = "Iteration", ylab = "p",
-         type = "l",main =
-           paste("Generated mixture probabilities\nComponent",i))
-  }
+  # L=length(fit$allgens_List)
+  # genps = fit$genps[(burnin + 1):L, ]
+  # genmus = fit$genmus[, , (burnin + 1):L]
+  # m = dim(fit$genmus)[1]
 
-  plot(genmus[1,1,],xlab = "Iteration",ylab = bquote(mu),
-       type = "l", main =
-         "Generated mixture means\nComponent 1, x-coord")
-  plot(genmus[1,2,], xlab = "Iteration", ylab =bquote(mu),
-       type = "l",main =
-         "Generated mixture means\nComponent 1, y-coord")
+  plot_df <- data.frame(comp = gl(fit$m, k = fit$L,
+                                  labels = paste("Component", 1:fit$m)),
+                        iter = 1:fit$L,
+                        ps = as.vector(fit$genps),
+                        xs = as.vector(t(fit$genmus[, 1, ])),
+                        ys = as.vector(t(fit$genmus[, 1, ])))
 
-  for (i in 2:m) {
-    plot(genmus[i,1,], xlab = "Iteration", ylab = bquote(mu),
-         type = "l", main =
-           paste("Generated mixture means\nComponent"
-                 ,i,", x-coord"))
-    plot(genmus[i,2,], xlab = "Iteration", ylab =
-           bquote(mu), type = "l", main =
-           paste("Generated mixture means\nComponent"
-                 ,i,", y-coord"))
-  }
+  plot_p <- ggplot(plot_df, aes(iter, ps)) + geom_path() +
+                     facet_wrap(~ comp, ncol = ncol, scales = "free_y") +
+    labs(x = "Iterations", y = "Probability") +
+    theme_light() +
+    add_title("Generated mixture probabilities", m = fit$m, L = fit$L)
 
+  plot_x <- ggplot(plot_df, aes(iter, xs)) + geom_path() +
+    facet_wrap(~ comp, ncol = ncol, scales = "free_y") +
+    labs(x = "Iteration", y = expression(mu[x])) +
+    theme_light() +
+    add_title("Generated mixture mean, X-coordinate", m = fit$m, L = fit$L)
+
+  plot_y <- ggplot(plot_df, aes(iter, ys)) + geom_path() +
+    facet_wrap(~ comp, ncol = ncol, scales = "free_y") +
+    labs(x = "Iteration", y = expression(mu[y])) +
+    theme_light() +
+    add_title("Generated mixture mean, Y-coordinate", m = fit$m, L = fit$L)
+
+  lapply(paste0("plot_", chain),
+         function(x) print(eval(parse(text = x))))
+  invisible(NULL)
 }
 
 
@@ -56,31 +61,25 @@ plot_chains <- function(fit, burnin = length(fit$allgens_List) / 10) {
 #'
 #' @export
 #' @examples
-#' fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-#'                               L = 50000)
+#' fit <- est_mix_damcmc(pp = redwood, m = 5)
 #' plot_ind(fit)
+plot_ind <- function(fit, burnin = fit$L / 10) {
+  fit <- drop_realization(fit, burnin)
 
-plot_ind <- function(fit, burnin = length(fit$allgens_List) / 10) {
-  m <- dim(fit$genmus)[1]
-  labs <- 1:m
-  L <- length(fit$allgens_List)
-  zs <- GetAvgLabelsDiscrete2Multinomial_sppmix(fit$genzs[(burnin + 1):L, ], m)
-  plot_df <- tidyr::gather(data.frame(zs, point = 1:nrow(zs)),
-                           comp, probability, -point)
+  probs <- GetAvgLabelsDiscrete2Multinomial_sppmix(fit$genzs, fit$m)
+  plot_df <- data.frame(probability = as.vector(probs),
+                        point = 1:fit$data$n,
+                        component = rep(1:fit$m, each = fit$data$n))
 
-  plot_df$component <- as.integer(gsub("X", "", plot_df$comp)) - 0.5
-
-  ggplot2::qplot(point, component, data = plot_df, geom = "segment",
-                 col = probability, xend = point, yend = component + 1,
-                 size = I(5)) +
-    ggplot2::scale_color_gradient(low = "white", high = "grey18") +
-    ggplot2::coord_cartesian(ylim = c(.5, m + .5), xlim = c(-1, nrow(zs) + 1)) +
-    ggplot2::theme_classic() +
-    ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, size = 1)) +
-    ggplot2::labs(x = "Point", y = "Component",
-                  colour = "Probability", title = "Membership indicators") +
-    ggplot2::scale_y_discrete(breaks = labs)
-
+  ggplot(plot_df, aes(point, component - .5, xend = point,
+                      yend = component + .5, col = probability)) +
+    geom_segment(size = I(5)) +
+    coord_cartesian(ylim = c(.5, fit$m + .5)) +
+    scale_color_gradient(low = "grey", high = "grey2",
+                         guide = guide_colorbar(nbin = 100, barheight = 15)) +
+    labs(x = "Point", y = "Component", colour = "Probability") +
+    theme_light() +
+    add_title("Membership Indicator Plot", m = fit$m, n = fit$data$n)
 }
 
 
@@ -143,15 +142,7 @@ plot_avgsurf <- function(fit, win = fit$data$window, LL = 100,
   col <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord),
                                                   length = 100))]
 
-  #   if(.Platform$OS.type=='windows')
-  #   {
-  #     scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
-  #     scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
-  #     height=as.numeric(scr_height[length(scr_height)-1])
-  #     width=as.numeric(scr_width[length(scr_width)-1])
-  #   }
-
-   rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
   rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
 
   U=rgl::par3d("userMatrix")
@@ -202,10 +193,10 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
   # rgl plots don't wait for ENTER, so it has to appear first
   plot(post_mix)
 
-  plotmix_2d(post_mix, pattern = fit$data)
+  print(plotmix_2d(post_mix, pattern = fit$data))
   print(plot_ind(fit, burnin))
   plot_chains(fit, burnin)
-  return(invisible())
+  return(invisible(NULL))
 }
 
 
@@ -224,7 +215,8 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
 #'                               L = 5000)
 #' plot(fit)
 #' @export
-plot.bdmcmc_res <- function(fit, win = fit$data$window, burnin = length(fit$allgens)/10,
+plot.bdmcmc_res <- function(fit, win = fit$data$window,
+                            burnin = length(fit$allgens)/10,
                             LL = 100, zlims = c(0, 0)) {
   L <- length(fit$genlamdas)
   xlims <- win$xrange
@@ -233,11 +225,11 @@ plot.bdmcmc_res <- function(fit, win = fit$data$window, burnin = length(fit$allg
 
   distr_numcomp <- GetCompDistr_sppmix(fit$numcomp[-(1:burnin)],fit$maxnumcomp)
   zcoord <- ApproxBayesianModelAvgIntensity_sppmix(
-      fit$allgens_List[-(1:burnin)],
-      fit$genlamdas[-(1:burnin)],
-      fit$numcomp[-(1:burnin)],
-      distr_numcomp,1,fit$maxnumcomp,LL, xlims, ylims,
-      fit$ApproxCompMass[-(1:burnin),])
+    fit$allgens_List[-(1:burnin)],
+    fit$genlamdas[-(1:burnin)],
+    fit$numcomp[-(1:burnin)],
+    distr_numcomp,1,fit$maxnumcomp,LL, xlims, ylims,
+    fit$ApproxCompMass[-(1:burnin),])
   #find the highest z
   maxz_height <- max(zcoord)
   if (zlims[1] == 0 && zlims[2] == 0) {
@@ -254,15 +246,8 @@ plot.bdmcmc_res <- function(fit, win = fit$data$window, burnin = length(fit$allg
   col <- jet.colors(100)[findInterval(zcoord, seq(min(zcoord), max(zcoord),
                                                   length = 100))]
 
-  #   if(.Platform$OS.type=='windows')
-  #   {
-  #     scr_width <- system("wmic desktopmonitor get screenwidth", intern=TRUE)
-  #     scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE)
-  #     height=as.numeric(scr_height[length(scr_height)-1])
-  #     width=as.numeric(scr_width[length(scr_width)-1])
-  #   }
 
-   rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
+  rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
   rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
 
   U=rgl::par3d("userMatrix")
@@ -287,6 +272,8 @@ plot.bdmcmc_res <- function(fit, win = fit$data$window, burnin = length(fit$allg
                        zlim = zlims,
                        col = jet.colors(100))))
 }
+
+
 #' @export
 Plots_off<- function()
 {
