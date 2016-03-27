@@ -1,0 +1,133 @@
+---
+title: "Diagnostic and model selection"
+author: "Jiaxun Chen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Diagnostic and model selection}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+In the document, we will demonstrate the effect of label switching on model 
+fitting, different ways to mitigate or eliminate this effect, goodness of fit
+test and model seletion methods.
+
+## Label switching
+### Effect of label switching
+Label switching usually happens during the fitting of mixture models whose components 
+are overlapping. We use the following example to show the effect of label switching.
+```{r, message=FALSE, warning=FALSE}
+library(sppmix)
+int_surf <- normmix(ps = c(.3, .2, .5),
+                    mus = list(c(0.2, 0.2), c(0.2, 0.5), c(.6, .6)),
+                    sigmas = list(.01*diag(2), .01*diag(2), .01*diag(2)),
+                    lambda = 100,
+                    win = square(1))
+```
+The intensity surface of the truth model shows that among the three components, 
+two of them are overlapping. 
+
+```{r,webgl=TRUE}
+plot(int_surf)
+```
+
+Generate a point pattern from this model and fit this pattern by using `est_mix_damcmc()`.
+
+```{r, message=FALSE, warning=FALSE}
+pp <- rsppmix(int_surf)
+plot(pp, int_surf$mus)
+fit <- est_mix_damcmc(pp, m=3, truncate = TRUE)
+```
+
+Get the posterior mean after burnin and plot the estimated intensity surface.
+
+```{r}
+postmean <- get_post(fit)
+plot(postmean)
+plotmix_2d(postmean, fit$data)
+```
+
+The plots of intensity surface shows that all components are in the center of the
+domain. The model doesn't fitted well.
+
+### Diagnositc for label switching
+We can detect label switching by using `plot_chains()`, i.e. trace plot for the MCMC chain of $\mu$ and p.
+
+```{r}
+plot_chains(fit)
+```
+
+The plots of chains show sudden changes of the parameter values, which indicate 
+label switching. Also, we can use `test_labswitch()` to detect label switching.
+
+```{r}
+test_labswitch(fit$genmus)
+```
+
+### Remedial methods for label swithcing
+
+After label swithcing is detected, we can use `FixLS_da()` function to mitigate 
+the effect of label switching. 
+
+```{r,message=FALSE, warning=FALSE}
+fit2 <- FixLS_da(fit)
+postmean2 <- get_post(fit2)
+plot(postmean2)
+plotmix_2d(postmean2, pattern = fit$data)
+```
+
+Also, to get the intensity surface, we can use function `plot_avgsurf()` to plot 
+the average of posterior surfaces, which will not be affected by label switching.
+
+```{r, message=FALSE, warning=FALSE}
+plot_avgsurf(fit)
+```
+
+### Goodness of fit test
+Function `mc_gof()` can be used for goodness of fit test. `mc_gof()` uses Monte Carlo
+realizations of pattern patterns to simulated the distribution of test statistic and 
+conducts the T-test.
+
+```{r,message=FALSE, warning=FALSE}
+gofts <- mc_gof(pp, postmean2, alpha = 0.05)
+gofts
+```
+
+
+### Model selection
+We can use function `selectMix()` to select best number of components and also fit
+the model by using the best number of component. Notice, all possibel numbers of components
+need to be specified.
+
+```{r, message=FALSE, warning=FALSE}
+best_fit <- selectMix(pp, 1:5)
+best_fit
+```
+
+The function `selectMix()` returns AIC, BIC and ICLC values for each model. Minimum value 
+indicates the best model.
+
+Another approach for model selection is to use birth-death MCMC (Stephens M.(2000)).
+To fit a Birth-Death MCMC, use function ```est_mix_bdmcmc```. In this case, the parameter ```m``` is not the component of the mixture, but the maximum component in a Birth-death MCMC algorithm.
+
+```{r, message=FALSE, warning=FALSE}
+fitbd <- est_mix_bdmcmc(pp, 5)
+tb <- tabulate(fitbd$numcomp, fitbd$maxnumcomp)
+mp <- barplot(tb,names.arg=1:fitbd$maxnumcomp,
+                 xlab="Number of Components",ylab="Iterations",
+                 main="Distribution of the number of components"
+                 ,ylim=c(0,1.2*max(tb)))
+```
+The histogram of number of components suggests the model with 4 components is the best. Plot the posterior sufrace of model with 4 component.
+
+```{r, message=FALSE, warning=FALSE}
+modelcomp4 <- get_post(fitbd, num_comp = 4)
+plot(modelcomp4)
+plotmix_2d(modelcomp4, fit$data)
+```
+
+Also, we can plot the average surfaces of birth-death MCMC.
+
+```{r, message=FALSE, warning=FALSE}
+plot(fitbd)
+```
