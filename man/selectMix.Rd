@@ -41,9 +41,10 @@ defined in the vector Ms.
 \examples{
 # create the true mixture
 truemix <- normmix(ps=c(.2, .6,.2), mus=list(c(0.3, 0.3), c(0.7, 0.7), c(0.5, 0.5)),
-sigmas = list(.005*diag(2), .001*diag(2), .001*diag(2)))
+sigmas = list(.005*diag(2), .001*diag(2), .001*diag(2)),
+lambda=100,win=square(1))
 # generate the point pattern
-genPPP <- rsppmix(100,truemix,square(1))
+genPPP <- rsppmix(truemix)
 plot(genPPP)
 # compute model selection criteria
 ModelSel=selectMix(genPPP,1:5,runallperms=0)

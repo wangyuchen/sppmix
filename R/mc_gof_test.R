@@ -5,7 +5,7 @@
 #' a proposed normal mixture model.
 #'
 #' @param pp point pattern object of class \code{ppp}.
-#' @param L length of MCMC chain, default to 5000.
+#' @param L length of MCMC chain, default to 10000.
 #' @param burnin number of burn-in iterations.
 #' @param intsurf Object of class intensity_surface.
 #' @param alpha Significant level for the goodness-of-fit test.
@@ -36,7 +36,7 @@
 #' # Apply goodness-of-fit test
 #' mc_gof(pp1, intsurf2, 0.05)
 
-mc_gof <- function(pp, intsurf, alpha, L = 5000, burnin = L/10,
+mc_gof <- function(pp, intsurf, alpha, L = 10000, burnin = L/10,
                    truncate = FALSE) {
   # check first
   if (L < 1000) {
@@ -105,24 +105,15 @@ mc_gof <- function(pp, intsurf, alpha, L = 5000, burnin = L/10,
   #   Mixture Model FITS WELL"
   # }
   p_mean <- mean(T_meanTS < T_mean)
-  # if (p_mean < alpha) {
-  #   result_mean <- "\nSmall p-value, Mixture Model does not fit well.\n "
-  # } else {
-  #   result_mean <- " Large p-value, Mixture Model fits the data well. \n"
-  # }
-  # result <- paste("\n                Monte Carlo Goodness of Fit Test \nTest Statistic: T_meanTS=",
-  #                 round(T_meanTS, 4), "\nNull: Mixture Model fits the pattern well.\n",
-  #                 "Alternative: Mixture Model is not appropriate. \np-value:",
-  #                 round(p_mean, 4), result_mean)
-  # message(result)
-  h0 <- 0
-  names(h0) <- "Mixture Model fits the data well."
-  RVAL <- list(statistic = c(T_meanTS = T_meanTS, T_alpha = T_meanalpha),
-               data.name = paste("Compare the given point pattern",
-                                 "with given intensity surface"),
-               p.value = p_mean, method = "Monte Carlo Goodness of Fit Test",
-               alternative = paste("Mixture Model does not fit well.",
-                                 "\nnull hypothesis: Mixture Model fits the data well."))
-  class(RVAL) <- "htest"
-  return(RVAL)
+  if (p_mean < alpha) {
+    result_mean <- "\nSmall p-value, Mixture Model does not fit well.\n "
+  } else {
+    result_mean <- " Large p-value, Mixture Model fits the data well. \n"
+  }
+  result <- paste("\n         Monte Carlo Goodness of Fit Test \nTest Statistic:",
+                  round(T_meanTS, 4), " Critical Value:", round(T_meanalpha, 4),
+                  "\nNull Hypothesis: Mixture Model fits the pattern well.",
+                  "\nAlternative: Mixture Model is not appropriate. \np-value:",
+                  round(p_mean, 4), result_mean)
+  cat(result)
 }

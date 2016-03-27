@@ -96,13 +96,13 @@ get_post.damcmc_res <- function(fit, burnin) {
 #' @export
 est_mix_bdmcmc <- function(pp, m, truncate = FALSE,
                            lambda1 = 1, lambda2 = 10, hyper = c(5,.01,3,2,1,1),
-                           L = 5000, LL = 100) {
+                           L = 5000) {
 
   fit <- BDMCMC2d_sppmix(m, data = cbind(pp$x, pp$y),
                          xlims = Window(pp)$xrange, ylims = Window(pp)$yrange,
                          truncate = truncate,
                          lamda = lambda1, lamdab = lambda2, hyper = hyper,
-                         L = L, LL = LL)
+                         L = L)
   fit$data <- pp
   class(fit) <- "bdmcmc_res"
   return(invisible(fit))

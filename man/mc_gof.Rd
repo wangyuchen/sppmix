@@ -4,7 +4,7 @@
 \alias{mc_gof}
 \title{Monte Carlo goodness of fit test for normal mixture model}
 \usage{
-mc_gof(pp, intsurf, alpha, L = 5000, burnin = L/10, truncate = FALSE)
+mc_gof(pp, intsurf, alpha, L = 10000, burnin = L/10, truncate = FALSE)
 }
 \arguments{
 \item{pp}{point pattern object of class \code{ppp}.}
@@ -13,7 +13,7 @@ mc_gof(pp, intsurf, alpha, L = 5000, burnin = L/10, truncate = FALSE)
 
 \item{alpha}{Significant level for the goodness-of-fit test.}
 
-\item{L}{length of MCMC chain, default to 5000.}
+\item{L}{length of MCMC chain, default to 10000.}
 
 \item{burnin}{number of burn-in iterations.}
 
