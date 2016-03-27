@@ -4,24 +4,19 @@
 \alias{plot_ind}
 \title{Plot membership indicator}
 \usage{
-plot_ind(fit, burnin = length(fit$allgens_List)/10)
+plot_ind(fit, burnin = fit$L/10)
 }
 \arguments{
-\item{fit}{An object contains all posterior realizations from
-\code{\link{est_mix_damcmc}} or \code{\link{est_mix_bdmcmc}}.}
+\item{fit}{Object of class \code{damcmc_res} or \code{bdmcmc_res}.}
 
-\item{burnin}{Length of burnin, default value is 1/10 of total number of
-iteration.}
+\item{burnin}{Number of burn-in iterations. By default, it's 1/10 of chain
+length.}
 }
 \description{
 Plot membership indicator
 }
 \examples{
-fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-                              L = 50000)
+fit <- est_mix_damcmc(pp = redwood, m = 5)
 plot_ind(fit)
-}
-\author{
-Yuchen Wang, Jiaxun Chen
 }
 

@@ -7,19 +7,16 @@
 \method{plot}{damcmc_res}(fit, burnin = length(fit$allgens)/10)
 }
 \arguments{
-\item{fit}{An object contains all posterior realizations from
-\code{\link{est_mix_damcmc}}}
+\item{fit}{Object of class \code{damcmc_res} or \code{bdmcmc_res}.}
 
-\item{burnin}{Length of burnin, default value is 1/10 of total number of
-iteration.}
+\item{burnin}{Number of burn-in iterations. By default, it's 1/10 of chain
+length.}
 }
 \description{
 Plot result from DAMCMC fit
 }
 \examples{
-
-fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-                              L = 5000)
+fit <- est_mix_damcmc(pp = redwood, m = 3)
 plot(fit)
 }
 
