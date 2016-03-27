@@ -1,7 +1,7 @@
 #' Fix label switching
 #'
-#' Fix label switching by apply the best permutation to the posterior
-#' realization (MCMC result)
+#' Fix label switching by apply the best permutation or identifiability constraint
+#'  to the posterior realization (MCMC result)
 #' @inheritParams plot_avgsurf
 #' @param xlab1 The label for x-axis
 #' @param ylab1 The label for y-axis
@@ -129,7 +129,7 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
 #' Test if there is a label switching of the posterior realizations of mu by
 #' testing if the mean of each component changed dramatically during MCMC.
 #'
-#' @param genmus posterior realizations from DAMCMC algorithm.
+#' @param genmus posterior realizations of mus from DAMCMC algorithm.
 #' @author Athanasios (Sakis) Micheas
 #' @export
 test_labswitch<- function(genmus) {

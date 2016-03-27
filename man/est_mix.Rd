@@ -25,7 +25,7 @@ component density are restricted within the domain of the point pattern.}
 
 \item{lambda1}{Parameter in Poisson prior, lambda = 1 by default.}
 
-\item{lambda2}{Birth rate, lambdab = 10 by default.}
+\item{lambda2}{Birth rate, lambdab2 = 10 by default.}
 
 \item{hyper_da}{hyperparameters for the hierarchical prior. See 'Details'.}
 }

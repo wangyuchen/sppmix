@@ -7,7 +7,7 @@
 test_labswitch(genmus)
 }
 \arguments{
-\item{genmus}{posterior realizations from DAMCMC algorithm.}
+\item{genmus}{posterior realizations of mus from DAMCMC algorithm.}
 }
 \description{
 Test if there is a label switching of the posterior realizations of mu by

@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_mix_intensity.R
 \name{get_post}
 \alias{get_post}
-\title{Calculate posterior mixture from estimated mixture}
+\title{Calculate posterior mixture by using posterior mean of parameters}
 \usage{
 get_post(obj, ...)
 }
@@ -15,7 +15,7 @@ get_post(obj, ...)
 An object of class \code{intensity_surface}.
 }
 \description{
-Calculate posterior mixture from estimated mixture
+Calculate posterior mixture by using posterior mean of parameters
 }
 \details{
 For Birth-Death MCMC, the number of component need to be specified.

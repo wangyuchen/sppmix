@@ -97,7 +97,7 @@ plot_ind <- function(fit, burnin = length(fit$allgens_List) / 10) {
 #' @param LL Number of grid on x and y axes.
 #' @param burnin Length of burnin, default value is 1/10 of total number of
 #' iteration.
-#' @param zlims The limits of z axis. The default does not has
+#' @param zlims The limits of z axis. The default does not have
 #' additional limits on z axis.
 #' @author Athanasios Christou Micheas, Jiaxun Chen, Yuchen Wang
 #' @export
@@ -181,10 +181,14 @@ plot_avgsurf <- function(fit, win = fit$data$window, LL = 100,
 
 #' Plot result from DAMCMC fit
 #'
+#' @param fit An object contains all posterior realizations from
+#' \code{\link{est_mix_damcmc}}
+#' @param burnin Length of burnin, default value is 1/10 of total number of
+#' iteration.
 #' @examples
 #'
 #' fit <- sppmix::est_mix_damcmc(pp = redwood, m = 3, truncate = FALSE,
-#'                               L = 5000, LL = 100)
+#'                               L = 5000)
 #' plot(fit)
 #' @export
 plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
@@ -198,11 +202,28 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
   # rgl plots don't wait for ENTER, so it has to appear first
   plot(post_mix, Window(fit$data))
 
-  plot_contour(post_mix, fit$data)
+  plotmix_2d(post_mix, fit$data)
   print(plot_ind(fit, burnin))
   plot_chains(fit, burnin)
   return(invisible())
 }
+
+
+#' Plot the average surfaces from BDMCMC fit
+#'
+#' @param fit An object contains all posterior realizations from
+#' \code{\link{est_mix_bdmcmc}}
+#' @param burnin Length of burnin, default value is 1/10 of total number of
+#' iteration.
+#' @param LL Number of grid on x and y axes.
+#' @param zlims The limits of z axis. The default does not have
+#' additional limits on z axis.
+
+#' @examples
+#'
+#' fit <- sppmix::est_mix_bdmcmc(pp = redwood, m = 3, truncate = FALSE,
+#'                               L = 5000)
+#' plot(fit)
 
 #' @export
 plot.bdmcmc_res <- function(fit, win = fit$data$window, burnin = length(fit$allgens)/10,

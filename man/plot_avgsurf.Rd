@@ -18,7 +18,7 @@ plot_avgsurf(fit, win = fit$data$window, LL = 100,
 \item{burnin}{Length of burnin, default value is 1/10 of total number of
 iteration.}
 
-\item{zlims}{The limits of z axis. The default does not has
+\item{zlims}{The limits of z axis. The default does not have
 additional limits on z axis.}
 }
 \description{

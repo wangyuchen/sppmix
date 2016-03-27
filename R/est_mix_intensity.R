@@ -38,7 +38,7 @@ est_mix_damcmc <- function(pp, m, truncate = FALSE,
   return(invisible(fit))
 }
 
-#' Calculate posterior mixture from estimated mixture
+#' Calculate posterior mixture by using posterior mean of parameters
 #'
 #' @param fit object from \code{est_mix_damcmc} or \code{est_mix_bdmcmc}.
 #' @param burnin number of burn-in iterations.
@@ -83,7 +83,7 @@ get_post.damcmc_res <- function(fit, burnin) {
 }
 
 #' @param lambda1 Parameter in Poisson prior, lambda = 1 by default.
-#' @param lambda2 Birth rate, lambdab = 10 by default.
+#' @param lambda2 Birth rate, lambdab2 = 10 by default.
 #' @param hyper_da hyperparameters for the hierarchical prior. See 'Details'.
 #' @rdname est_mix
 #' @details

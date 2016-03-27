@@ -25,8 +25,8 @@ to permute all realizations.}
 and intensity surface after permutation. The default is FALSE.}
 }
 \description{
-Fix label switching by apply the best permutation to the posterior
-realization (MCMC result)
+Fix label switching by apply the best permutation or identifiability constraint
+ to the posterior realization (MCMC result)
 }
 \examples{
 # generate data

@@ -12,6 +12,8 @@
 #' additional limits on z axis.
 #' @param poc The point coodinates for the title. The default is the top middle
 #' in the 3-D plot.
+#' @param grayscale Logical flag indicate if using gray scale as the color
+#' of the 3-D plot.
 #' @param ... Further arguments passed to \code{\link[rgl]{persp3d}}.
 #'
 #' @export
@@ -20,8 +22,7 @@
 #' intsurf1 <- normmix(ps = c(.3, .7),
 #'                     mus = list(c(0.2, 0.2), c(.8, .8)),
 #'                     sigmas = list(.01*diag(2), .01*diag(2)),
-#'                     lambda = 100,
-#'                     win = square(1))
+#'                     lambda = 100, win = square(1))
 #' plot(intsurf1)
 plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
                                    zlims = c(0, 0), pos=c(0, 0, 0),

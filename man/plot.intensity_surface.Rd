@@ -18,6 +18,9 @@ or not.}
 \item{zlims}{The limits of z axis. The default does not has
 additional limits on z axis.}
 
+\item{grayscale}{Logical flag indicate if using gray scale as the color
+of the 3-D plot.}
+
 \item{...}{Further arguments passed to \code{\link[rgl]{persp3d}}.}
 
 \item{win}{An object of class \code{\link[spatstat]{owin}}.}
@@ -34,8 +37,7 @@ Plot the density surface of a normal mixture.
 intsurf1 <- normmix(ps = c(.3, .7),
                     mus = list(c(0.2, 0.2), c(.8, .8)),
                     sigmas = list(.01*diag(2), .01*diag(2)),
-                    lambda = 100,
-                    win = square(1))
+                    lambda = 100, win = square(1))
 plot(intsurf1)
 }
 
