@@ -4,18 +4,19 @@
 \alias{get_post}
 \alias{get_post.bdmcmc_res}
 \alias{get_post.damcmc_res}
-\title{Calculate posterior mixture by using posterior mean of parameters}
+\title{Get Posterior normal mixture}
 \usage{
 get_post(obj, ...)
 
-\method{get_post}{damcmc_res}(fit, burnin)
+\method{get_post}{damcmc_res}(fit, burnin = fit$L/10)
 
-\method{get_post}{bdmcmc_res}(fit, comp, burnin)
+\method{get_post}{bdmcmc_res}(fit, comp, burnin = fit$L/10)
 }
 \arguments{
 \item{fit}{object from \code{est_mix_damcmc} or \code{est_mix_bdmcmc}.}
 
-\item{burnin}{number of burn-in iterations.}
+\item{burnin}{number of burn-in iterations. By default, it's 1/10 of chain
+length.}
 
 \item{comp}{number of components. The posterior will be calculated only
 based on iterations where}
@@ -24,10 +25,9 @@ based on iterations where}
 An object of class \code{intensity_surface}.
 }
 \description{
-Calculate posterior mixture by using posterior mean of parameters
-}
-\details{
-For Birth-Death MCMC, the number of component need to be specified.
+Calculate posterior mixture after DAMCMC or BDMCMC fit. The posterior
+mixture is calculated by using posterior mean of parameters. For birth-death
+MCMC, the number of component need to be specified.
 }
 \examples{
 
