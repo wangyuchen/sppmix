@@ -6,7 +6,7 @@
 \alias{summary.normmix}
 \title{Mixture in 2d with normal components.}
 \usage{
-normmix(ps, mus, sigmas, lambda = NULL, win = NULL)
+normmix(ps, mus, sigmas, lambda = NULL, win = NULL, estimated = FALSE)
 
 \method{summary}{normmix}(mix)
 

@@ -78,7 +78,7 @@ get_post.damcmc_res <- function(fit, burnin) {
     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
   }
   post_intensity <- normmix(post_ps, post_mus, post_sigmas, mean_lambda,
-                            fit$data$window)
+                            fit$data$window, estimated = TRUE)
   return(post_intensity)
 }
 

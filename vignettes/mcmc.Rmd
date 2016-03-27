@@ -9,49 +9,58 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Data Augmentation MCMC
-### Fit point pattern with DAMCMC
-The function ```est_mix_damcmc()``` fits a mixture model to spatial point pattern data using data augmentation MCMC. To use this function, you need to convert your data into a point pattern class ```ppp``` as defined in the spatstat package. The point pattern object should have points as well as a window.
+In this document, we will show that how to use `sppmix` is to fit normal mixture models to point pattern data. We have two major algorithms: data augmentation MCMC and birth-death MCMC. The former fits a point pattern with fixed number of components, while the latter allows the number of components to change. 
+
+After the fit, we discussed some diagnostic functions for the posterior sample. For example, label switching is one possible issue after the fit. Some test is introduced to solve lable switching.
+
 ```{r, echo=FALSE} 
 library(knitr)
-opts_chunk$set(fig.width = 5, fig.height = 4)
+opts_chunk$set(fig.width = 6, fig.height = 4)
 library(rgl)
 knit_hooks$set(webgl = hook_webgl)
 ```
 
+## Data Augmentation MCMC
+### Fit point pattern with DAMCMC
+The function `est_mix_damcmc()` fits a mixture model to spatial point pattern data using data augmentation MCMC. If you've already have a point pattern data, you'll need to convert your data into a point pattern class `ppp` as defined in the spatstat package. All the dataset generated from a normal mixture by `rsppmix()` is already in class `ppp`.
 
-```{r}
+A `ppp` object is essentially a two dimensional data and a window of class `owin`.
+
+```{r, message=FALSE, warning=FALSE}
 library(sppmix)
-data(redwood)
-Window(redwood)
+true_intsurf <- normmix(ps = c(.3, .7),
+                    mus = list(c(0.2, 0.2), c(.8, .8)),
+                    sigmas = list(.01*diag(2), .01*diag(2)),
+                    lambda = 100,
+                    win = square(1))
+
+pp1 <- rsppmix(intsurf = true_intsurf)
+plot(pp1, mus = true_intsurf$mus)
 ```
 
-After defining the point pattern, you can run ```est_mix_damcmc()``` to fit a mixture to it. With DAMCMC, the number of components must be defined beforehand. For example, here we fit a 4 component mixture to the redwood data. You can specify whether to use truncation, where all the components are gurenteered to be within the window your data is in, but it will be slower.
-
+After defining the point pattern, you can use `est_mix_damcmc()` to fit a mixture to the data using DAMCMC. With DAMCMC, the number of components must be defined beforehand. For example, here we fit a 4 component mixture to the redwood data using 10000 MCMC draws. 
 
 ```{r, results='hide'}
-fit <- est_mix_damcmc(redwood, 4, L = 10000) 
+fit <- est_mix_damcmc(pp1, m = 4, L = 10000) 
 ```
 
 
-### After MCMC
-Note that although ```est_mix_damcmc()``` is running a MCMC algorithm, you don't need to set burn-in number of iterations, because the object ```fit``` of class ```damcmc_res``` will always give you the full MCMC chain. This gives you the flexibility to change burn-in number without re-run the MCMC again. Also every post-MCMC operation will need to specify burn-in, by default it's 1/10 the chain length. 
+### Diagnostic for posterior sample
+Note that although `est_mix_damcmc()` is running a MCMC algorithm, you don't need to set burn-in number of iterations. The object `fit` of class `damcmc_res` will always give you the full MCMC chain. This gives you the flexibility to change burn-in number without re-run the MCMC again. Also every post-MCMC operation will need to specify burn-in, by default it's 1/10 the chain length. 
 
-To get the estimated posterior mixture, you need to use ```get_post()``` function.
+Here all the MCMC results are contained in an object of class `damcmc_res`. The data structure of a MCMC result is quite complicated and hard to work with directly, so we provided different S3 methods for this class. 
+
+In most cases, the posterior normal mixture we get from MCMC is the main focus after fitting. To access the posterior, you can use `get_post()` to get the estimated posterior mixture.
 
 ```{r}
 post_mix <- get_post(fit, burnin = 2000)
 post_mix
 ```
 
-Object ```post_mix``` is a list of 2 elements, the first is a normal mixture of class ```normmix``` and the second is the estimated mean intensity $\lambda$.
-
-
-Given that the posterior mixture is of class ```normmix```, any operations introduced in *Work with 2D Normal Mixtures* vignette can be applied to it.
+Object `post_mix` is of class `intensity_surface`. For more details of this class, please refer to `vignette("use_normmix", package = "sppmix")`. For example, we can plot a 2d mixture with points. 
 
 ```{r}
-plot_contour(mix = post_mix,  
-             pattern = redwood, win = Window(redwood))
+plotmix_2d(post_mix, pattern = pp1)
 ```
 
 
@@ -69,7 +78,7 @@ plot_ind(fit)
 ```
 
 ```{r, webgl=TRUE}
-plot(post_mix, Window(fit$data))
+plot(post_mix)
 ```
 
 ## Birth-Death MCMC
@@ -77,10 +86,10 @@ plot(post_mix, Window(fit$data))
 To fit a Birth-Death MCMC, use function ```est_mix_bdmcmc```. In this case, the parameter ```m``` is not the component of the mixture, but the maximum component in a Birth-death MCMC algorithm.
 
 ```{r, results='hide'}
-fit2 <- sppmix::est_mix_bdmcmc(pp = redwood, m = 5, truncate = FALSE, 
-                               lambda1 = 1, lambda2 = 10, 
-                               hyper = c(5,.01,3,2,1,1),
-                               L = 50000, LL = 100)
+# fit2 <- sppmix::est_mix_bdmcmc(pp = redwood, m = 5, truncate = FALSE, 
+#                                lambda1 = 1, lambda2 = 10, 
+#                                hyper = c(5,.01,3,2,1,1),
+#                                L = 50000)
 ```
 
 

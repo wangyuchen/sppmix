@@ -4,26 +4,25 @@
 \alias{plot.intensity_surface}
 \title{Plot normal mixture density.}
 \usage{
-\method{plot}{intensity_surface}(intsurf, win = intsurf$window, L = 100,
-  title1 = "Poisson Process Intensity", truncate = TRUE, zlims = c(0, 0),
-  pos = c(0, 0, 0), grayscale = FALSE, ...)
+\method{plot}{intensity_surface}(intsurf, truncate = TRUE, L = 256,
+  zlims = c(0, 0), pos = c(0, 0, 0), grayscale = FALSE, ...)
 }
 \arguments{
 \item{intsurf}{An object of class \code{\link{intensity_surface}}.}
 
-\item{win}{An object of class \code{\link[spatstat]{owin}}.}
-
-\item{L}{Number of grid on x and y axes.}
-
-\item{title1}{The title (on top) for the density plot.}
-
 \item{truncate}{Whether the density is truncated in the window (truncate)
 or not.}
+
+\item{L}{Number of grid on x and y axes.}
 
 \item{zlims}{The limits of z axis. The default does not has
 additional limits on z axis.}
 
 \item{...}{Further arguments passed to \code{\link[rgl]{persp3d}}.}
+
+\item{win}{An object of class \code{\link[spatstat]{owin}}.}
+
+\item{title1}{The title (on top) for the density plot.}
 
 \item{poc}{The point coodinates for the title. The default is the top middle
 in the 3-D plot.}

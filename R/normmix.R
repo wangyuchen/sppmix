@@ -37,8 +37,9 @@
 #'                     win = square(1))
 #' intsurf1
 #'
-normmix <- function(ps, mus, sigmas, lambda = NULL, win = NULL) {
-  if (abs(sum(ps) - 1) > .Machine$double.eps) {
+normmix <- function(ps, mus, sigmas, lambda = NULL, win = NULL,
+                    estimated = FALSE) {
+  if (abs(sum(ps) - 1) > .001) {
     stop("Component probabilities must sum to 1.")
   }
 
@@ -50,10 +51,11 @@ normmix <- function(ps, mus, sigmas, lambda = NULL, win = NULL) {
     # generating intensity surface
     if (lambda <= 0) stop("Intensity must be greater than 0.")
     RVAL <- list(m = length(ps), ps = ps, mus = mus, sigmas = sigmas,
-                 intensity = lambda, window = win)
+                 intensity = lambda, window = win, estimated = estimated)
     class(RVAL) <- c("intensity_surface", "normmix")
   } else {
-    RVAL <- list(m = length(ps), ps = ps, mus = mus, sigmas = sigmas)
+    RVAL <- list(m = length(ps), ps = ps, mus = mus, sigmas = sigmas,
+                 estimated = estimated)
     class(RVAL) <- "normmix"
   }
 
@@ -83,8 +85,8 @@ print.normmix <- function(mix) {
 
 #' @export
 print.intensity_surface <- function(mix) {
-  cat("Theoretical average number of points over window:",
-      mix$intensity, "\n")
+  pre <- ifelse(mix$estimated, "Estimated", "Theoretical")
+  cat(pre, "number of points over window:", mix$intensity, "\n")
   print(mix$window)
   NextMethod()
 }

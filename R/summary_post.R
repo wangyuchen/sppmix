@@ -22,34 +22,29 @@ summary.damcmc_res <- function(fit, dgt = 2) {
     poststats = GetStats_sppmix(fit$genps[,i], alpha=0.05)
     poststats <- sapply(poststats, format, digits = dgt)
 
-    cat("\n---------------- Component ",i,"------------\n")
-    #cat(paste("Probability: true =",truemix[[i]]$p))
-    cat(paste("\nProbability: posterior mean =",
-              poststats$Mean,"\n"))
-    cat(paste(poststats$CredibleSetConfidence,
-              "% Credible Set:\n[",poststats$CredibleSet[1],
-              ",",poststats$CredibleSet[2],"]" ))
+    cat("---------------- Component ", i , "----------------\n")
+    cat("Probability: posterior mean =",
+              poststats$Mean,"\n")
+    cat(poststats$CredibleSetConfidence,
+              "% Credible Set: [",poststats$CredibleSet[1],
+              ",",poststats$CredibleSet[2],"]\n" )
 
     poststats = GetStats_sppmix(fit$genmus[i,1,],alpha=0.05)
     poststats <- sapply(poststats, format, digits = dgt)
 
-    #cat(paste("\nMean vector, x-coord: true =",truemix[[i]]$mu[1]))
-    cat(paste("\nMean vector, x-coord: post mean =",
-              poststats$Mean,"\n"))
-    cat(paste(poststats$CredibleSetConfidence,
-              "% Credible Set:\n[",poststats$CredibleSet[1],
-              ",",poststats$CredibleSet[2],"]" ))
+    cat("Mean vector, x-coord: post mean =",
+              poststats$Mean,"\n")
+    cat(poststats$CredibleSetConfidence,
+              "% Credible Set: [",poststats$CredibleSet[1],
+              ",",poststats$CredibleSet[2],"]\n" )
 
     poststats = GetStats_sppmix(fit$genmus[i,2,],alpha=0.05)
     poststats <- sapply(poststats, format, digits = dgt)
 
-    #cat(paste("\nMean vector, y-coord: true =",truemix[[i]]$mu[2]))
-    cat(paste("\nMean vector, y-coord: post mean =",
-              poststats$Mean,"\n"))
-    cat(paste(poststats$CredibleSetConfidence,
-              "% Credible Set:\n[",poststats$CredibleSet[1],
-              ",",poststats$CredibleSet[2],"]" ))
+    cat("Mean vector, y-coord: post mean =",
+              poststats$Mean,"\n")
+    cat(poststats$CredibleSetConfidence,
+              "% Credible Set: [",poststats$CredibleSet[1],
+              ",",poststats$CredibleSet[2],"]\n" )
   }
-  cat("\n----------------Component stats done------------\n")
-  #cat("\nNOTE: if you have the truth, then what is called comp
 }

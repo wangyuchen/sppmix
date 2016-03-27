@@ -77,13 +77,11 @@ plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
   if (grayscale == TRUE) {
     rgl::bgplot3d(suppressWarnings(
       fields::image.plot(legend.only = TRUE,
-                         #                         smallplot= c(.8,.82,0.05,.7),
                          zlim = zlims,
                          col = gray.colors(100))))
   } else {
     rgl::bgplot3d(suppressWarnings(
       fields::image.plot(legend.only = TRUE,
-                         #                         smallplot= c(.8,.82,0.05,.7),
                          zlim = zlims,
                          col = jet.colors(100))))
 
@@ -98,9 +96,8 @@ plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
 #'
 #' @param pattern A point pattern of class sppmix or
 #' \code{\link[spatstat]{ppp}}.
-#' @param ... Parameters passed to \code{\link[ggplot2]{ggplot}}.
-#' @inheritParams plot_contour
-#' @export
+#' @param mus An optioanl list of theoretical mean for each component.
+#' @param ... Additional parameters to \code{add_title} to be plot on title
 #' @examples
 #' intsurf1 <- normmix(ps = c(.3, .7),
 #'                     mus = list(c(0.2, 0.2), c(.8, .8)),
@@ -113,6 +110,7 @@ plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
 #' plot(spp, mus = intsurf1$mus)
 #' plot(spp, lambda = 100)
 #'
+#' @export
 plot.sppmix <- function(pattern, mus, ...) {
   n <- spatstat::npoints(pattern)
 
@@ -228,7 +226,7 @@ plot_density <- function(density_df, contour = FALSE) {
              "#FF7F00", "red", "#7F0000")
 
   if (!contour) {
-    p + geom_raster(aes(fill = value)) +
+    p + geom_raster(aes(fill = value), interpolate = TRUE) +
       scale_fill_gradientn(colors = color) +
       guides(fill = guide_colorbar(nbin = 100, barheight = 15))
   } else {

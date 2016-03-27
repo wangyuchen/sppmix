@@ -10,7 +10,9 @@
 \item{pattern}{A point pattern of class sppmix or
 \code{\link[spatstat]{ppp}}.}
 
-\item{...}{Parameters passed to \code{\link[ggplot2]{ggplot}}.}
+\item{mus}{An optioanl list of theoretical mean for each component.}
+
+\item{...}{Additional parameters to \code{add_title} to be plot on title}
 }
 \description{
 Plot funciton for spatial point pattern generated from mixture. It's an
@@ -25,6 +27,7 @@ intsurf1 <- normmix(ps = c(.3, .7),
 
 spp <- rsppmix(intsurf1)
 plot(spp)
+plot(spp, mus = intsurf1$mus)
 plot(spp, lambda = 100)
 
 }
