@@ -12,8 +12,7 @@ if(Get_User_Input_sppmix("Use default parameter values?"))
   sigdf <- 5
   LL <- 50
   maxnumcomp <- 10
-}else
-{
+} else {
   m <- Get_User_Input_sppmix("the true number of components",modeYN=0)
   xlims <- c(
     Get_User_Input_sppmix("minx",modeYN=0),
@@ -49,11 +48,10 @@ if(Get_User_Input_sppmix("Apply truncation?"))
 
 if(Get_User_Input_sppmix("Generate the true mixture?"))
   #truemix <- GenNormalMixture(lamda,m,xlims,ylims,r,truncated)
-  mix_demo <- rnormmix(m, sig0, sigdf, win)
-  truemix <- rsppmix(lamda, mix = mix_demo, truncate = truncated, win = win)
-  true_mus <- data.frame(matrix(unlist(mix_demo$mus), m, 2, byrow = TRUE))
-  names(true_mus) <- c("x","y")
-  plot(truemix)+ggplot2::geom_point(data = true_mus, size = 3, colour ="red")
+  mix_demo <- rnormmix(m, sig0, sigdf, xlim = xlims, ylim = ylims)
+  demo_surf <- to_int_surf(mix_demo, lambda = lamda, win = win)
+  truemix <- rsppmix(demo_surf, truncate = truncated)
+  plot(truemix, mix_demo$mus)
 
 if(Get_User_Input_sppmix("Simulate from the posterior (DAMCMC)?"))
   gens <- est_mix_damcmc(truemix, m = m, L = L, truncate = truncated)
@@ -61,16 +59,15 @@ if(Get_User_Input_sppmix("Simulate from the posterior (DAMCMC)?"))
 #  cat("passed")
 if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
 {
-  zmax_truemix <- max(lamda*dnormmix(mix_demo,win));
-  zmax_genmeanmix <- max(post_demo$mean_lambda*dnormmix(post_demo$post_normmix,
-                                                        win))
+  zmax_truemix <- max(dnormmix(demo_surf, xlim = xlims, ylim = ylims))
+  zmax_genmeanmix <- max(dnormmix(post_demo, xlim = xlims, ylim = ylims))
   zmax <- max(c(zmax_truemix, zmax_genmeanmix))
 
-  plot(mix = mix_demo, lambda = lamda, win = win,
+  plot(mix = demo_surf,
        zlims = c(0, 1.1*zmax), truncate = truncated,
        title1 = paste("Intensity surface of the true model with,",m,
                       "components,",truemix$n,"points"))
-  plot(post_demo$post_normmix, post_demo$mean_lambda, win = win,
+  plot(post_demo,
        zlims = c(0, 1.1*zmax), truncate = truncated,
        title1 = paste("Intensity surface of posterior means,",m,
                       "components,",truemix$n,"points"))
@@ -104,9 +101,9 @@ if(Get_User_Input_sppmix("Apply relabeling algorithm?"))
 if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
 {
   gensBD <- est_mix_bdmcmc(pp = truemix, m = maxnumcomp, truncate = truncated,
-                           lambda = 1, lambdab = 10,
+                           lambda1 = 1, lambda2 = 10,
                            hyper = c(5,.01,3,2,1,1), L = L)
-  if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?")) {
+if(Get_User_Input_sppmix("Show Birth-Death MCMC plots?")) {
     cat("Frequency table for the number of components")
   print(table(gensBD$numcomp))
   tab=tabulate(gensBD$numcomp,nbins=gensBD$maxnumcomp)
@@ -117,11 +114,13 @@ if(Get_User_Input_sppmix("Run the Birth-Death MCMC fit?"))
     plot(gensBD$numcomp, xlab="Iteration", ylab="Number of components",
          type="l", main="Generated chain for the number of components")
     postBD <- get_post(gensBD, comp =which.max(tab), burnin = burnin)
-    plot(postBD$post_normmix, postBD$mean_lambda, win = win,
-         zlims = c(0, 1.1*zmax), truncate = truncated,
+    plot(postBD, zlims = c(0, 1.1*zmax), truncate = truncated,
          title1 = paste("Intensity surface of posterior means, MAP m = ",
                         which.max(tab),
                         "components,",truemix$n,"points"))
+}
+  if(Get_User_Input_sppmix("Show average surfaces of Birth-Death MCMC?")) {
+    plot(gensBD)
   }
 }
 

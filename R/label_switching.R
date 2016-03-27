@@ -68,28 +68,30 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
                           win = win)
   }
    if (plot_result == TRUE) {
-   n = fit$data$n
-    par(mfrow=c(1,1))
-
-   titleLines <- list(
-     bquote(paste(lambda,"=",.(mean_lambda),", n=",.(n),", m=",.(m)," components")),
-        title1 = "Posterior mean (permutated labels)"
-   )
+   # n = fit$data$n
+   #  par(mfrow=c(1,1))
+   #
+   # titleLines <- list(
+   #   bquote(paste(lambda,"=",.(mean_lambda),", n=",.(n),", m=",.(m)," components")),
+   #      title1 = "Posterior mean (permutated labels)"
+   # )
    # Now output each line The text in the list is converted
    # to expressions do.call
 
-   plot.default(fit$data,pch=20,
-        xlab=xlab1,
-        ylab=ylab1,
-        xlim=xlims1,
-        ylim=ylims1,main="")
-   mtext(do.call(expression, titleLines),side=3,line=0:1)
+   plot(fit$data, post_normix$mus)
 
-   for(i in 1:m)
-   {
-     center = c(post_normix$mus[[i]])
-     points(center[1], center[2] ,pch=20,col="red")
-   }
+   # plot.default(fit$data,pch=20,
+   #      xlab=xlab1,
+   #      ylab=ylab1,
+   #      xlim=xlims1,
+   #      ylim=ylims1,main="")
+   # mtext(do.call(expression, titleLines),side=3,line=0:1)
+   #
+   # for(i in 1:m)
+   # {
+   #   center = c(post_normix$mus[[i]])
+   #   points(center[1], center[2] ,pch=20,col="red")
+   # }
    plot.intensity_surface(post_normix,
                 title1 = "Posterior mean intensity surface (permutated labels)")
 }
@@ -109,7 +111,9 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
                       gensigmas = permgens$gensigmas,
                       genzs = permgens$genzs,
                       genlamdas = permgens$genlamdas,
-                      data = fit$data
+                      data = fit$data,
+                      m = m,
+                      L = L
     )
   } else {
     perum_fit <- list(allgens_List = permgens$permuted_gens,
@@ -117,11 +121,13 @@ FixLS_da<- function(fit, burnin = length(fit$allgens_List) / 10,
                       genmus = permgens$permuted_mus,
                       gensigmas = permgens$permuted_sigmas,
                       genlamdas = fit$genlamdas,
-                      data = fit$data
+                      data = fit$data,
+                      m = m,
+                      L = L
     )
   }
    class(perum_fit) <- "damcmc_res"
-   return(invisible(perum_fit))
+   return(perum_fit)
 }
 
 #' Test if posterior realizations of mu have label switching
