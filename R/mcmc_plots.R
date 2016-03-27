@@ -200,9 +200,9 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
   post_mix <- get_post(fit, burnin = burnin)
 
   # rgl plots don't wait for ENTER, so it has to appear first
-  plot(post_mix, Window(fit$data))
+  plot(post_mix)
 
-  plotmix_2d(post_mix, fit$data)
+  plotmix_2d(post_mix, pattern = fit$data)
   print(plot_ind(fit, burnin))
   plot_chains(fit, burnin)
   return(invisible())
@@ -218,13 +218,11 @@ plot.damcmc_res <- function(fit, burnin = length(fit$allgens) / 10) {
 #' @param LL Number of grid on x and y axes.
 #' @param zlims The limits of z axis. The default does not have
 #' additional limits on z axis.
-
 #' @examples
 #'
 #' fit <- sppmix::est_mix_bdmcmc(pp = redwood, m = 3, truncate = FALSE,
 #'                               L = 5000)
 #' plot(fit)
-
 #' @export
 plot.bdmcmc_res <- function(fit, win = fit$data$window, burnin = length(fit$allgens)/10,
                             LL = 100, zlims = c(0, 0)) {
