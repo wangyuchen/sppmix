@@ -1,12 +1,16 @@
-#' Calculate posterior mixture by using posterior mean of parameters
+#' Get Posterior normal mixture.
 #'
-#' @param fit object from \code{est_mix_damcmc} or \code{est_mix_bdmcmc}.
-#' @param burnin number of burn-in iterations.
+#' Calculate posterior normal mixture of a DAMCMC or BDMCMC fit. The posterior
+#' mixture is calculated by using posterior mean of parameters. For birth-death
+#' MCMC, the number of component should be specified, and all realization with
+#' that number of components are gathered to calculate posterior mixture.
+#'
+#' @param fit Object of class \code{damcmc_res} or \code{bdmcmc_res}.
+#' @param burnin Number of burn-in iterations. By default, it's 1/10 of chain
+#' length.
 #'
 #' @return An object of class \code{intensity_surface}.
 #'
-#' @details
-#' For Birth-Death MCMC, the number of component need to be specified.
 #' @export
 #' @rdname get_post
 get_post <- function(obj, ...) {
@@ -15,98 +19,78 @@ get_post <- function(obj, ...) {
 
 
 #' @examples
-#'
 #' fit <- est_mix_damcmc(pp = redwood, m = 3)
 #' post_intsurf <- get_post(fit, burnin = 1000)
 #' @rdname get_post
 #' @export
-get_post.damcmc_res <- function(fit, burnin) {
-  L <- length(fit$allgens)
-  m <- ncol(fit$genps)
-  if (missing(burnin)) burnin <- L / 10
+get_post.damcmc_res <- function(fit, burnin = fit$L / 10) {
+  fit_burnined <- drop_realization(fit, burnin)
 
-  post_ps <- colMeans(fit$genps[-(1:burnin), , drop = FALSE])
-  mus <- apply(fit$genmus[, , -(1:burnin), drop = FALSE], 1:2, mean)
+  post_ps <- colMeans(fit_burnined$genps[, 1:fit$m])
+  mus <- apply(fit_burnined$genmus[1:fit$m, , ], 1:2, mean)
 
-  mean_mat <- function(mats) Reduce("+", mats) / length(mats)
-  sigmas <- apply(fit$gensigmas[-(1:burnin), , drop = FALSE], 2, mean_mat)
+  sigmas <- apply(fit_burnined$gensigmas[, 1:fit$m], 2,
+                  function(mats) Reduce(`+`, mats) / length(mats))
 
-  mean_lambda <- mean(fit$genlamdas)
+  mean_lambda <- mean(fit_burnined$genlamdas)
 
-  post_mus <- post_sigmas <- vector("list", m)
-  for (i in 1:m) {
+  post_mus <- post_sigmas <- vector("list", fit$m)
+  for (i in seq_along(post_mus)) {
     post_mus[[i]] <- mus[i, ]
     post_sigmas[[i]] <- matrix(sigmas[, i], 2, 2)
   }
-  post_intensity <- normmix(post_ps, post_mus, post_sigmas, mean_lambda,
-                            fit$data$window, estimated = TRUE)
-  return(post_intensity)
+  normmix(post_ps, post_mus, post_sigmas, mean_lambda,
+          fit$data$window, estimated = TRUE)
 }
 
 
-#' @param comp number of components. The posterior will be calculated only
-#' based on iterations where
+#' @param num_comp Number of components. The posterior will be calculated only
+#' based on iterations have that many number of components.
 #' @examples
+#'
 #' fit <- est_mix_bdmcmc(pp = redwood, m = 5)
-#' post_intsurf <- get_post(fit, 3, burnin = 1000)
+#' post_intsurf <- get_post(fit, num_comp = 4, burnin = 1000)
 #' @rdname get_post
 #' @export
-get_post.bdmcmc_res <- function(fit, comp, burnin) {
-  L <- length(fit$allgens)
-  if (missing(burnin)) burnin <- L / 10
+get_post.bdmcmc_res <- function(fit, num_comp, burnin = fit$L / 10) {
+  fit_burnined <- drop_realization(fit, burnin)
 
-  numcomp <- fit$numcomp
-  numcomp[1:burnin] <- 0
-  ind <- numcomp == comp
-
-  post_ps <- colMeans(fit$genps[ind, , drop = FALSE])
-  post_ps <- post_ps[seq_len(comp)]
-
-  if (any(is.nan(post_ps))) {
-    stop(paste("This BDMCMC chain does not contain any", comp,
-             "component realizations after burn-in."))
+  if (!(num_comp %in% unique(fit_burnined$numcomp))) {
+    stop(paste0("This BDMCMC chain does not contain any ", num_comp,
+               "-component realizations after burn-in."))
   }
 
-  mus <- apply(fit$genmus[, , ind, drop = FALSE], 1:2, mean)
-  mus <- matrix(mus[seq_len(comp), ], comp, 2)
+  new_chain <- drop_realization(fit_burnined, fit_burnined$numcomp != num_comp)
+  new_chain$m <- num_comp
 
-  mean_mat <- function(mats) Reduce("+", mats) / length(mats)
-  sigmas <- apply(fit$gensigmas[ind, , drop = FALSE], 2, mean_mat)
-  sigmas <- sigmas[seq_len(comp)]
+  get_post.damcmc_res(new_chain, burnin = 0)
 
-  mean_lambda <- mean(fit$genlamdas[ind])
-
-  post_mus <- vector("list", comp)
-  for (i in 1:comp) {
-    post_mus[[i]] <- mus[i, ]
-  }
-  post_intensity <- normmix(post_ps, post_mus, sigmas, mean_lambda,
-                            fit$data$window, estimated = TRUE)
-  return(post_intensity)
 }
 
 
-#' @export
-get_bdmcmc_rlz <- function(fit, comp) {
+drop_realization <- function(fit, drop) {
+  # Generalized function for burn-in or drop realizations
+  if (is.numeric(drop)) {
+    if (length(drop) == 1) keep <- seq_len(fit$L) > drop else keep <- -drop
+  }
 
-  L <- length(fit$allgens)
+  if (is.logical(drop)) keep <- !drop
 
-  res <- list()
-  ind <- fit$numcomp == comp
+  fit$allgens_List <- fit$allgens_List[keep]
+  fit$genps <- fit$genps[keep, , drop = FALSE]
+  fit$genmus <- fit$genmus[, , keep, drop = FALSE]
+  fit$gensigmas <- fit$gensigmas[keep, , drop = FALSE]
+  fit$genzs <- fit$genzs[keep, , drop = FALSE]
+  fit$genlamdas <- fit$genlamdas[keep, , drop = FALSE]
+  fit$ApproxCompMass <- fit$ApproxCompMass[keep, , drop = FALSE]
 
-  res$allgens_List <- fit$allgens_List[ind]
-  res$genps <- fit$genps[ind, seq_len(comp), drop = FALSE]
-  res$genmus <- fit$genmus[seq_len(comp), , ind, drop = FALSE]
+  fit$L <- length(fit$allgens_List)
+  if (class(fit) == "bdmcmc_res")
+    fit$numcomp <- fit$numcomp[keep, , drop = FALSE]
 
-  res$gensigmas <- fit$gensigmas[ind, seq_len(comp), drop = FALSE]
-
-  res$genlamdas <- fit$genlamdas[ind, 1, drop = FALSE]
-  res$genzs <- fit$genzs[ind, , drop = FALSE]
-  res$data <- fit$data
-
-  class(res) <- "damcmc_res"
-  return(res)
+  fit
 }
+
 
 
 
