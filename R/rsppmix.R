@@ -55,8 +55,8 @@ rsppmix <- function(intsurf, truncate = TRUE, ...) {
     spp <- vector("list", length(unique(comp)))
     for (k in unique(comp)) {
       snd <- mvtnorm::rmvnorm(sum(comp == k),
-                                   mix$mus[[k]], mix$sigmas[[k]])
-      spp[[k]] <- cbind(snd, comp = k)
+                              mix$mus[[k]], mix$sigmas[[k]])
+      spp[[k]] <- cbind(snd, k)
     }
     return(do.call(rbind, spp))
   }
@@ -72,6 +72,8 @@ rsppmix <- function(intsurf, truncate = TRUE, ...) {
     warning(paste(sum(!spatstat::inside.owin(spp[, 1], spp[, 2], win)),
                   "points are outside window."))
   }
+
+  spp <- spp[sample(1:nrow(spp), size = nrow(spp)), ]
 
   RVAL <- as.ppp(spp[, 1:2], W=win, check = truncate)
   RVAL$comp <- spp[, 3]

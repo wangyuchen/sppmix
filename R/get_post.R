@@ -64,10 +64,24 @@ get_post.bdmcmc_res <- function(fit, num_comp, burnin = fit$L / 10) {
   new_chain$m <- num_comp
 
   get_post.damcmc_res(new_chain, burnin = 0)
-
 }
 
-
+#' Drop a subset of MCMC realization
+#'
+#' Drop realizations from a MCMC chain.
+#'
+#' @inheritParams get_post
+#' @param drop If one integer is provided, it will drop the first 1:drop
+#' realizations. If an integer vector is provided, it will drop these
+#' iterations. If a logical vector is provided (with the same length as chain
+#' length of \code{fit}), it will be used for subsetting directly.
+#'
+#' @examples
+#' fit <- est_mix_bdmcmc(redwood, m = 5)
+#' fit
+#' drop_realization(fit, 500)
+#' drop_realization(fit, fit$numcompo != 5)
+#'
 drop_realization <- function(fit, drop) {
   # Generalized function for burn-in or drop realizations
   if (is.numeric(drop)) {
@@ -85,8 +99,9 @@ drop_realization <- function(fit, drop) {
   fit$ApproxCompMass <- fit$ApproxCompMass[keep, , drop = FALSE]
 
   fit$L <- length(fit$allgens_List)
-  if (class(fit) == "bdmcmc_res")
+  if (class(fit) == "bdmcmc_res") {
     fit$numcomp <- fit$numcomp[keep, , drop = FALSE]
+  }
 
   fit
 }

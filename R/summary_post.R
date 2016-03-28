@@ -13,11 +13,10 @@
 #' post=est_mix_damcmc(pp2,L = 5000,2,truncate = F)
 #' summary the posterior results
 #' summary(post)
-summary.damcmc_res <- function(fit, dgt = 2) {
-
-  m = dim(fit$genmus)[1]
-  for (i in 1:m)
-  {
+summary.damcmc_res <- function(fit, burnin = fit$L / 10, dgt = 2) {
+  fit <- drop_realization(fit, burnin)
+  m = fit$m
+  for (i in 1:m) {
     #true value and credible sets
     poststats = GetStats_sppmix(fit$genps[,i], alpha=0.05)
     poststats <- sapply(poststats, format, digits = dgt)

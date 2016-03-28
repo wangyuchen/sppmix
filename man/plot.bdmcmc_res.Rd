@@ -8,11 +8,10 @@
   burnin = length(fit$allgens)/10, LL = 100, zlims = c(0, 0))
 }
 \arguments{
-\item{fit}{An object contains all posterior realizations from
-\code{\link{est_mix_bdmcmc}}}
+\item{fit}{Object of class \code{damcmc_res} or \code{bdmcmc_res}.}
 
-\item{burnin}{Length of burnin, default value is 1/10 of total number of
-iteration.}
+\item{burnin}{Number of burn-in iterations. By default, it's 1/10 of chain
+length.}
 
 \item{LL}{Number of grid on x and y axes.}
 
@@ -23,9 +22,7 @@ additional limits on z axis.}
 Plot the average surfaces from BDMCMC fit
 }
 \examples{
-
-fit <- sppmix::est_mix_bdmcmc(pp = redwood, m = 3, truncate = FALSE,
-                              L = 5000)
+fit <- est_mix_bdmcmc(pp = redwood, m = 5)
 plot(fit)
 }
 
