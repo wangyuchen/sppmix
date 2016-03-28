@@ -30,7 +30,9 @@
 NULL
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("To start with sppmix, type ?sppmix", " or ",
+  packageStartupMessage("To start with sppmix, type ?sppmix or ",
+                        "demo(package = 'sppmix') \n",
+                        "To learn more, type ",
                         "browseVignettes(package = 'sppmix')")
 }
 

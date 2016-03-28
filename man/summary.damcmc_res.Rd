@@ -4,11 +4,14 @@
 \alias{summary.damcmc_res}
 \title{Summary of an MCMC result}
 \usage{
-\method{summary}{damcmc_res}(fit, dgt = 2)
+\method{summary}{damcmc_res}(fit, burnin = fit$L/10, dgt = 2)
 }
 \arguments{
 \item{fit}{An object contains all posterior realizations from
 \code{\link{est_mix_damcmc}} or \code{\link{est_mix_bdmcmc}}.}
+
+\item{burnin}{Length of burnin, default value is 1/10 of total number of
+iteration.}
 }
 \description{
 Prints a brief summary of an MCMC realization result

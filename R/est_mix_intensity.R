@@ -49,7 +49,7 @@ est_mix_damcmc <- function(pp, m, truncate = FALSE,
 print.damcmc_res <- function(fit) {
   cat("Normal Mixture fit by Data Augmentation MCMC \n",
       "MCMC samples:", fit$L, "\n",
-      "Number of component:", fit$m, "\n")
+      "Number of components:", fit$m, "\n")
 }
 
 
@@ -86,7 +86,8 @@ est_mix_bdmcmc <- function(pp, m, truncate = FALSE,
 print.bdmcmc_res <- function(fit) {
   cat("Normal Mixture fit by Birth-death MCMC\n",
       "MCMC samples:", fit$L, "\n",
-      "Number of component:", sort(unique(fit$numcomp)), "\n")
+      "Number of components:")
+  print(table(fit$numcomp))
 }
 
 

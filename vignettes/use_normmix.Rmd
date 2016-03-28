@@ -1,19 +1,21 @@
 ---
-title: "Work with 2D Normal Mixtures"
+title: "Working with 2D Normal Mixtures"
 author: "Yuchen Wang"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Work with 2D Normal Mixtures}
+  %\VignetteIndexEntry{Working with 2D Normal Mixtures}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 ```{r, echo=FALSE, message=FALSE} 
 library(knitr)
 library(sppmix)
 opts_chunk$set(fig.width = 5, fig.height = 4)
 ```
-A two dimensional normal mixture is a basic building block of this package. We created a S3 class `normmix` and related methods for operations with normal mixture. In this vignette, you'll learn everything that related to a `normmix` object.
+
+A two dimensional normal mixture is a basic building block of this package. We created a S3 class `normmix` and related methods for operations with normal mixture. In this vignette, you'll learn everything that related to a `normmix` object. In first section, class `normmix` is introduced. When provided with intensity and a window, a normal mixture becomes an intensity surface. We defined the class `intensity_surface` and introduced it in the second section. In the end, we showed how to generate point pattern data from those two classes. 
 
 ## Normal Mixtures
 ### Definition of a Normal Mixture
@@ -49,6 +51,13 @@ It will be of class `normmix`, and there's some default S3 methods associated wi
 ```{r}
 summary(mix1)
 ```
+
+You can also plot it using a density plot.
+
+```{r}
+plot(mix1)
+```
+
 
 #### Generate Mixture from Simulation
 If you don't have a specific normal mixture you want to work with (which is always the case), you may want to simulate a normal mixture. `rnormmix()` will allow you to simulate normal mixtures in different ways.
@@ -121,12 +130,20 @@ pp1 <- rsppmix(intsurf = intsurf1)
 pp1
 ```
 
-You may also use a `normmix` object and supply the other information to sppmix. Truncation is another feature of `rsppmix()`. When `truncate` is true (default), the simulated points are guranteened to be within the window When it's false, a warning will be given when there are points outside window.
+You may also use a `normmix` object and supply the other information to sppmix. In this package, you'll see many functions that expect a `intsurf` object and have `...` parameter. In most cases, you can provide a `normmix` object instead and provide `lambda` and `win` to `...` parameter. This allows you to use a call-specific intensity or window instead of create an intensity surface every time.
 
 ```{r}
-rsppmix(mix1, truncate = FALSE, lambda = 100, win = square(1))
+rsppmix(mix1, lambda = 100, win = square(1))
 ```
 
+Now you have an intensity surface and the point generated from it. You can use `plotmix_2d` to plot the intensity and also add points to it. 
+
+```{r}
+plotmix_2d(intsurf1, pattern = pp1)
+```
+
+
+Now we've introduced how to work with normal mixtures and intensity surfaces. In other vignettes, we'll introduce how to use data augmentation MCMC and birth-death MCMC to fit normal mixture to a given point pattern and some model diagnostics.
 
 
 
