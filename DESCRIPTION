@@ -1,6 +1,6 @@
 Package: sppmix
 Title: 2D normal mixture models for spatial point process.
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: as.person(c(
     "Yuchen Wang <ycwang0712@gmail.com> [aut]",
     "Jiaxun Chen <chenjiaxun9@hotmail.com> [aut, cre]",
@@ -18,7 +18,6 @@ Imports:
     rgl,
     ggplot2,
     Rcpp,
-    tidyr,
     fields
 LinkingTo: Rcpp,
     RcppArmadillo,
