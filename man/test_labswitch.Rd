@@ -4,10 +4,14 @@
 \alias{test_labswitch}
 \title{Test if posterior realizations of mu have label switching}
 \usage{
-test_labswitch(genmus)
+test_labswitch(fit, burnin = fit$L/10)
 }
 \arguments{
-\item{genmus}{posterior realizations of mus from DAMCMC algorithm.}
+\item{fit}{An object contains all posterior realizations from
+\code{\link{est_mix_damcmc}} or \code{\link{est_mix_bdmcmc}}.}
+
+\item{burnin}{Length of burnin, default value is 1/10 of total number of
+iteration.}
 }
 \description{
 Test if there is a label switching of the posterior realizations of mu by

@@ -51,7 +51,7 @@ if(Get_User_Input_sppmix("Generate the true mixture?"))
   mix_demo <- rnormmix(m, sig0, sigdf, xlim = xlims, ylim = ylims)
   demo_surf <- to_int_surf(mix_demo, lambda = lamda, win = win)
   truemix <- rsppmix(demo_surf, truncate = truncated)
-  plot(truemix, mix_demo$mus)
+  plot(truemix, mus = mix_demo$mus)
 
 if(Get_User_Input_sppmix("Simulate from the posterior (DAMCMC)?"))
   gens <- est_mix_damcmc(truemix, m = m, L = L, truncate = truncated)
@@ -63,15 +63,12 @@ if(Get_User_Input_sppmix("Show basic 2d and 3d plots?"))
   zmax_genmeanmix <- max(dnormmix(post_demo, xlim = xlims, ylim = ylims))
   zmax <- max(c(zmax_truemix, zmax_genmeanmix))
 
-  plot(mix = demo_surf,
-       zlims = c(0, 1.1*zmax), truncate = truncated,
-       main = paste("Intensity surface of the true model with,",m,
-                      "components,",truemix$n,"points"))
+  print(plotmix_2d(post_demo, pattern = truemix))
   plot(post_demo,
        zlims = c(0, 1.1*zmax), truncate = truncated,
        main = paste("Intensity surface of posterior means,",m,
-                      "components,",truemix$n,"points"))
-#   PlotNormalMixture(mix1=mix_of_postmeans,
+                    "components,",truemix$n,"points"))
+  #   PlotNormalMixture(mix1=mix_of_postmeans,
 #                     data1=gendata,
 #                     m1=m,lamda1=mean_lambda,xlims1=xlims,
 #                     ylims1=ylims,
@@ -87,7 +84,7 @@ if(Get_User_Input_sppmix("Show Chains and Stats?"))
 }
 
 if(Get_User_Input_sppmix("Check for label switching?"))
-  test_labswitch(gens$genmus[,,burnin:L])
+  test_labswitch(gens)
 
 if(Get_User_Input_sppmix("Show average of intensity surfaces (slow operation)?"))
   plot_avgsurf(gens, win = win, burnin = burnin, LL = LL, zlims=c(0,1.1*zmax))

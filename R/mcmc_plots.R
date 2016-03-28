@@ -260,7 +260,7 @@ plot.bdmcmc_res <- function(fit, win = fit$data$window,
 }
 
 
-#' @export
+
 Plots_off<- function()
 {
   graphics.off()

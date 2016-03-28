@@ -16,7 +16,7 @@ length.}
 Plot result from DAMCMC fit
 }
 \examples{
-fit <- est_mix_damcmc(pp = redwood, m = 3)
+fit <- est_mix_damcmc(pp = redwood, m = 5)
 plot(fit)
 }
 
