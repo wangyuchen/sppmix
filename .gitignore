@@ -2,13 +2,3 @@
 .Rhistory
 .RData
 inst/doc
-
-vignettes/mcmc.html
-
-vignettes/mcmc.R
-
-vignettes/unnamed_chunk_8snapshot.png
-
-vignettes/use_normmix.html
-
-vignettes/use_normmix.R
