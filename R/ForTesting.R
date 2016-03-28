@@ -2,7 +2,7 @@
 #Do Clean+Rebuild, test, then check, then B+R
 #Written by Sakis Micheas, 2015
 
-#' @export
+
 GenNormalMixture<- function(lamda=50,m=1,
     xlims=c(-3,3),ylims=c(-3,3),r=20,trunc=FALSE,
     xlab1="x",ylab1="y")
@@ -86,7 +86,7 @@ if(0)
   return(list(mix1,genmix))
 }
 
-#' @export
+
 PlotNormalMixture<- function(mix1,data1,
                              m1=1,lamda1=100,
                              xlims1=c(-3,3),
@@ -160,7 +160,7 @@ PlotNormalMixture<- function(mix1,data1,
 }
 
 
-#' @export
+
 Plot2d_sppmix<- function(data1,mix1,lamda1=100,
                  xlims1=c(-3,3),
                  ylims1=c(-3,3),
@@ -246,7 +246,7 @@ Plot2d_sppmix<- function(data1,mix1,lamda1=100,
 
 }
 
-#' @export
+
 Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
       title1="Poisson Process Intensity",
       xlims=c(0,1),ylims=c(0,1),zlims=NULL)
@@ -307,7 +307,7 @@ Plot3d_sppmix<- function(xcoord,ycoord,zcoord,
                        col = jet.colors(100))))
 }
 
-#' @export
+
 Plot3dGrayScale_sppmix<- function(xcoord,ycoord,zcoord,
                                   title1="Poisson Process Intensity",
                                   xlims=c(0,1),ylims=c(0,1),zlims=NULL)
@@ -351,7 +351,7 @@ Plot3dGrayScale_sppmix<- function(xcoord,ycoord,zcoord,
       zlim = zlims,col = gray.colors(100))))
 }
 
-#' @export
+
 Plot3d_xyz<- function(xcoord,ycoord,zcoord,
     title1="3d Points",
     xlims=c(0,1),ylims=c(0,1),zlims=NULL)
@@ -406,7 +406,7 @@ Plot3d_xyz<- function(xcoord,ycoord,zcoord,
               ,texts=title1)
 }
 
-#' @export
+
 Save_AllOpenRglGraphs<- function(
   dir1="D:/sppmix/images",filename1="RglGraph")
 {
@@ -425,7 +425,7 @@ Save_AllOpenRglGraphs<- function(
     cat(paste("Saved",count-1,"plots in",dir1))
 }
 
-#' @export
+
 Go<- function()
 {
 #just for testing, run Demo_sppmix instead
@@ -552,7 +552,7 @@ Go<- function()
 
 }
 
-#' @export
+
 Demo_sppmix<- function()
 {
   library(microbenchmark)
@@ -692,7 +692,7 @@ Demo_sppmix<- function()
 }
 
 
-#' @export
+
 PostGenBDMCMC_sppmix<- function(gensBD,gendata,xlims,ylims,LL=51,maxz_height,truncated=FALSE)
 {#processes output from a Birth-Death fit
   cat("Frequency table for the number of components")
@@ -773,7 +773,7 @@ PostGenBDMCMC_sppmix<- function(gensBD,gendata,xlims,ylims,LL=51,maxz_height,tru
 
 }
 
-#' @export
+
 Show3dAvgofsurfaces<- function(gens,LL=30,burnin=1000,xlims=c(0,10),ylims=c(0,10),zlims=c(0,1),truncated=FALSE)
 {
   L=dim(gens$genps)[1]
@@ -805,7 +805,7 @@ Show3dAvgofsurfaces<- function(gens,LL=30,burnin=1000,xlims=c(0,10),ylims=c(0,10
 
 }
 
-#' @export
+
 ShowChains<- function(genps,genmus,m=5)
 {
  #   windows()
@@ -846,7 +846,7 @@ ShowChains<- function(genps,genmus,m=5)
 
 }
 
-#' @export
+
 FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims1=c(0,10),burnin=1000,truncated=truncated)
 {
 #  z=sppmix::FixLabels(gens,truemix)
@@ -884,7 +884,7 @@ FixLabels<- function(allgens,data1,truemix=NULL,maxz=1,m1=5,xlims1=c(0,10),ylims
   return(permgens)
 }
 
-#' @export
+
 CheckLabels<- function(genmus)
 {
   cat("\nChecking for label switching...\n")
@@ -906,7 +906,7 @@ CheckLabels<- function(genmus)
 
 }
 
-#' @export
+
 ShowStats<- function(genps,genmus,gensigmas,truemix)
 {
   m=ncol(genps)
@@ -980,7 +980,7 @@ cat("\n----------------Component stats done------------\n")
 #cat("\nNOTE: if you have the truth, then what is called component 1 might be called component 2 in the fit. This is not label switching. Check the plots of the generated chains for erratic behavior (sudden jumps) and if present, run the FixLabels routine to find the best permutation.\n")
 }
 
-#' @export
+
 MakeNormMixFromMixtureList<- function(mix)
 {
   #takes a mixture list and returns
@@ -1000,7 +1000,7 @@ MakeNormMixFromMixtureList<- function(mix)
   return (norm_mix)
 }
 
-#' @export
+
 MakeMixtureList<- function(allgens_List,burnin=1000)
 {
   #takes the DAMCMC output and makes a mixture list
@@ -1017,7 +1017,7 @@ MakeMixtureList<- function(allgens_List,burnin=1000)
   return (mix)
 }
 
-#' @export
+
 Get_User_Input_sppmix<- function(prompt_string="",modeYN=1)
 {
   options(warn=-1)
