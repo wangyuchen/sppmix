@@ -134,12 +134,13 @@ You may also use a `normmix` object and supply the other information to sppmix. 
 
 ```{r}
 rsppmix(mix1, lambda = 100, win = square(1))
+plot(pp1)
 ```
 
 Now you have an intensity surface and the point generated from it. You can use `plotmix_2d` to plot the intensity and also add points to it. 
 
 ```{r}
-plotmix_2d(intsurf1, pattern = pp1)
+plot(intsurf1, pattern = pp1)
 ```
 
 

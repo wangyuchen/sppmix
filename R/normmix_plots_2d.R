@@ -17,10 +17,14 @@
 #' @export
 plot.sppmix <- function(pattern, mus, ...) {
   n <- spatstat::npoints(pattern)
+  win <- pattern$window
 
   p <- ggplot(as.data.frame(pattern), aes(x, y)) + geom_point() +
+    geom_rect(aes(xmin = win$xrange[1], xmax = win$xrange[2],
+                  ymin = win$yrange[1], ymax = win$yrange[2]),
+              color = "black", fill = NA) +
     labs(x = "X", y = "Y") +
-    coord_fixed(xlim = pattern$window$xrange, ylim = pattern$window$yrange) +
+    coord_fixed(xlim = win$xrange, ylim = win$yrange) +
     theme_light() +
     add_title("Spatial Point Pattern from Normal Mixture", n = pattern$n, ...)
 
@@ -37,16 +41,16 @@ plot.sppmix <- function(pattern, mus, ...) {
 }
 
 
-#' 2D contour plots for normal mixture and intensity surface
+#' 2D density plots for normal mixture and intensity surface
 #'
 #' Create a contour plot for the intensity surface with or without realizations
 #' on it.
 #'
 #' @inheritParams rsppmix
-#' @param pattern optional spatial point pattern to add to the plot. In the c
+#' @param pattern Optional spatial point pattern to add to the plot. In the
 #' class of \code{\link[spatstat]{ppp}}.
 #' @param contour Logical flag indicating whether to plot countour only.
-#' @param L number of grids on each coordinate.
+#' @param L Number of grids on each coordinate.
 #'
 #' @examples
 #' # plot normmix density

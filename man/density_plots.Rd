@@ -3,7 +3,7 @@
 \name{plot.intensity_surface}
 \alias{plot.intensity_surface}
 \alias{plot.normmix}
-\title{2D contour plots for normal mixture and intensity surface}
+\title{2D density plots for normal mixture and intensity surface}
 \usage{
 \method{plot}{intensity_surface}(intsurf, pattern, contour = FALSE,
   truncate = TRUE, L = 256, ...)
@@ -14,7 +14,7 @@
 \arguments{
 \item{intsurf}{Object of class \code{intensity_surface} or \code{normmix}.}
 
-\item{pattern}{optional spatial point pattern to add to the plot. In the c
+\item{pattern}{Optional spatial point pattern to add to the plot. In the
 class of \code{\link[spatstat]{ppp}}.}
 
 \item{contour}{Logical flag indicating whether to plot countour only.}
@@ -22,7 +22,7 @@ class of \code{\link[spatstat]{ppp}}.}
 \item{truncate}{Whether to truncate the points outside the domain,
 default to TRUE.}
 
-\item{L}{number of grids on each coordinate.}
+\item{L}{Number of grids on each coordinate.}
 
 \item{...}{Further parameters passed to \code{to_int_surf()}.}
 
