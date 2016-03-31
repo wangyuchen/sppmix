@@ -1,17 +1,12 @@
-//Written by Yuchen Wang, 2015
-#include "sppmix.h"
-//#include <Rcpp.h>
+#include <Rcpp.h>
 #include <mvtnormAPI.h>
 
 using namespace Rcpp;
 
-
 // [[Rcpp::export]]
-double ApproxBivNormProb_sppmix(vec const& xlims,
-                                vec const& ylims,vec const& mu,
-                                mat const& sigma,int type)
-{
-  NumericVector lls(2),uls(2);
+double pbvnorm(NumericVector const& xlims, NumericVector const& ylims,
+               NumericVector const& mu, NumericMatrix const& sigma, int type) {
+  NumericVector lls(2), uls(2);
   lls(0) = (xlims(0) - mu(0)) / sqrt(sigma(0, 0));
   lls(1) = (ylims(0) - mu(1)) / sqrt(sigma(1, 1));
 
@@ -19,11 +14,10 @@ double ApproxBivNormProb_sppmix(vec const& xlims,
   uls(1) = (ylims(1) - mu(1)) / sqrt(sigma(1, 1));
 
   NumericVector muxy(2);
-  muxy(0)=0;
-  muxy(1)=0;
+  muxy(0) = 0;
+  muxy(1) = 0;
 
   int n = 2, nu = 0, maxpts = 2000, inform;
-
 
   //INFIN INTEGER, array of integration limits flags:
   //if INFIN(I) < 0, Ith limits are (-infinity, infinity);
@@ -34,9 +28,9 @@ double ApproxBivNormProb_sppmix(vec const& xlims,
   infin(0) = type;
   infin(1) = type;
 
-  double abseps=1/1000, releps=1/1000, error, value;
-  int rnd=0;
-  double corr=sigma(0, 1) / sqrt(sigma(0, 0) * sigma(1, 1));
+  double abseps = 1/1000, releps=1/1000, error, value;
+  int rnd = 0;
+  double corr = sigma(0, 1) / sqrt(sigma(0, 0) * sigma(1, 1));
 
   /* mvtnorm_C_mvtdst is defined in mvtnorm/inst/include/mvtnormAPI.h */
   mvtnorm_C_mvtdst(&n, &nu, lls.begin(), uls.begin(),

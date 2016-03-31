@@ -1,87 +1,3 @@
-#' Plot normal mixture density.
-#'
-#' Plot the density surface of a normal mixture.
-#'
-#' @inheritParams rsppmix
-#' @param L Number of grid on x and y axes.
-#' @param main Title for the density plot.
-#' @param zlims The limits of z axis. The default does not has additional limits
-#' on z axis.
-#' @param pos The point coodinates for the title. The default is the top middle
-#' in the 3-D plot.
-#' @param grayscale Logical flag indicate if using gray scale as the color
-#' of the 3-D plot.
-#'
-#' @export
-#' @examples
-#' plot(demo_intsurf)
-plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
-                                   zlims = c(0, 0), pos=c(0, 0, 0),
-                                   main = "Intensity Surface of Normal Mixture",
-                                   grayscale = FALSE, ...) {
-
-  intsurf <- to_int_surf(intsurf, ...)
-
-  win <- intsurf$window
-  xlims <- win$xrange
-  ylims <- win$yrange
-
-  est_intensity <- dnormmix(intsurf, xlim = xlims, ylim = ylims,
-                            L = L, truncate = truncate)
-
-  x <- est_intensity$xcol
-  y <- est_intensity$yrow
-  z <- as.matrix(est_intensity)
-
-  jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
-                                   "#7FFF7F", "yellow", "#FF7F00", "red",
-                                   "#7F0000"))
-  if (grayscale == TRUE) {
-    col <- gray.colors(100)[findInterval(t(z), seq(min(z),
-                                                   max(z), length = 100))]
-  } else {
-    col <- jet.colors(100)[findInterval(t(z), seq(min(z),
-                                                  max(z), length = 100))]
-  }
-
-  if (zlims[1] == 0 && zlims[2] == 0) {
-    zlims=c(0,max(z))
-  }
-
-  if (.Platform$OS.type == "unix") {
-    rgl::layout3d(matrix(1:2, 1, 2), widths = c(5, 1))
-  }
-  rgl::open3d(windowRect = c(0, 45, 612, 657), zoom=1.2)
-  U=rgl::par3d("userMatrix")
-  rgl::par3d(userMatrix=
-               rgl::rotate3d(U,pi/4,0,0,1))
-
-  rgl::persp3d(x = x, y = y, z = t(z),
-               color = col, xlab="x",ylab="y",zlab="",
-               zlim=c(zlims[1]-0.01,zlims[2]),
-               box = FALSE, axes = FALSE)
-  rgl::axis3d('x')
-  rgl::axis3d('y')
-  rgl::axis3d('z-+', pos = c(xlims[1], ylims[2], 0))
-  rgl::title3d(main = NULL)
-  rgl::text3d(xlims[2], ylims[2], zlims[2],
-              texts = main)
-
-  if (grayscale == TRUE) {
-    rgl::bgplot3d(suppressWarnings(
-      fields::image.plot(legend.only = TRUE,
-                         zlim = zlims,
-                         col = gray.colors(100))))
-  } else {
-    rgl::bgplot3d(suppressWarnings(
-      fields::image.plot(legend.only = TRUE,
-                         zlim = zlims,
-                         col = jet.colors(100))))
-
-  }
-}
-
-
 #' Plot spatial point pattern generated from mixture.
 #'
 #' Plot funciton for spatial point pattern generated from mixture. It's an
@@ -97,6 +13,7 @@ plot.intensity_surface <- function(intsurf, truncate = TRUE, L = 256,
 #' plot(spp, mus = intsurf1$mus)
 #' plot(spp, mus = intsurf1$mus, lambda = 100)
 #'
+#' @import ggplot2
 #' @export
 plot.sppmix <- function(pattern, mus, ...) {
   n <- spatstat::npoints(pattern)
@@ -131,7 +48,6 @@ plot.sppmix <- function(pattern, mus, ...) {
 #' @param contour Logical flag indicating whether to plot countour only.
 #' @param L number of grids on each coordinate.
 #'
-#' @import ggplot2
 #' @examples
 #' # plot normmix density
 #' plot(demo_mix)
@@ -144,8 +60,8 @@ plot.sppmix <- function(pattern, mus, ...) {
 #'
 #' @export
 #' @rdname density_plots
-plotmix_2d <- function(intsurf, pattern, contour = FALSE, truncate = TRUE,
-                       L = 256, ...) {
+plot.intensity_surface <- function(intsurf, pattern, contour = FALSE,
+                                   truncate = TRUE, L = 256, ...) {
   intsurf <- to_int_surf(intsurf, ...)
   win <- intsurf$window
 
