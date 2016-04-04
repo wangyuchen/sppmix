@@ -19,15 +19,16 @@
 #' in the domain. If \code{truncate = FALSE} is set, the returned point pattern
 #' will not check whether the points are inside the domain.
 #'
-#' @param intsurf Object of class \code{intensity_surface} or \code{normmix}.
+#' @param x Object of class \code{intensity_surface} or \code{normmix}.
+#' @param ... Further parameters passed to \code{to_int_surf()}.
+#' See \code{\link{to_int_surf}} for details.
 #' @param truncate Whether to truncate the points outside the domain,
 #' default to TRUE.
-#' @param ... Further parameters passed to \code{to_int_surf()}.
 #'
 #' @return A point pattern of class \code{c("sppmix", "ppp")}.
 #' @export
 #' @examples
-#' rsppmix(intsurf = demo_intsurf)
+#' rsppmix(demo_intsurf)
 #'
 #' # overwrite lambda or win
 #' rsppmix(demo_intsurf, lambda = 200)
@@ -37,11 +38,11 @@
 #' rsppmix(demo_mix, lambda = 100, win = square(1))
 #'
 #' # turn off truncation
-#' rsppmix(intsurf = demo_intsurf, truncate = FALSE)
+#' rsppmix(demo_intsurf, truncate = FALSE)
 #'
-rsppmix <- function(intsurf, truncate = TRUE, ...) {
+rsppmix <- function(x, ..., truncate = TRUE) {
 
-  intsurf <- to_int_surf(intsurf, ...)
+  intsurf <- to_int_surf(x, ...)
   win <- intsurf$window
 
   n <- rpois(1, intsurf$intensity)
@@ -75,9 +76,9 @@ rsppmix <- function(intsurf, truncate = TRUE, ...) {
 
   spp <- spp[sample(1:nrow(spp), size = nrow(spp)), ]
 
-  RVAL <- as.ppp(spp[, 1:2], W=win, check = truncate)
+  RVAL <- spatstat::as.ppp(spp[, 1:2], W = win, check = truncate)
   RVAL$comp <- spp[, 3]
-  class(RVAL) <- c("sppmix", "ppp")
+  class(RVAL) <- c("sppmix", class(RVAL))
   return(RVAL)
 }
 

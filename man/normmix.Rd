@@ -8,9 +8,9 @@
 \usage{
 normmix(ps, mus, sigmas, lambda = NULL, win = NULL, estimated = FALSE)
 
-\method{summary}{normmix}(mix)
+\method{summary}{normmix}(object, ...)
 
-\method{summary}{intensity_surface}(mix)
+\method{summary}{intensity_surface}(object, ...)
 }
 \arguments{
 \item{ps}{Vector of component probabilities.}
@@ -30,7 +30,9 @@ create an intensity surface.}
 \item{estimated}{Whether it's an estimated mixture. By default it's set to
 FALSE. When using an estimated mixture, it should be set to TRUE.}
 
-\item{mix}{An object of class \code{normmix}}
+\item{object}{An object of class \code{normmix}}
+
+\item{...}{Currently omitted.}
 }
 \value{
 An object of class "normmix" containing the following components:

@@ -1,5 +1,5 @@
 plot_density_3d <- function(x, y, z, main, ...) {
-  demo_intsurf
+  sppmix::demo_intsurf
   win <- demo_intsurf$window
   est_intensity <- dnormmix(demo_intsurf, xlim = win$xrange, ylim = win$yrange,
                             L = 64)
@@ -18,19 +18,14 @@ plot_density_3d <- function(x, y, z, main, ...) {
   col <- jet.colors(100)[findInterval(z, seq(min(z), max(z), length = 100))]
 
 
-  open3d(useNULL = TRUE)  # plot at backend when calling any *3d functions
-  persp3d(x, y, z, col = col)
+  rgl::open3d(useNULL = TRUE)  # plot at backend when calling any *3d functions
+  rgl::persp3d(x, y, z, col = col)
 
-  s <- scene3d()
+  s <- rgl::scene3d()
   class(s) <- c("density_3d", class(s))
   s
 }
 
 print.density_3d <- function(scene, new_window = FALSE, ...) {
-  if (new_window) {
-    #     s$par3d$windowRect <- 1.5*s$par3d$windowRect
-    #     plot3d(s)
-  } else {
-    rglwidget::rglwidget(scene, ...)
-  }
+  rglwidget::rglwidget(scene, ...)
 }

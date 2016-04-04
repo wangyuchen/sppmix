@@ -4,8 +4,8 @@
 \alias{est_intensity_np}
 \title{Estimate intensity surface by using non-parametric method.}
 \usage{
-est_intensity_np(pattern, win, h, L = 10, kernel = c("Epanechnikov"),
-  edgecorrect = TRUE, truncate = TRUE)
+est_intensity_np(pattern, win = pattern$window, h, L = 10,
+  kernel = c("Epanechnikov"), edgecorrect = TRUE, truncate = TRUE)
 }
 \arguments{
 \item{pattern}{A two-dimesional spatial point pattern with class
@@ -33,11 +33,10 @@ An object of class \code{\link[spatstat]{im}}.
 Using Epanechnikov kernel to estimate intensity surface.
 }
 \examples{
-mix1 <- rnormmix(3, .01, 5, square(5))
-pattern1 <- rsppmix(30, mix1, square(5))
+pattern1 <- rsppmix(demo_mix, lambda = 30, win = square(5))
 
 # estimate and plot the estimated intensity surface
-surf1 <- est_intensity_np(pattern1, win=square(5), h=0.05, L=100)
+surf1 <- est_intensity_np(pattern1, h=0.05, L=100)
 plot(surf1)
 
 }

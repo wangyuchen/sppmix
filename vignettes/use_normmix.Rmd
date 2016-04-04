@@ -126,7 +126,7 @@ An intensity surface is the minimum requirement for generating a point pattern f
 `rsppmix()` will return a point pattern in the class of `c("sppmix", "ppp")`. You may recognize that `ppp` is the class for point pattern in the `spatstat` package. We extended it to `sppmix`, which is our own class for a point pattern generated from normal mixture.
 
 ```{r}
-pp1 <- rsppmix(intsurf = intsurf1)
+pp1 <- rsppmix(intsurf1)
 pp1
 ```
 

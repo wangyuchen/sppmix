@@ -3,39 +3,27 @@
 #' Plot funciton for spatial point pattern generated from mixture. It's an
 #' alternative to spatstat's plotting functions.
 #'
-#' @param pattern A point pattern of class sppmix or
+#' @param x A point pattern of class sppmix or
 #' \code{\link[spatstat]{ppp}}.
-#' @param mus An optioanl list of theoretical mean for each component.
 #' @param ... Additional parameters to \code{add_title} to be plot on title.
 #' @examples
 #' spp <- rsppmix(demo_intsurf)
 #' plot(spp)
-#' plot(spp, mus = intsurf1$mus)
-#' plot(spp, mus = intsurf1$mus, lambda = 100)
+#' plot(spp, lambda = 100)
 #'
 #' @import ggplot2
 #' @export
-plot.sppmix <- function(pattern, mus, ...) {
-  n <- spatstat::npoints(pattern)
-  win <- pattern$window
+plot.sppmix <- function(x, ...) {
+  n <- spatstat::npoints(x)
+  win <- x$window
 
-  p <- ggplot(as.data.frame(pattern), aes(x, y)) + geom_point() +
+  p <- ggplot(as.data.frame(x), aes_string("x", "y")) + geom_point() +
     geom_rect(aes(xmin = win$xrange[1], xmax = win$xrange[2],
                   ymin = win$yrange[1], ymax = win$yrange[2]),
               color = "black", fill = NA) +
     labs(x = "X", y = "Y") +
     coord_fixed(xlim = win$xrange, ylim = win$yrange) +
-    theme_light() +
-    add_title("Spatial Point Pattern from Normal Mixture", n = pattern$n, ...)
-
-
-  if (!missing(mus)) {
-    mean_df <- data.frame(do.call(rbind, mus))
-    names(mean_df) <- c("x", "y")
-    p <- p + geom_point(data = mean_df, color = "red", size = 2.5) +
-      add_title("Spatial Point Pattern from Normal Mixture", n = pattern$n,
-                m = nrow(mean_df), ...)
-  }
+    add_title("Spatial Point Pattern from Normal Mixture", n = x$n, ...)
 
   p
 }
@@ -57,19 +45,19 @@ plot.sppmix <- function(pattern, mus, ...) {
 #' plot(demo_mix)
 #'
 #' # plot intensity surface
-#' plotmix_2d(demo_intsurf)
+#' plot(demo_intsurf)
 #'
-#' pp1 <- rsppmix(intsurf = demo_intsurf)
-#' plotmix_2d(demo_intsurf, pp1)  # with points
+#' pp1 <- rsppmix(demo_intsurf)
+#' plot(demo_intsurf, pattern = pp1)  # with points
 #'
 #' @export
 #' @rdname density_plots
-plot.intensity_surface <- function(intsurf, pattern, contour = FALSE,
-                                   truncate = TRUE, L = 256, ...) {
-  intsurf <- to_int_surf(intsurf, ...)
-  win <- intsurf$window
+plot.intensity_surface <- function(x, ..., pattern, contour = FALSE,
+                                   truncate = TRUE, L = 256) {
+  x <- to_int_surf(x, ...)
+  win <- x$window
 
-  est_intensity <- dnormmix(intsurf, xlim = win$xrange, ylim = win$yrange,
+  est_intensity <- dnormmix(x, xlim = win$xrange, ylim = win$yrange,
                             L = L, truncate = truncate)
 
   p <- plot_density(as.data.frame(est_intensity), contour = contour) +
@@ -77,27 +65,28 @@ plot.intensity_surface <- function(intsurf, pattern, contour = FALSE,
   if (!missing(pattern)) {
     p + geom_point(data=as.data.frame(pattern)) +
       add_title("Normal Mixture Intensity Surface",
-                lambda = intsurf$intensity, m = intsurf$m, n = pattern$n)
+                lambda = x$intensity, m = x$m, n = pattern$n)
   } else {
     p + add_title("Normal Mixture Intensity Surface",
-                  lambda = intsurf$intensity, m = intsurf$m)
+                  lambda = x$intensity, m = x$m)
   }
 }
 
-#' @param mix object of class \code{normmix}.
+#' @param xlim,ylim Limits for the plot when \code{x} is a \code{normmix}. If
+#' missing, quantile estimation is used to find a reasonable region.
 #' @export
 #' @rdname density_plots
-plot.normmix <- function(mix, xlim, ylim, contour = FALSE,
-                         truncate = FALSE, L = 256) {
+plot.normmix <- function(x, xlim, ylim, contour = FALSE,
+                         truncate = FALSE, L = 256, ...) {
 
-  stopifnot(is.normmix(mix))
+  stopifnot(is.normmix(x))
 
   if (missing(xlim) | missing(ylim)) {
-    limits <- lapply(seq_len(mix$m), function(k) {
-      c(mvtnorm::qmvnorm(.01, mean = mix$mus[[k]],
-                         sigma = mix$sigmas[[k]])$quantile,
-        mvtnorm::qmvnorm(.99, mean = mix$mus[[k]],
-                         sigma = mix$sigmas[[k]])$quantile)
+    limits <- lapply(seq_len(x$m), function(k) {
+      c(mvtnorm::qmvnorm(.01, mean = x$mus[[k]],
+                         sigma = x$sigmas[[k]])$quantile,
+        mvtnorm::qmvnorm(.99, mean = x$mus[[k]],
+                         sigma = x$sigmas[[k]])$quantile)
     })
 
     if (truncate) warning("Using truncation without specifying a window.")
@@ -106,32 +95,31 @@ plot.normmix <- function(mix, xlim, ylim, contour = FALSE,
     if (missing(ylim)) ylim <- est_range
   }
 
-  est_density <- dnormmix(mix, xlim = xlim, ylim = ylim,
+  est_density <- dnormmix(x, xlim = xlim, ylim = ylim,
                           L = L, truncate = truncate)
 
 
   plot_density(as.data.frame(est_density), contour = contour) +
     labs(fill = "Density") +
-    add_title("Normal Mixture Density Plot", m = mix$m)
+    add_title("Normal Mixture Density Plot", m = x$m)
 }
 
 
 plot_density <- function(density_df, contour = FALSE) {
-  p <- ggplot(density_df, aes(x, y)) + coord_fixed(expand = FALSE) +
+  p <- ggplot(density_df, aes_string("x", "y")) + coord_fixed(expand = FALSE) +
     labs(x = "X", y = "Y")
 
   color <- c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
              "#FF7F00", "red", "#7F0000")
 
   if (!contour) {
-    p + geom_raster(aes(fill = value), interpolate = TRUE) +
+    p + geom_raster(aes_string(fill = "value"), interpolate = TRUE) +
       scale_fill_gradientn(colors = color) +
       guides(fill = guide_colorbar(nbin = 100, barheight = 15))
   } else {
-    p + stat_contour(aes(z = value, color = ..level..)) +
+    p + stat_contour(aes_string(z = "value", color = "..level..")) +
       scale_color_gradientn(colors = color) +
-      guides(color = guide_colorbar(nbin = 100, barheight = 15)) +
-      theme_light()
+      guides(color = guide_colorbar(nbin = 100, barheight = 15))
   }
 }
 

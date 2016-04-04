@@ -15,6 +15,7 @@
 #' create an intensity surface.
 #' @param estimated Whether it's an estimated mixture. By default it's set to
 #' FALSE. When using an estimated mixture, it should be set to TRUE.
+#' @param ... Currently omitted.
 #'
 #' @return An object of class "normmix" containing the following components:
 #'  \item{m}{Number of components.}
@@ -72,51 +73,49 @@ normmix <- function(ps, mus, sigmas, lambda = NULL, win = NULL,
 is.normmix <- function(mix) {
   # check class of object, if TRUE, assuming it's created by normmix() and
   # subject to all its constraints.
-  ifelse(inherits(mix, "normmix"), TRUE, FALSE)
+  inherits(mix, "normmix")
 }
 
 
 is.intensity_surface <- function(mix) {
-  # check class of object, if TRUE, assuming it's created by normmix() and
-  # subject to all its constraints.
-  ifelse(inherits(mix, "intensity_surface"), TRUE, FALSE)
+  inherits(mix, "intensity_surface")
 }
 
 
 #' @export
-print.normmix <- function(mix) {
-  cat("Normal Mixture with", mix$m, "component(s).\n")
+print.normmix <- function(x, ...) {
+  cat("Normal Mixture with", x$m, "component(s).\n")
 }
 
 #' @export
-print.intensity_surface <- function(mix) {
-  pre <- ifelse(mix$estimated, "Estimated average", "Expected")
-  cat(pre, "number of points over window:", mix$intensity, "\n")
-  print(mix$window)
+print.intensity_surface <- function(x, ...) {
+  pre <- ifelse(x$estimated, "Estimated average", "Expected")
+  cat(pre, "number of points over window:", x$intensity, "\n")
+  print(x$window)
   NextMethod()
 }
 
 #' @export
-print.summary_normmix <- function(mix_df) {
-  with(mix_df,
+print.summary_normmix <- function(x, ...) {
+  with(x,
        for (i in unique(comp)) {
          cat("Component", i, "is centered at", "[",
              round(mu[comp == i][1], 2), ",", round(mu[comp == i][2], 2), "]",
              "with probability", round(ps[comp == i][1], 4), "\n")
-         prmatrix(round(mix_df[comp == i, 4:5], 4), rowlab = rep("", 2),
+         prmatrix(round(x[comp == i, 4:5], 4), rowlab = rep("", 2),
                   collab = c("covariance", "matrix:"))
        }
   )
 }
 
-#' @param mix An object of class \code{normmix}
+#' @param object An object of class \code{normmix}
 #' @rdname normmix
 #' @export
-summary.normmix <- function(mix) {
-  comps <- vector("list", mix$m)
-  for (i in 1:mix$m) {
-    comps[[i]] <- data.frame(comp = i, ps = mix$ps[[i]],
-                             mu = mix$mus[[i]], sigma = mix$sigmas[[i]])
+summary.normmix <- function(object, ...) {
+  comps <- vector("list", object$m)
+  for (i in 1:object$m) {
+    comps[[i]] <- data.frame(comp = i, ps = object$ps[[i]],
+                             mu = object$mus[[i]], sigma = object$sigmas[[i]])
   }
   RVAL <- do.call(rbind, comps)
   class(RVAL) <- c("summary_normmix", oldClass(RVAL))
@@ -125,8 +124,8 @@ summary.normmix <- function(mix) {
 
 #' @rdname normmix
 #' @export
-summary.intensity_surface <- function(mix) {
-  print(mix)
+summary.intensity_surface <- function(object, ...) {
+  print(object)
   NextMethod()
 }
 

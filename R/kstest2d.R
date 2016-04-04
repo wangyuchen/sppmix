@@ -10,15 +10,15 @@
 #' \item{p.value}{The p-value of the test}
 #' \item{alternative}{A character string describing the alternative hypothesis}
 #'
-#' @references J. A. Peacock, "Two-dimensional goodness-of-fit testingin
+#' @references J. A. Peacock, "Two-dimensional goodness-of-fit testing in
 #' astronomy", Monthly Notices Royal Astronomy Society 202 (1983)615-627.
 #'
 #' Adapted from Matlab code by Dylan Muir.
 #' @export
 #' @examples
 #' # genrating two point patterns
-#' mix1 <- rnormmix(3, sig0 = .01, df = 5, square(5))
-#' mix2 <- rnormmix(8, sig0 = .01, df = 10, square(5))
+#' mix1 <- rnormmix(3, sig0 = .01, df = 5, xlim = c(0, 5), ylim = c(0, 5))
+#' mix2 <- rnormmix(8, sig0 = .01, df = 10, xlim = c(0, 5), ylim = c(0, 5))
 #' pp1 <- rsppmix(mix1, lambda = 20, win = square(5))
 #' pp2 <- rsppmix(mix2, lambda = 20, win = square(5))
 #'

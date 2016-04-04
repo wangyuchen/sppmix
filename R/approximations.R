@@ -6,6 +6,7 @@
 #' @param mix An object of class \code{normmix}
 #' @param xlim,ylim Vector of length two. Mixture density are estimated within
 #' this range.
+#' @importFrom mvtnorm dmvnorm
 #'
 #' @return A numerical vector corresponding to the density of each component
 #'  within the window.

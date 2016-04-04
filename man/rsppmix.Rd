@@ -4,15 +4,16 @@
 \alias{rsppmix}
 \title{Generate a spatial point pattern from normal mixture.}
 \usage{
-rsppmix(intsurf, truncate = TRUE, ...)
+rsppmix(x, ..., truncate = TRUE)
 }
 \arguments{
-\item{intsurf}{Object of class \code{intensity_surface} or \code{normmix}.}
+\item{x}{Object of class \code{intensity_surface} or \code{normmix}.}
+
+\item{...}{Further parameters passed to \code{to_int_surf()}.
+See \code{\link{to_int_surf}} for details.}
 
 \item{truncate}{Whether to truncate the points outside the domain,
 default to TRUE.}
-
-\item{...}{Further parameters passed to \code{to_int_surf()}.}
 }
 \value{
 A point pattern of class \code{c("sppmix", "ppp")}.
@@ -39,7 +40,7 @@ in the domain. If \code{truncate = FALSE} is set, the returned point pattern
 will not check whether the points are inside the domain.
 }
 \examples{
-rsppmix(intsurf = demo_intsurf)
+rsppmix(demo_intsurf)
 
 # overwrite lambda or win
 rsppmix(demo_intsurf, lambda = 200)
@@ -49,7 +50,7 @@ rsppmix(demo_intsurf, win = square(2))
 rsppmix(demo_mix, lambda = 100, win = square(1))
 
 # turn off truncation
-rsppmix(intsurf = demo_intsurf, truncate = FALSE)
+rsppmix(demo_intsurf, truncate = FALSE)
 
 }
 

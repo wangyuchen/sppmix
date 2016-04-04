@@ -17,15 +17,15 @@
 #' @return An object of class \code{\link[spatstat]{im}}.
 #' @export
 #' @examples
-#' mix1 <- rnormmix(3, .01, 5, square(5))
-#' pattern1 <- rsppmix(30, mix1, square(5))
+#' pattern1 <- rsppmix(demo_mix, lambda = 30, win = square(5))
 #'
 #' # estimate and plot the estimated intensity surface
-#' surf1 <- est_intensity_np(pattern1, win=square(5), h=0.05, L=100)
+#' surf1 <- est_intensity_np(pattern1, h=0.05, L=100)
 #' plot(surf1)
 #'
-est_intensity_np <- function(pattern, win, h, L=10, kernel=c("Epanechnikov"),
-                             edgecorrect=TRUE, truncate=TRUE){
+est_intensity_np <- function(pattern, win = pattern$window, h, L=10,
+                             kernel=c("Epanechnikov"), edgecorrect=TRUE,
+                             truncate=TRUE){
   kernel <- match.arg(kernel)
   if (truncate==TRUE) {
     pattern <- pattern[spatstat::inside.owin(pattern$x,pattern$y,win)]

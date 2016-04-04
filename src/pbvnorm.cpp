@@ -13,9 +13,7 @@ double pbvnorm(NumericVector const& xlims, NumericVector const& ylims,
   uls(0) = (xlims(1) - mu(0)) / sqrt(sigma(0, 0));
   uls(1) = (ylims(1) - mu(1)) / sqrt(sigma(1, 1));
 
-  NumericVector muxy(2);
-  muxy(0) = 0;
-  muxy(1) = 0;
+  NumericVector muxy = NumericVector::create(0, 0);
 
   int n = 2, nu = 0, maxpts = 2000, inform;
 
@@ -24,11 +22,9 @@ double pbvnorm(NumericVector const& xlims, NumericVector const& ylims,
   //if INFIN(I) = 0, Ith limits are (-infinity, UPPER(I)];
   //if INFIN(I) = 1, Ith limits are [LOWER(I), infinity);
   //if INFIN(I) = 2, Ith limits are [LOWER(I), UPPER(I)].
-  IntegerVector infin(2);
-  infin(0) = type;
-  infin(1) = type;
+  IntegerVector infin = IntegerVector::create(type, type);
 
-  double abseps = 1/1000, releps=1/1000, error, value;
+  double abseps = 1/1000, releps = 1 / 1000, error, value;
   int rnd = 0;
   double corr = sigma(0, 1) / sqrt(sigma(0, 0) * sigma(1, 1));
 

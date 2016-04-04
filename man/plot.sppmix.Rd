@@ -4,13 +4,11 @@
 \alias{plot.sppmix}
 \title{Plot spatial point pattern generated from mixture.}
 \usage{
-\method{plot}{sppmix}(pattern, mus, ...)
+\method{plot}{sppmix}(x, ...)
 }
 \arguments{
-\item{pattern}{A point pattern of class sppmix or
+\item{x}{A point pattern of class sppmix or
 \code{\link[spatstat]{ppp}}.}
-
-\item{mus}{An optioanl list of theoretical mean for each component.}
 
 \item{...}{Additional parameters to \code{add_title} to be plot on title.}
 }
@@ -21,8 +19,7 @@ alternative to spatstat's plotting functions.
 \examples{
 spp <- rsppmix(demo_intsurf)
 plot(spp)
-plot(spp, mus = intsurf1$mus)
-plot(spp, mus = intsurf1$mus, lambda = 100)
+plot(spp, lambda = 100)
 
 }
 

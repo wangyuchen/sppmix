@@ -5,14 +5,17 @@
 \alias{plot.normmix}
 \title{2D density plots for normal mixture and intensity surface}
 \usage{
-\method{plot}{intensity_surface}(intsurf, pattern, contour = FALSE,
-  truncate = TRUE, L = 256, ...)
+\method{plot}{intensity_surface}(x, ..., pattern, contour = FALSE,
+  truncate = TRUE, L = 256)
 
-\method{plot}{normmix}(mix, xlim, ylim, contour = FALSE, truncate = FALSE,
-  L = 256)
+\method{plot}{normmix}(x, xlim, ylim, contour = FALSE, truncate = FALSE,
+  L = 256, ...)
 }
 \arguments{
-\item{intsurf}{Object of class \code{intensity_surface} or \code{normmix}.}
+\item{x}{Object of class \code{intensity_surface} or \code{normmix}.}
+
+\item{...}{Further parameters passed to \code{to_int_surf()}.
+See \code{\link{to_int_surf}} for details.}
 
 \item{pattern}{Optional spatial point pattern to add to the plot. In the
 class of \code{\link[spatstat]{ppp}}.}
@@ -24,9 +27,8 @@ default to TRUE.}
 
 \item{L}{Number of grids on each coordinate.}
 
-\item{...}{Further parameters passed to \code{to_int_surf()}.}
-
-\item{mix}{object of class \code{normmix}.}
+\item{xlim, ylim}{Limits for the plot when \code{x} is a \code{normmix}. If
+missing, quantile estimation is used to find a reasonable region.}
 }
 \description{
 Create a contour plot for the intensity surface with or without realizations
@@ -37,10 +39,10 @@ on it.
 plot(demo_mix)
 
 # plot intensity surface
-plotmix_2d(demo_intsurf)
+plot(demo_intsurf)
 
-pp1 <- rsppmix(intsurf = demo_intsurf)
-plotmix_2d(demo_intsurf, pp1)  # with points
+pp1 <- rsppmix(demo_intsurf)
+plot(demo_intsurf, pattern = pp1)  # with points
 
 }
 
