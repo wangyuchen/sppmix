@@ -80,3 +80,60 @@ rsppmix <- function(intsurf, truncate = TRUE, ...) {
   class(RVAL) <- c("sppmix", "ppp")
   return(RVAL)
 }
+
+
+#' Generate mixture with normal components.
+#'
+#' Generate a mixture on a 2d window where the mean and variance of the
+#' components are random. The number of component can either be fixed or random.
+#'
+#' @param m Number of components in normal mixture.
+#' @param sig0 Tunning parameter in generating random matrix from Wishart
+#' distribution.
+#' @param df Degree of freedom in generating random matrix from Wishart
+#' distribution.
+#' @param rand_m whether number of components is random. When
+#' \code{rand_m = FALSE}, it will randomly choose number of components from
+#' \code{1:m}.
+#' @param xlim,ylim Vector of length two, the limit are used to sample the mu's
+#' from a uniform distribution.
+#'
+#' @return Object of class \code{normmix}.
+#' @export
+#' @examples
+#' mix1 <- rnormmix(m = 3, sig0 = .1, df = 5)
+#' summary(mix1)
+#'
+#' mix2 <- rnormmix(m = 5, sig0 = .1, df = 5, rand_m = TRUE, ylim = c(0, 5))
+#' summary(mix2)
+#'
+rnormmix <- function(m, sig0, df, rand_m = FALSE,
+                     xlim = c(0, 1), ylim = c(0, 1)) {
+  if (rand_m) {
+    # number of components is random
+    m <- sample(1:m, 1)
+  }
+
+  gen_ps <- rdirichlet(1, rep(1, m))
+  gen_mu <- cbind(x = runif(m, xlim[1], xlim[2]),
+                  y = runif(m, ylim[1], ylim[2]))
+  gen_sigma <- stats::rWishart(m, df, sig0 * diag(2))
+
+  mus <- vector(mode = "list", length = m)
+  sigmas <- vector(mode = "list", length = m)
+
+  for (k in 1:m) {
+    mus[[k]] <- gen_mu[k, ]
+    sigmas[[k]] <- gen_sigma[, , k]
+  }
+
+  normmix(gen_ps, mus, sigmas)
+}
+
+
+rdirichlet <- function (n, alpha) {
+  l <- length(alpha)
+  x <- matrix(rgamma(l * n, alpha), ncol = l, byrow = TRUE)
+  sm <- x %*% rep(1, l)
+  return(x/as.vector(sm))
+}
