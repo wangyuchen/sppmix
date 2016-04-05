@@ -1,34 +1,3 @@
-#' Approximate density of a normal mixture over a 2d domain.
-#'
-#' Approximate the density of each component in a normal mixture within the
-#' domain using multivariate normal density function.
-#'
-#' @param mix An object of class \code{normmix}
-#' @param xlim,ylim Vector of length two. Mixture density are estimated within
-#' this range.
-#' @importFrom mvtnorm dmvnorm
-#'
-#' @return A numerical vector corresponding to the density of each component
-#'  within the window.
-#' @export
-approx_normmix <- function(mix, xlim = c(0, 1), ylim = c(0, 1)) {
-
-  if (!is.normmix(mix)) {
-    stop("mix must be of class normmix or intensity surface")
-  }
-
-  approx <- numeric(mix$m)
-
-  for (k in 1:mix$m) {
-    approx[k] <- mvtnorm::pmvnorm(lower = c(xlim[1], ylim[1]),
-                                  upper = c(xlim[2], ylim[2]),
-                                  mean = mix$mus[[k]],
-                                  sigma = mix$sigmas[[k]])
-  }
-
-  return(approx)
-}
-
 #' Calculate density of normal mixture.
 #'
 #' When a \code{normmix} object is given, this function estimates density values

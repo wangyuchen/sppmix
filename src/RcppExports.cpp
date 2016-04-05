@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // pbvnorm
-double pbvnorm(NumericVector const& xlims, NumericVector const& ylims, NumericVector const& mu, NumericMatrix const& sigma, int type);
-RcppExport SEXP sppmix_pbvnorm(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP typeSEXP) {
+double pbvnorm(NumericVector const& xlims, NumericVector const& ylims, NumericVector const& mu, NumericMatrix const& sigma);
+RcppExport SEXP sppmix_pbvnorm(SEXP xlimsSEXP, SEXP ylimsSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -15,8 +15,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector const& >::type ylims(ylimsSEXP);
     Rcpp::traits::input_parameter< NumericVector const& >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericMatrix const& >::type sigma(sigmaSEXP);
-    Rcpp::traits::input_parameter< int >::type type(typeSEXP);
-    __result = Rcpp::wrap(pbvnorm(xlims, ylims, mu, sigma, type));
+    __result = Rcpp::wrap(pbvnorm(xlims, ylims, mu, sigma));
+    return __result;
+END_RCPP
+}
+// approx_normmix
+NumericVector approx_normmix(List mix, NumericVector xlim, NumericVector ylim);
+RcppExport SEXP sppmix_approx_normmix(SEXP mixSEXP, SEXP xlimSEXP, SEXP ylimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type mix(mixSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xlim(xlimSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type ylim(ylimSEXP);
+    __result = Rcpp::wrap(approx_normmix(mix, xlim, ylim));
     return __result;
 END_RCPP
 }
