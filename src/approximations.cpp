@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <mvtnormAPI.h>
+#include "sppmix.h"
 
 using namespace Rcpp;
 
