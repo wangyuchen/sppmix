@@ -6,10 +6,10 @@
 \title{2D density plots for normal mixture and intensity surface}
 \usage{
 \method{plot}{intensity_surface}(x, ..., pattern, contour = FALSE,
-  truncate = TRUE, L = 256)
+  truncate = TRUE, L = 128)
 
 \method{plot}{normmix}(x, xlim, ylim, contour = FALSE, truncate = FALSE,
-  L = 256, ...)
+  L = 128, ...)
 }
 \arguments{
 \item{x}{Object of class \code{intensity_surface} or \code{normmix}.}

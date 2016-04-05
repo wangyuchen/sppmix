@@ -53,7 +53,7 @@ plot.sppmix <- function(x, ...) {
 #' @export
 #' @rdname density_plots
 plot.intensity_surface <- function(x, ..., pattern, contour = FALSE,
-                                   truncate = TRUE, L = 256) {
+                                   truncate = TRUE, L = 128) {
   x <- to_int_surf(x, ...)
   win <- x$window
 
@@ -77,7 +77,7 @@ plot.intensity_surface <- function(x, ..., pattern, contour = FALSE,
 #' @export
 #' @rdname density_plots
 plot.normmix <- function(x, xlim, ylim, contour = FALSE,
-                         truncate = FALSE, L = 256, ...) {
+                         truncate = FALSE, L = 128, ...) {
 
   stopifnot(is.normmix(x))
 
