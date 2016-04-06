@@ -59,8 +59,10 @@ plot.intensity_surface <- function(x, ..., pattern, contour = FALSE,
 
   est_intensity <- dnormmix(x, xlim = win$xrange, ylim = win$yrange,
                             L = L, truncate = truncate)
+  plot_df <- as.data.frame(est_intensity)
+  names(plot_df) <- c("x", "y", "value")
 
-  p <- plot_density(as.data.frame(est_intensity), contour = contour) +
+  p <- plot_density(plot_df, contour = contour) +
     labs(fill = "Intensity")
   if (!missing(pattern)) {
     p + geom_point(data=as.data.frame(pattern)) +
@@ -97,9 +99,11 @@ plot.normmix <- function(x, xlim, ylim, contour = FALSE,
 
   est_density <- dnormmix(x, xlim = xlim, ylim = ylim,
                           L = L, truncate = truncate)
+  plot_df <- as.data.frame(est_density)
+  names(plot_df) <- c("x", "y", "value")
 
 
-  plot_density(as.data.frame(est_density), contour = contour) +
+  plot_density(plot_df, contour = contour) +
     labs(fill = "Density") +
     add_title("Normal Mixture Density Plot", m = x$m)
 }

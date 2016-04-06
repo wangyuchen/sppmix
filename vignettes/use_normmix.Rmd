@@ -137,10 +137,16 @@ rsppmix(mix1, lambda = 100, win = square(1))
 plot(pp1)
 ```
 
-Now you have an intensity surface and the point generated from it. You can use `plotmix_2d` to plot the intensity and also add points to it. 
+Now you have an intensity surface and the point generated from it. You can use `plot` to plot the intensity and also add points to it. 
 
 ```{r}
 plot(intsurf1, pattern = pp1)
+```
+
+Or an interactive 3D surface plot using `plot_mix_3d`.
+
+```{r}
+plot_mix_3d(intsurf1)
 ```
 
 

@@ -3,7 +3,6 @@
 S3method(plot,intensity_surface)
 S3method(plot,normmix)
 S3method(plot,sppmix)
-S3method(print,density_3d)
 S3method(print,intensity_surface)
 S3method(print,normmix)
 S3method(print,summary_normmix)

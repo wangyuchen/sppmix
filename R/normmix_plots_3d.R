@@ -17,9 +17,9 @@ plot_mix_3d <- function(x, ..., truncate = TRUE, L = 128,
 
   est_intensity <- dnormmix(x, xlim = win$xrange, ylim = win$yrange,
                             L = L, truncate = truncate)
-  x <- est_intensity$xcol
-  y <- est_intensity$yrow
-  z <- as.matrix(est_intensity)
+  x <- unique(est_intensity[, 1])
+  y <- unique(est_intensity[, 2])
+  z <- matrix(est_intensity[, 3], L, L, byrow = TRUE)
 
   plot_density_3d(x, y, z, main = main, ...)
 }
@@ -46,11 +46,5 @@ plot_density_3d <- function(x, y, z, main, ...) {
   rgl::axes3d(c('x', 'y', 'z-+'))
 
   s <- rgl::scene3d()
-  class(s) <- c("density_3d", class(s))
-  s
-}
-
-#' @export
-print.density_3d <- function(x, ...) {
-  print(rglwidget::rglwidget(x, ...))
+  rglwidget::rglwidget(s)
 }
