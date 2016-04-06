@@ -13,7 +13,8 @@ approx_normmix(mix, xlim, ylim)
 this range.}
 }
 \value{
-A numerical vector corresponding to the density of each component
+A numerical vector corresponding to the density of each
+ component
  within the window.
 }
 \description{

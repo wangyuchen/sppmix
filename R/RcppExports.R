@@ -15,10 +15,43 @@ pbvnorm <- function(xlims, ylims, mu, sigma) {
 #' this range.
 #' @importFrom mvtnorm dmvnorm
 #'
-#' @return A numerical vector corresponding to the density of each component
+#' @return A numerical vector corresponding to the density of each
+#'  component
 #'  within the window.
 #' @export
 approx_normmix <- function(mix, xlim, ylim) {
     .Call('sppmix_approx_normmix', PACKAGE = 'sppmix', mix, xlim, ylim)
+}
+
+#' Calculate density of normal mixture.
+#'
+#' When a \code{normmix} object is given, this function estimates density
+#' values within the domain. When a \code{intensity_surface} is given, it
+#' multiplies the estimated density values with intensity and returns the
+#' estimated intensity.
+#'
+#' @param mix An object of class \code{normmix} or \code{intensity_surface}.
+#' When an intensity surface is given, it estimates the intensity instead of
+#' density within the domain.
+#' @param xlim,ylim The range within which the density or intensity is
+#' calculated.
+#' @param L Length of grid on each axis. The density is calculated on a L * L
+#' grid.
+#' @param truncate Whether to truncate the density to be within the domain.
+#'
+#' @return An matrix with the first two columns the grid coordinates and the
+#' third column the density (intensity) value.
+#'
+#'
+#' @examples
+#' est_density <- dnormmix(demo_mix)
+#' est_density <- dnormmix(demo_intsurf)
+#' @export
+dnormmix <- function(mix, xlim = as.numeric( c(0, 1)), ylim = as.numeric( c(0, 1)), L = 128L, truncate = TRUE) {
+    .Call('sppmix_dnormmix', PACKAGE = 'sppmix', mix, xlim, ylim, L, truncate)
+}
+
+dbvnorm <- function(x, mean, sigma, logd = FALSE) {
+    .Call('sppmix_dbvnorm', PACKAGE = 'sppmix', x, mean, sigma, logd)
 }
 

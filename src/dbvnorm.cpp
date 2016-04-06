@@ -1,4 +1,5 @@
-#include <RcppArmadillo.h>
+// From Rcpp Gallery
+#include "sppmix.h"
 
 const double log2pi = std::log(2.0 * M_PI);
 
@@ -14,7 +15,7 @@ arma::vec dbvnorm(arma::mat x, arma::rowvec mean,
   double constants = -(static_cast<double>(xdim)/2.0) * log2pi;
 
   for (int i=0; i < n; i++) {
-    arma::vec z = rooti * arma::trans( x.row(i) - mean) ;
+    arma::vec z = rooti * arma::trans(x.row(i) - mean) ;
     out(i)      = constants - 0.5 * arma::sum(z%z) + rootisum;
   }
 
