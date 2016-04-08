@@ -5,8 +5,8 @@ Authors@R: as.person(c(
     "Yuchen Wang <ycwang0712@gmail.com> [aut, cre]",
     "Jiaxun Chen <chenjiaxun9@hotmail.com> [aut]"
   ))
-Description: This package implemented data structures and methods for modeling
-    spatial point process data using mixtures of normal components.
+Description: Data structures and methods for modeling spatial point process
+    data using mixtures of normal components.
 Depends:
     R (>= 3.2.1),
     stats,
